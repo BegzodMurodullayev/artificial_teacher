@@ -1,0 +1,46 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual envs
+venv/
+.venv/
+env/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Databases and runtime state
+*.db
+*.sqlite3
+*.sqlite
+*.db-shm
+*.db-wal
+bot.instance.lock
+bot/*.db
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.cursor/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Docker
+.docker/

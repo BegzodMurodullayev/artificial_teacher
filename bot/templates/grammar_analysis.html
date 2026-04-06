@@ -1,0 +1,44 @@
+﻿{% extends "base.html" %}
+{% block meta %}
+<span class="pill">User: {{ user_name }}</span>
+<span class="pill">Level guess: {{ level_guess }}</span>
+<span class="pill">Section: Grammar</span>
+{% endblock %}
+{% block body %}
+<div class="grid three">
+  <div class="stat-card">
+    <div class="stat-label">Topilgan xatolar</div>
+    <div class="stat-value">{{ analysis_items|length }}</div>
+    <div class="stat-note">Aniqlangan nuqtalar soni</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Daraja taxmini</div>
+    <div class="stat-value">{{ level_guess }}</div>
+    <div class="stat-note">Konservativ baholash</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">To'g'ri variant</div>
+    <div class="stat-note">Asosiy matn quyida keltirilgan</div>
+    <div class="meter" style="margin-top:12px;"><div class="meter-fill" style="width:{% if analysis_items|length == 0 %}92{% elif analysis_items|length <= 2 %}74{% elif analysis_items|length <= 4 %}56{% else %}38{% endif %}%;"></div></div>
+  </div>
+</div>
+
+<section class="card">
+  <h2>Tahlil</h2>
+  <ul class="clean">
+    {% for item in analysis_items %}
+    <li><strong>{{ loop.index }}.</strong> {{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="card">
+  <h2>To'g'ri variant</h2>
+  <div class="note">{{ corrected_text }}</div>
+</section>
+
+<section class="card">
+  <h2>Asosiy qoida</h2>
+  <p>{{ rule_text }}</p>
+</section>
+{% endblock %}

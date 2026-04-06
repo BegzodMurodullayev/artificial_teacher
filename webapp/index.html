@@ -1,0 +1,250 @@
+﻿<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artificial Teacher - Web App</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">AT</div>
+        <div>
+          <p class="eyebrow">Artificial Teacher</p>
+          <h2>Study Hub</h2>
+          <p id="planText" class="muted">Plan: FREE</p>
+        </div>
+      </div>
+
+      <nav class="nav" id="navTabs">
+        <button class="nav-item active" data-page="dashboard">Dashboard</button>
+        <button class="nav-item" data-page="focus">Focus</button>
+        <button class="nav-item" data-page="tracker">Tracker</button>
+        <button class="nav-item" data-page="progress">Progress</button>
+        <button class="nav-item" data-page="settings">Settings</button>
+      </nav>
+
+      <section class="side-card">
+        <p class="muted">Quick stats</p>
+        <div class="kv"><span>Words</span><strong id="sideWords">0</strong></div>
+        <div class="kv"><span>Quiz</span><strong id="sideQuiz">0</strong></div>
+        <div class="kv"><span>Lessons</span><strong id="sideLessons">0</strong></div>
+      </section>
+
+      <section class="side-card">
+        <p class="muted">Server snapshot</p>
+        <div class="kv"><span>Level</span><strong id="sideLevel">A1</strong></div>
+        <div class="kv"><span>Rank</span><strong id="sideRank">-</strong></div>
+        <div class="kv"><span>Score</span><strong id="sideScore">0</strong></div>
+      </section>
+
+      <section class="side-card">
+        <p class="muted">Bot bilan sync</p>
+        <strong id="syncStatus" class="sync-status">Auto sync tayyor</strong>
+        <p class="muted tiny">Ma'lumotlar local saqlanadi va Mini App yopilganda botga yuboriladi.</p>
+        <button id="syncBtn" class="btn btn-primary">Snapshot yangilash</button>
+      </section>
+
+      <section class="side-card">
+        <p class="muted">Upgrade sababi</p>
+        <strong id="upsellTitle" class="upsell-title">Free plan</strong>
+        <p id="upsellCopy" class="muted tiny">Ko'proq export, kuchli analytics va flexible focus rejimlari Pro/Premium'da ochiladi.</p>
+      </section>
+    </aside>
+
+    <main class="content">
+      <header class="topbar card">
+        <div>
+          <p class="eyebrow" id="topEyebrow">Dashboard</p>
+          <h1 id="topTitle">Learning Control Panel</h1>
+          <p id="topDesc" class="muted">Barcha o'qish jarayoni bitta joyda.</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn btn-ghost" id="sendTrackerTop">Tracker</button>
+          <button class="btn btn-primary" id="openFocusTop">Start focus</button>
+        </div>
+      </header>
+
+      <section class="page active" id="page-dashboard">
+        <div class="grid metrics">
+          <article class="card metric">
+            <span>Today points</span>
+            <strong id="metricPoints">0</strong>
+          </article>
+          <article class="card metric">
+            <span>Focus minutes</span>
+            <strong id="metricFocus">0</strong>
+          </article>
+          <article class="card metric">
+            <span>Completion</span>
+            <strong id="metricCompletion">0%</strong>
+          </article>
+          <article class="card metric">
+            <span>Mode</span>
+            <strong id="metricMode">Free</strong>
+          </article>
+        </div>
+
+        <div class="grid two-col">
+          <article class="card">
+            <h3>Daily goals</h3>
+            <p class="muted">Bugungi maqsadlar bo'yicha holat.</p>
+            <div class="goal-list">
+              <div class="goal-row"><span>Words</span><span id="goalWords">0 / 20</span></div>
+              <div class="bar"><i id="barWords"></i></div>
+              <div class="goal-row"><span>Quiz</span><span id="goalQuiz">0 / 5</span></div>
+              <div class="bar"><i id="barQuiz"></i></div>
+              <div class="goal-row"><span>Lessons</span><span id="goalLessons">0 / 2</span></div>
+              <div class="bar"><i id="barLessons"></i></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Activity feed</h3>
+            <p class="muted">Oxirgi local harakatlar.</p>
+            <ul id="activityFeed" class="feed"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="page" id="page-focus">
+        <article class="card">
+          <h3>Pomodoro Focus</h3>
+          <p class="muted">Session tugaganda navbatga olinadi va Mini App yopilganda botga sync bo'ladi.</p>
+
+          <div class="timer-wrap">
+            <div class="timer-ring">
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <circle cx="60" cy="60" r="52" class="ring-bg"></circle>
+                <circle cx="60" cy="60" r="52" class="ring-fg" id="ringFg"></circle>
+              </svg>
+              <div class="timer-center">
+                <strong id="timerView">25:00</strong>
+                <span id="sessionLabel">Focus</span>
+              </div>
+            </div>
+
+            <div class="timer-controls">
+              <button id="startTimer" class="btn btn-primary">Start</button>
+              <button id="pauseTimer" class="btn btn-ghost">Pause</button>
+              <button id="resetTimer" class="btn btn-ghost">Reset</button>
+            </div>
+          </div>
+
+          <div class="grid three-col">
+            <label>Focus (min)
+              <input id="focusInput" type="number" min="15" max="90" value="25" />
+            </label>
+            <label>Break (min)
+              <input id="breakInput" type="number" min="3" max="30" value="5" />
+            </label>
+            <label>Long break (min)
+              <input id="longBreakInput" type="number" min="10" max="45" value="15" />
+            </label>
+          </div>
+
+          <p id="focusGate" class="warn"></p>
+        </article>
+      </section>
+
+      <section class="page" id="page-tracker">
+        <article class="card">
+          <h3>Daily tracker</h3>
+          <p class="muted">Bugungi o'qish natijalarini kiriting.</p>
+
+          <div class="grid three-col">
+            <label>Learned words
+              <input id="wordsInput" type="number" min="0" max="1000" value="0" />
+            </label>
+            <label>Solved quiz
+              <input id="quizInput" type="number" min="0" max="300" value="0" />
+            </label>
+            <label>Lessons done
+              <input id="lessonInput" type="number" min="0" max="300" value="0" />
+            </label>
+          </div>
+
+          <div class="grid two-col">
+            <label>Topics covered
+              <input id="topicsInput" type="text" placeholder="grammar, travel, business" />
+            </label>
+            <label>Study note
+              <input id="noteInput" type="text" placeholder="Bugun qaysi joy qiyin bo'ldi?" />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button id="saveTracker" class="btn btn-primary">Saqlash</button>
+            <button id="sendTracker" class="btn btn-ghost">Bot uchun navbatga qo'shish</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="page" id="page-progress">
+        <article class="card">
+          <h3>Progress analytics</h3>
+          <p class="muted">Mahalliy ma'lumotlar bo'yicha diagramma.</p>
+          <canvas id="progressCanvas" width="1100" height="420"></canvas>
+          <div class="actions">
+            <button id="exportJson" class="btn btn-ghost">Export JSON</button>
+          </div>
+          <p id="exportGate" class="warn"></p>
+        </article>
+      </section>
+
+      <section class="page" id="page-settings">
+        <article class="card">
+          <h3>Settings</h3>
+          <p class="muted">Interfeys va ishlash sozlamalari.</p>
+
+          <div class="grid three-col">
+            <label>Theme
+              <select id="themeSelect">
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </label>
+            <label>Language
+              <select id="langSelect">
+                <option value="uz">Uzbek</option>
+                <option value="en">English</option>
+              </select>
+            </label>
+            <label>Daily words goal
+              <input id="goalWordsInput" type="number" min="5" max="200" value="20" />
+            </label>
+          </div>
+
+          <div class="grid three-col">
+            <label>Daily quiz goal
+              <input id="goalQuizInput" type="number" min="1" max="50" value="5" />
+            </label>
+            <label>Daily lesson goal
+              <input id="goalLessonInput" type="number" min="1" max="20" value="2" />
+            </label>
+            <label>Haptic feedback
+              <select id="hapticSelect">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button id="saveSettings" class="btn btn-primary">Save settings</button>
+            <button id="resetAll" class="btn btn-danger">Reset all local data</button>
+          </div>
+
+          <p class="muted tiny">Dark/Light mode foydalanuvchi tanloviga ko'ra saqlanadi.</p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

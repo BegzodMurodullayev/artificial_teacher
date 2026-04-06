@@ -1,0 +1,33 @@
+﻿{% extends "base.html" %}
+{% block meta %}
+<span class="pill">User: {{ user_name }}</span>
+<span class="pill">Direction: {{ direction_label }}</span>
+<span class="pill">Section: Translation</span>
+{% endblock %}
+{% block body %}
+<div class="grid two">
+  <div class="card">
+    <h2>Asl matn</h2>
+    <div class="note">{{ source_text }}</div>
+  </div>
+  <div class="card">
+    <h2>Tarjima</h2>
+    <div class="note">{{ translated_text }}</div>
+  </div>
+</div>
+
+<section class="card">
+  <h2>Izoh va qo'shimchalar</h2>
+  <ul class="clean">
+    {% for item in notes %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% if raw_text %}
+<section class="card">
+  <h2>To'liq AI javobi</h2>
+  <p>{{ raw_text }}</p>
+</section>
+{% endif %}
+{% endblock %}

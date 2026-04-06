@@ -1,0 +1,29 @@
+﻿# Git metadata
+.git
+.gitignore
+
+# Python cache/build
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.pytest_cache/
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data
+*.db
+*.sqlite3
+*.sqlite
+*.log
+logs/
+bot.instance.lock
+
+# IDE
+.vscode/
+.idea/

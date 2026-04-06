@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="eyebrow">Artificial Teacher lesson</div>
+<h1>{{ title }}</h1>
+<div class="meta">
+  <span class="pill">Topic: {{ topic }}</span>
+  <span class="pill">Level: {{ level }}</span>
+</div>
+
+<section class="card">
+  <h2>Intro</h2>
+  <p>{{ intro }}</p>
+</section>
+
+<section class="card">
+  <h2>Words</h2>
+  <table>
+    <thead>
+      <tr><th>Word</th><th>Meaning</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      {% for row in words %}
+      <tr>
+        <td>{{ row.word }}</td>
+        <td>{{ row.meaning }}</td>
+        <td>{{ row.exam\ple }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Phrases</h2>
+  <ul>
+    {% for item in phrases %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="card">
+  <h2>Dialogue</h2>
+  <p>{{ dialogue }}</p>
+</section>
+
+<section class="card">
+  <h2>Exercises</h2>
+  <ul>
+    {% for item in exercises %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="card">
+  <h2>Tips</h2>
+  <ul>
+    {% for item in tips %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

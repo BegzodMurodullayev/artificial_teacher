@@ -1,0 +1,29 @@
+﻿{% extends "base.html" %}
+{% block meta %}
+<span class="pill">User: {{ user_name }}</span>
+<span class="pill">Section: {{ section }}</span>
+{% if subtitle %}<span class="pill">{{ subtitle }}</span>{% endif %}
+{% endblock %}
+{% block body %}
+<section class="card hero-card">
+  <p class="eyebrow">{{ section }}</p>
+  <h2>{{ title }}</h2>
+  {% if summary %}<p class="soft">{{ summary }}</p>{% endif %}
+</section>
+
+{% if key_points %}
+<section class="card">
+  <h2>Asosiy nuqtalar</h2>
+  <ul class="clean">
+    {% for item in key_points %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>To'liq matn</h2>
+  <div class="note">{{ raw_text }}</div>
+</section>
+{% endblock %}

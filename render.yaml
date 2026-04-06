@@ -1,0 +1,51 @@
+﻿services:
+  - type: worker
+    name: artificial-teacher-bot
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeploy: true
+    disk:
+      name: artificial-teacher-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: OWNER_ID
+        sync: false
+      - key: BOT_USERNAME
+        value: "@Artificial_teacher_bot"
+      - key: DB_PATH
+        value: "/var/data/engbot.db"
+      - key: WEBHOOK_URL
+        value: ""
+      - key: WEBHOOK_PORT
+        value: "8443"
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: AI_MODEL
+        value: "openai/gpt-4o-mini"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: TOPMEDIAI_API_KEY
+        sync: false
+      - key: TOPMEDIAI_API_BASE
+        value: "https://api.topmediai.com/v1"
+      - key: WEB_APP_URL
+        sync: false
+      - key: SUPPORT_URL
+        sync: false
+      - key: WEBSITE_URL
+        sync: false
+      - key: TELEGRAM_CHANNEL_URL
+        sync: false
+      - key: INSTAGRAM_URL
+        sync: false
+
+  - type: static_site
+    name: artificial-teacher-webapp
+    rootDir: webapp
+    buildCommand: ""
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: false

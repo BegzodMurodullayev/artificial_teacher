@@ -1,0 +1,288 @@
+﻿<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <style>
+    :root {
+      --bg-a: {{ theme.bg_a }};
+      --bg-b: {{ theme.bg_b }};
+      --paper: {{ theme.paper }};
+      --paper-alt: {{ theme.paper_alt }};
+      --ink: {{ theme.ink }};
+      --muted: {{ theme.muted }};
+      --accent: {{ theme.accent }};
+      --accent-2: {{ theme.accent_2 }};
+      --line: {{ theme.line }};
+      --good: {{ theme.good }};
+      --bad: {{ theme.bad }};
+      --shadow: {{ theme.shadow }};
+      --badge-fill: {{ theme.badge_fill }};
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
+      color: var(--ink);
+      background: {{ theme.texture }};
+      padding: 26px;
+    }
+    .sheet {
+      max-width: 1080px;
+      margin: 0 auto;
+      background: color-mix(in srgb, var(--paper) 92%, white);
+      border: 1px solid color-mix(in srgb, var(--line) 88%, white);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .hero {
+      padding: 34px 34px 22px;
+      background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--accent-2) 28%, transparent), transparent 28%),
+        linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--paper-alt)) 0%, color-mix(in srgb, var(--paper) 92%, white) 100%);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 85%, white);
+    }
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    h1, h2, h3 { margin-top: 0; }
+    h1 {
+      font-size: 38px;
+      line-height: 1.08;
+      margin-bottom: 12px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    h2 {
+      font-size: 22px;
+      margin: 0 0 12px;
+      font-weight: 800;
+    }
+    h3 {
+      font-size: 17px;
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+    p, li { line-height: 1.7; }
+    .subtle {
+      color: var(--muted);
+      margin: 0;
+    }
+    .report-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--badge-fill);
+      color: var(--ink);
+      border: 1px solid color-mix(in srgb, var(--line) 80%, white);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--paper-alt) 85%, white);
+      border: 1px solid color-mix(in srgb, var(--line) 82%, white);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .content {
+      padding: 26px 34px 34px;
+    }
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 94%, white) 0%, color-mix(in srgb, var(--paper-alt) 65%, white) 100%);
+      border: 1px solid color-mix(in srgb, var(--line) 84%, white);
+      border-radius: var(--radius-lg);
+      padding: 18px 18px 16px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+      margin-top: 16px;
+    }
+    .stat-card {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid color-mix(in srgb, var(--line) 80%, white);
+      background: color-mix(in srgb, var(--paper-alt) 78%, white);
+    }
+    .stat-label {
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .stat-value {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+    .stat-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .note {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--accent) 10%, white);
+      border: 1px solid color-mix(in srgb, var(--line) 84%, white);
+      color: var(--ink);
+    }
+    .good { color: var(--good); font-weight: 700; }
+    .bad { color: var(--bad); font-weight: 700; }
+    .soft { color: var(--muted); }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+    }
+    .meter {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--line) 75%, white);
+      border: 1px solid color-mix(in srgb, var(--line) 90%, white);
+    }
+    .meter-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 999px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+    th, td {
+      border: 1px solid color-mix(in srgb, var(--line) 84%, white);
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: color-mix(in srgb, var(--accent) 8%, var(--paper-alt));
+      font-weight: 800;
+      font-size: 13px;
+    }
+    code {
+      background: color-mix(in srgb, var(--paper-alt) 85%, white);
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 90%;
+    }
+    ul.clean {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+    ul.clean li {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--paper-alt) 75%, white);
+      border: 1px solid color-mix(in srgb, var(--line) 82%, white);
+    }
+    .review-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .review-card {
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--line) 84%, white);
+      padding: 16px;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 92%, white) 0%, color-mix(in srgb, var(--paper-alt) 70%, white) 100%);
+    }
+    .review-card.good-review {
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--good) 18%, transparent);
+    }
+    .review-card.bad-review {
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bad) 18%, transparent);
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid color-mix(in srgb, var(--line) 82%, white);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 780px) {
+      body { padding: 12px; }
+      .hero, .content { padding: 18px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      h1 { font-size: 30px; }
+      .stat-value { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">{{ brand_name }} export</div>
+          <h1>{{ title }}</h1>
+          {% if subtitle %}<p class="subtle">{{ subtitle }}</p>{% endif %}
+        </div>
+        <div class="report-chip">{{ theme.name }} • {{ report_id }}</div>
+      </div>
+      {% if meta_text %}<p class="subtle">{{ meta_text }}</p>{% endif %}
+      {% if hero_note %}<div class="note" style="margin-top:16px;">{{ hero_note }}</div>{% endif %}
+      <div class="meta">{% block meta %}{% endblock %}</div>
+    </section>
+    <section class="content">
+      {% block body %}{% endblock %}
+      <div class="footer">
+        <div>{{ brand_name }} • {{ generated_at }}</div>
+        <div>Report ID: <span class="mono">{{ report_id }}</span></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

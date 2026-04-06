@@ -1,0 +1,62 @@
+﻿{% extends "base.html" %}
+{% block meta %}
+<span class="pill">User: {{ user_name }}</span>
+<span class="pill">Type: {{ qtype }}</span>
+<span class="pill">Level: {{ level }}</span>
+<span class="pill">Natija: {{ correct }}/{{ total }}</span>
+{% if iq_score is not none %}<span class="pill">IQ: {{ iq_score }}</span>{% endif %}
+{% endblock %}
+{% block body %}
+<div class="grid three">
+  <div class="stat-card">
+    <div class="stat-label">To'g'ri javoblar</div>
+    <div class="stat-value">{{ correct }}/{{ total }}</div>
+    <div class="stat-note">Yakuniy natija</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Aniqlik</div>
+    <div class="stat-value">{% if total %}{{ ((correct / total) * 100)|round(0, 'floor')|int }}%{% else %}0%{% endif %}</div>
+    <div class="meter" style="margin-top:12px;"><div class="meter-fill" style="width:{% if total %}{{ ((correct / total) * 100)|round(0, 'floor')|int }}{% else %}0{% endif %}%;"></div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Hisobot turi</div>
+    <div class="stat-value">{{ qtype }}</div>
+    <div class="stat-note">{% if iq_score is not none %}Taxminiy IQ: {{ iq_score }}{% else %}Daraja va xatolar asosida tahlil{% endif %}</div>
+  </div>
+</div>
+
+<section class="card">
+  <h2>Yakuniy xulosa</h2>
+  <p>{{ summary }}</p>
+</section>
+
+<section class="card">
+  <h2>Savollar tahlili</h2>
+  <div class="review-list">
+    {% for row in rows %}
+    <article class="review-card {{ 'good-review' if row.is_correct else 'bad-review' }}">
+      <div class="pill" style="margin-bottom:10px;">Savol {{ loop.index }}</div>
+      <h3>{{ row.question }}</h3>
+      {% if row.options %}
+      <ul class="clean" style="margin-top:12px;">
+        {% for option in row.options %}
+        <li>{{ option }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      <div class="grid two" style="margin-top:14px;">
+        <div class="stat-card">
+          <div class="stat-label">Sizning javobingiz</div>
+          <div class="{{ 'good' if row.is_correct else 'bad' }}">{{ row.user_answer }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">To'g'ri javob</div>
+          <div>{{ row.correct_answer }}</div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:14px;">{{ row.explanation }}</div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+﻿{% extends "base.html" %}
+{% block body %}
+<div class="eyebrow">Artificial Teacher pronunciation</div>
+<h1>{{ title }}</h1>
+<div class="meta">
+  <span class="pill">User: {{ user_name }}</span>
+  <span class="pill">Word: {{ term }}</span>
+  <span class="pill">Accent: {{ accent }}</span>
+</div>
+
+<section class="card">
+  <h2>Talaffuz tahlili</h2>
+  <ul>
+    {% for item in analysis_items %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="card">
+  <h2>To'liq izoh</h2>
+  <p>{{ full_text }}</p>
+</section>
+{% endblock %}

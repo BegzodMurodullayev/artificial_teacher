@@ -1,0 +1,51 @@
+﻿{% extends "base.html" %}
+{% block meta %}
+<span class="pill">User: {{ user_name }}</span>
+<span class="pill">Plan: {{ plan_name }}</span>
+<span class="pill">Level: {{ level }}</span>
+<span class="pill">Rank: #{{ rank }} / {{ total_users }}</span>
+<span class="pill">Score: {{ score }}</span>
+{% endblock %}
+{% block body %}
+<div class="grid three">
+  <div class="stat-card"><div class="stat-label">Streak</div><div class="stat-value">{{ streak_days }}</div><div class="stat-note">kun</div></div>
+  <div class="stat-card"><div class="stat-label">Quiz aniqligi</div><div class="stat-value">{{ quiz_accuracy }}%</div><div class="stat-note">{{ quiz_correct }}/{{ quiz_played }}</div></div>
+  <div class="stat-card"><div class="stat-label">IQ</div><div class="stat-value">{{ iq_score }}</div><div class="stat-note">So'nggi tahlil</div></div>
+</div>
+
+<section class="card">
+  <h2>Learning Snapshot</h2>
+  <table>
+    <tbody>
+      <tr><th>Checks</th><td>{{ checks_total }}</td><th>AI xabarlar</th><td>{{ messages_total }}</td></tr>
+      <tr><th>Referral ballar</th><td>{{ referral_points }}</td><th>Referral kod</th><td><code>{{ referral_code }}</code></td></tr>
+      <tr><th>Referral cashback</th><td>{{ cash_balance }} UZS</td><th>Referral havola</th><td><code>{{ referral_link }}</code></td></tr>
+      <tr><th>Focus minutes</th><td>{{ focus_minutes }}</td><th>Words learned</th><td>{{ words_learned }}</td></tr>
+      <tr><th>Quiz sessions</th><td>{{ quiz_completed }}</td><th>Lessons completed</th><td>{{ lessons_completed }}</td></tr>
+      <tr><th>Tracker points</th><td colspan="3">{{ tracker_points }}</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Platform Leaderboard</h2>
+  <div class="review-list">
+    {% for row in leaders %}
+    <article class="review-card {{ 'good-review' if row.rank <= 3 else '' }}">
+      <div class="grid two">
+        <div>
+          <div class="stat-label">Rank</div>
+          <div class="stat-value">#{{ row.rank }}</div>
+        </div>
+        <div>
+          <div class="stat-label">Score</div>
+          <div class="stat-value">{{ row.score }}</div>
+        </div>
+      </div>
+      <h3 style="margin-top:12px;">{{ row.name }}</h3>
+      <p class="soft">Daraja: {{ row.level }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

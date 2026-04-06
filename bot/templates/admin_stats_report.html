@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+  .metric { padding:18px; border-radius:18px; background:#fff; border:1px solid var(--line); }
+  .metric strong { display:block; font-size:30px; margin-top:6px; }
+  .bars { display:grid; gap:12px; margin-top:12px; }
+  .bar-row span { display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px; }
+  .bar { height:12px; border-radius:999px; background:#f4e7d7; overflow:hidden; }
+  .bar i { display:block; height:100%; background:linear-gradient(90deg,#a95517,#d97706); border-radius:999px; }
+</style>
+<div class="eyebrow">Artificial Teacher admin export</div>
+<h1>{{ title }}</h1>
+<div class="meta">
+  <span class="pill">Generated for admin</span>
+  <span class="pill">Users: {{ total_users }}</span>
+  <span class="pill">Conversion: {{ conversion_rate }}%</span>
+</div>
+<section class="grid">
+  <article class="metric"><span>Jami userlar</span><strong>{{ total_users }}</strong></article>
+  <article class="metric"><span>Free</span><strong>{{ free_users }}</strong></article>
+  <article class="metric"><span>Pullik</span><strong>{{ paid_users }}</strong></article>
+  <article class="metric"><span>Pending</span><strong>{{ pending_payments }}</strong></article>
+  <article class="metric"><span>Tekshiruvlar</span><strong>{{ total_checks }}</strong></article>
+  <article class="metric"><span>Quiz savollar</span><strong>{{ total_quiz }}</strong></article>
+</section>
+<section class="card">
+  <h2>Platform balans</h2>
+  <div class="bars">
+    <div class="bar-row"><span><b>Pullik ulushi</b><b>{{ conversion_rate }}%</b></span><div class="bar"><i style="width: {{ conversion_rate }}%"></i></div></div>
+    <div class="bar-row"><span><b>Free ulushi</b><b>{{ free_rate }}%</b></span><div class="bar"><i style="width: {{ free_rate }}%; background:linear-gradient(90deg,#64748b,#94a3b8)"></i></div></div>
+    <div class="bar-row"><span><b>Pending bosim</b><b>{{ pending_rate }}%</b></span><div class="bar"><i style="width: {{ pending_rate }}%; background:linear-gradient(90deg,#b45309,#f59e0b)"></i></div></div>
+  </div>
+</section>
+<section class="card">
+  <h2>Top foydalanuvchilar</h2>
+  <table>
+    <thead><tr><th>Rank</th><th>Name</th><th>Level</th><th>Score</th></tr></thead>
+    <tbody>
+      {% for row in leaders %}
+      <tr><td>{{ row.rank }}</td><td>{{ row.name }}</td><td>{{ row.level }}</td><td>{{ row.score }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
