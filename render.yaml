@@ -1,4 +1,4 @@
-﻿services:
+services:
   - type: worker
     name: artificial-teacher-bot
     env: docker
@@ -43,8 +43,9 @@
       - key: INSTAGRAM_URL
         sync: false
 
-  - type: static_site
+  - type: web
     name: artificial-teacher-webapp
+    env: static
     rootDir: webapp
     buildCommand: ""
     staticPublishPath: .
