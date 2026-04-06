@@ -513,7 +513,8 @@ def _build_users_export_html_file() -> tuple[Path, int]:
             temp.write(f"<td>{pyhtml.escape(str(row.get('role') or 'user'))}</td>")
             temp.write(f"<td>{pyhtml.escape(plan)}</td>")
             temp.write(f"<td>{pyhtml.escape(str((row.get('expires_at') or '')[:19] or '-'))}</td>")
-            temp.write(f"<td>{'Ha' if row.get('is_banned') else "Yo'q"}</td>")
+            status = "Ha" if row.get("is_banned") else "Yo'q"
+            temp.write(f"<td>{status}</td>")
             temp.write(f"<td>{pyhtml.escape(str((row.get('joined_at') or '')[:19] or '-'))}</td>")
             temp.write("</tr>")
     temp.write("</tbody></table>")
@@ -537,8 +538,6 @@ def _build_admin_analytics_markup():
         [InlineKeyboardButton("🔙 Orqaga", callback_data="adm_back")],
     ])
 def _user_detail_markup(user_row):
-    ban_action = "unban" if user_row.get("is_banned") else "ban"
-    ban_label = "\u2705 Blokdan chiqarish" if user_row.get("is_banned") else "\U0001F6AB Bloklash"
     return InlineKeyboardMarkup([
         [InlineKeyboardButton(ban_label, callback_data=f"adm_user_{user_row['user_id']}_{ban_action}")],
         [InlineKeyboardButton("\U0001F381 Obuna berish", callback_data=f"adm_user_{user_row['user_id']}_grant")],
@@ -601,7 +600,6 @@ def _user_detail_text(user_row):
     plan_name = plan.get("plan_name", "free")
     icon = PLAN_ICONS.get(plan_name, "\U0001F193")
     username = user_row.get("username") or "-"
-    blocked_text = "Ha" if user_row.get("is_banned") else "Yo'q"
     return (
         f"\U0001F464 *{escape_md(user_row.get('first_name') or 'User')}*\n"
         f"@{escape_md(username)} | `{user_row['user_id']}`\n"
@@ -1685,6 +1683,7 @@ async def group_admin_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     set_group(chat_id, field, new_val)
     settings = get_group(chat_id)
     await query.edit_message_reply_markup(reply_markup=build_group_settings_keyboard(chat_id, settings))
+
 
 
 

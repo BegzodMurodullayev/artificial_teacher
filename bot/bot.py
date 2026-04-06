@@ -186,19 +186,7 @@ async def start_health_server() -> Optional[asyncio.AbstractServer]:
 
     def _site_html() -> bytes:
         s = get_service_hit_summary(limit=5)
-        last_at = s.get("last_at") or "-"
-        total = s.get("total", 0)
-        h1 = s.get("last_1h", 0)
-        h24 = s.get("last_24h", 0)
-        html_text = (
-            "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
-            "<title>Artificial Teacher</title></head><body style=\"font-family:Arial;padding:20px\">"
-            "<h2>Artificial Teacher</h2><p>Bot service ishlayapti.</p>"
-            f"<p>Jami kirish: <b>{total}</b><br>1 soat: <b>{h1}</b><br>24 soat: <b>{h24}</b><br>Oxirgi: <b>{last_at}</b></p>"
-            "<p>Health: <a href=\"/health\">/health</a> | Bot monitor: /awake</p>"
-            "</body></html>"
-        )
-        return html_text.encode("utf-8")
+        return render_awake_site(s)
 
     async def _handle(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         path = "/"
@@ -242,6 +230,25 @@ async def start_health_server() -> Optional[asyncio.AbstractServer]:
         logger.warning("Health/site serverni ishga tushirib bo'lmadi: %s", e)
         return None
 
+
+def render_awake_site(stats: dict) -> bytes:
+    template_path = Path(__file__).with_name("site") / "index.html"
+    try:
+        html_text = template_path.read_text(encoding="utf-8")
+    except Exception:
+        html_text = "<!doctype html><html><body>Service running</body></html>"
+    payload = json.dumps({
+        "total": stats.get("total", 0),
+        "last_at": stats.get("last_at") or "-",
+        "last_1h": stats.get("last_1h", 0),
+        "last_24h": stats.get("last_24h", 0),
+    })
+    html_text = html_text.replace("{{total}}", str(stats.get("total", 0)))
+    html_text = html_text.replace("{{last_at}}", str(stats.get("last_at") or "-"))
+    html_text = html_text.replace("{{last_1h}}", str(stats.get("last_1h", 0)))
+    html_text = html_text.replace("{{last_24h}}", str(stats.get("last_24h", 0)))
+    html_text = html_text.replace("{{stats_json}}", payload)
+    return html_text.encode("utf-8")
 def plan_display_name(plan: dict, with_icon: bool = False) -> str:
     plan_name = str(plan.get("plan_name", "free")).lower()
     fallback = {
@@ -2913,6 +2920,9 @@ if __name__ == "__main__":
             logger.info("Bot to'xtatildi.")
         else:
             raise
+
+
+
 
 
 
