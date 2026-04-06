@@ -21,7 +21,7 @@ load_dotenv()
 from telegram import (
     Update, InlineKeyboardButton, InlineKeyboardMarkup, BotCommand,
     InlineQueryResultArticle, InputTextMessageContent, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-    KeyboardButton, WebAppInfo
+    KeyboardButton, WebAppInfo, BotCommandScopeChat
 )
 from telegram.error import BadRequest
 from telegram.request import HTTPXRequest
@@ -60,6 +60,7 @@ from database.db import (
     record_level_signal, auto_adjust_level_from_signals,
     get_admin_ids, get_points, get_cash_balance, get_reward_wallet, apply_referral_code, redeem_promo_code,
     add_webapp_progress, set_webapp_progress_snapshot, get_user_rank_snapshot, get_leaderboard, get_webapp_totals,
+    record_service_hit, get_service_hit_summary,
 )
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -67,7 +68,7 @@ logger = logging.getLogger(__name__)
 
 BOT_TOKEN    = os.getenv("BOT_TOKEN", "")
 WEBHOOK_URL  = os.getenv("WEBHOOK_URL", "")
-WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", "8443"))
+WEBHOOK_PORT = int(os.getenv("PORT", os.getenv("WEBHOOK_PORT", "8443")))
 USE_WEBHOOK  = bool(WEBHOOK_URL)
 BOT_NAME = "Artificial Teacher"
 BOT_USERNAME = (os.getenv("BOT_USERNAME", "@Artificial_teacher_bot") or "@Artificial_teacher_bot").strip()
@@ -163,6 +164,83 @@ def release_instance_lock() -> None:
 
 atexit.register(release_instance_lock)
 
+async def start_health_server() -> Optional[asyncio.AbstractServer]:
+    """Render free web service uchun oddiy site + health endpoint."""
+    port_raw = os.getenv("PORT", "").strip()
+    if not port_raw:
+        return None
+    try:
+        port = int(port_raw)
+    except ValueError:
+        logger.warning("PORT noto'g'ri: %s", port_raw)
+        return None
+
+    def _resp(status: str, body: bytes, content_type: str = "text/plain; charset=utf-8") -> bytes:
+        header = (
+            f"HTTP/1.1 {status}\\r\\n"
+            f"Content-Type: {content_type}\\r\\n"
+            f"Content-Length: {len(body)}\\r\\n"
+            "Connection: close\\r\\n\\r\\n"
+        ).encode("utf-8")
+        return header + body
+
+    def _site_html() -> bytes:
+        s = get_service_hit_summary(limit=5)
+        last_at = s.get("last_at") or "-"
+        total = s.get("total", 0)
+        h1 = s.get("last_1h", 0)
+        h24 = s.get("last_24h", 0)
+        html_text = (
+            "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+            "<title>Artificial Teacher</title></head><body style=\"font-family:Arial;padding:20px\">"
+            "<h2>Artificial Teacher</h2><p>Bot service ishlayapti.</p>"
+            f"<p>Jami kirish: <b>{total}</b><br>1 soat: <b>{h1}</b><br>24 soat: <b>{h24}</b><br>Oxirgi: <b>{last_at}</b></p>"
+            "<p>Health: <a href=\"/health\">/health</a> | Bot monitor: /awake</p>"
+            "</body></html>"
+        )
+        return html_text.encode("utf-8")
+
+    async def _handle(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+        path = "/"
+        ip = ""
+        ua = ""
+        try:
+            req = (await reader.read(4096)).decode("utf-8", errors="ignore")
+            first = req.splitlines()[0] if req else ""
+            parts = first.split()
+            if len(parts) >= 2:
+                path = parts[1].split("?", 1)[0]
+            for h in req.splitlines()[1:40]:
+                if h.lower().startswith("user-agent:"):
+                    ua = h.split(":", 1)[1].strip()
+                    break
+            peer = writer.get_extra_info("peername")
+            if isinstance(peer, tuple) and peer:
+                ip = str(peer[0])
+            record_service_hit(path=path, ip=ip, user_agent=ua)
+            if path in ("/", "/index.html", "/status"):
+                writer.write(_resp("200 OK", _site_html(), "text/html; charset=utf-8"))
+            elif path in ("/health", "/ping"):
+                writer.write(_resp("200 OK", b"ok"))
+            else:
+                writer.write(_resp("404 Not Found", b"not found"))
+            await writer.drain()
+        except Exception:
+            pass
+        finally:
+            try:
+                writer.close()
+                await writer.wait_closed()
+            except Exception:
+                pass
+
+    try:
+        server = await asyncio.start_server(_handle, host="0.0.0.0", port=port)
+        logger.info("Health/site server ishlamoqda: 0.0.0.0:%s", port)
+        return server
+    except Exception as e:
+        logger.warning("Health/site serverni ishga tushirib bo'lmadi: %s", e)
+        return None
 
 def plan_display_name(plan: dict, with_icon: bool = False) -> str:
     plan_name = str(plan.get("plan_name", "free")).lower()
@@ -2516,6 +2594,10 @@ async def daily_job(context):
 
 # Buyruqlar
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    db_user = get_user(user.id) or {}
+    role = str(db_user.get("role", "user")).lower()
+    extra = "/awake - Service awake monitor (admin)\\n" if role in ("owner", "admin") else ""
     await safe_reply(
         update.message,
         "\U0001F4D6 *Buyruqlar*\n\n"
@@ -2523,6 +2605,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/subscribe - Obuna rejalari\n"
         "/mypayments - To'lovlar tarixi\n"
         "/mystats - Darajam va reyting\n"
+        f"{extra}"
         "/promo - Promo kod ishlatish\n"
         "/clear - Suhbat tarixini tozalash\n"
         "/quiz - Quiz boshlash\n"
@@ -2581,6 +2664,40 @@ async def mystats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
     )
 
+
+async def awake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    db_user = get_user(user.id) or {}
+    role = str(db_user.get("role", "user")).lower()
+    if role not in ("owner", "admin"):
+        await safe_reply(update.effective_message, "Bu bo'lim faqat admin/owner uchun.")
+        return
+
+    stats = get_service_hit_summary(limit=12)
+    last_at = stats.get("last_at") or "-"
+    total = int(stats.get("total", 0) or 0)
+    h1 = int(stats.get("last_1h", 0) or 0)
+    h24 = int(stats.get("last_24h", 0) or 0)
+
+    rows = []
+    for i, r in enumerate(stats.get("recent", []), start=1):
+        ts = r.get("created_at", "-")
+        path = r.get("path", "-")
+        ip = r.get("ip", "-")
+        ua = (r.get("user_agent") or "-")[:30]
+        rows.append(f"{i}. {ts} | {path} | {ip} | {ua}")
+
+    history = "\n".join(rows) if rows else "Hozircha kirishlar yo'q."
+    text = (
+        "🌐 Service Awake Monitor\n\n"
+        f"So'nggi kirish: {last_at}\n"
+        f"Jami kirish: {total}\n"
+        f"1 soat: {h1}\n"
+        f"24 soat: {h24}\n\n"
+        "Oxirgi kirishlar:\n"
+        f"{history}"
+    )
+    await safe_reply(update.effective_message, text)
 
 async def clear_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     clear_history(update.effective_user.id)
@@ -2653,6 +2770,7 @@ async def main():
     app.add_handler(CommandHandler("subscribe",   subscribe_command_guarded))
     app.add_handler(CommandHandler("mypayments",  mypayments_command_guarded))
     app.add_handler(CommandHandler("mystats",     mystats_command))
+    app.add_handler(CommandHandler("awake",       awake_command))
     app.add_handler(CommandHandler("clear",       clear_command))
     app.add_handler(CommandHandler("promo",       promo_command))
     app.add_handler(CommandHandler("admin",       group_admin_command))
@@ -2727,7 +2845,28 @@ async def main():
             BotCommand("iqtest",     "IQ test"),
             BotCommand("app",        "Web App"),
         ])
+
+        admin_commands = [
+            BotCommand("start",      "Bosh menyu"),
+            BotCommand("subscribe",  "Obuna rejalari"),
+            BotCommand("mypayments", "To'lovlar tarixi"),
+            BotCommand("mystats",    "Statistika"),
+            BotCommand("awake",      "Service awake monitor"),
+            BotCommand("clear",      "Tarixni tozalash"),
+            BotCommand("promo",      "Promo kod"),
+            BotCommand("help",       "Yordam"),
+            BotCommand("admin",      "Admin panel"),
+            BotCommand("quiz",       "Quiz"),
+            BotCommand("iqtest",     "IQ test"),
+            BotCommand("app",        "Web App"),
+        ]
+        for admin_id in get_admin_ids(include_owner=True):
+            try:
+                await app.bot.set_my_commands(admin_commands, scope=BotCommandScopeChat(admin_id))
+            except Exception:
+                pass
         await app.start()
+        health_server = None
         try:
             if USE_WEBHOOK and WEBHOOK_URL:
                 await app.updater.start_webhook(
@@ -2736,6 +2875,7 @@ async def main():
                     webhook_url=f"{WEBHOOK_URL}/{BOT_TOKEN}",
                 )
             else:
+                health_server = await start_health_server()
                 await app.updater.start_polling(allowed_updates=Update.ALL_TYPES)
 
             logger.info("Bot ishlamoqda!")
@@ -2744,6 +2884,12 @@ async def main():
             except asyncio.CancelledError:
                 pass
         finally:
+            try:
+                if health_server:
+                    health_server.close()
+                    await health_server.wait_closed()
+            except Exception:
+                pass
             try:
                 if app.updater.running:
                     await app.updater.stop()
@@ -2767,6 +2913,19 @@ if __name__ == "__main__":
             logger.info("Bot to'xtatildi.")
         else:
             raise
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

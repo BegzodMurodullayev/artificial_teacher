@@ -1,14 +1,11 @@
 services:
-  - type: worker
+  - type: web
     name: artificial-teacher-bot
     env: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .
     autoDeploy: true
-    disk:
-      name: artificial-teacher-data
-      mountPath: /var/data
-      sizeGB: 1
+    plan: free
     envVars:
       - key: BOT_TOKEN
         sync: false
@@ -17,7 +14,7 @@ services:
       - key: BOT_USERNAME
         value: "@Artificial_teacher_bot"
       - key: DB_PATH
-        value: "/var/data/engbot.db"
+        value: "/tmp/engbot.db"
       - key: WEBHOOK_URL
         value: ""
       - key: WEBHOOK_PORT
@@ -42,11 +39,3 @@ services:
         sync: false
       - key: INSTAGRAM_URL
         sync: false
-
-  - type: web
-    name: artificial-teacher-webapp
-    env: static
-    rootDir: webapp
-    buildCommand: ""
-    staticPublishPath: .
-    pullRequestPreviewsEnabled: false

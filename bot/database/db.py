@@ -1565,3 +1565,53 @@ def get_webapp_progress(user_id, days=14):
 
 
 
+
+def _ensure_service_hits_table(db):
+    db.execute(
+        """CREATE TABLE IF NOT EXISTS service_hits (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            path        TEXT DEFAULT '/',
+            ip          TEXT DEFAULT '',
+            user_agent  TEXT DEFAULT '',
+            created_at  TEXT DEFAULT (datetime('now'))
+        )"""
+    )
+    db.execute("CREATE INDEX IF NOT EXISTS idx_service_hits_created ON service_hits(created_at)")
+
+
+def record_service_hit(path='/', ip='', user_agent=''):
+    db = conn()
+    _ensure_service_hits_table(db)
+    db.execute(
+        "INSERT INTO service_hits (path, ip, user_agent) VALUES (?, ?, ?)",
+        ((path or '/')[:120], (ip or '')[:80], (user_agent or '')[:240]),
+    )
+    db.commit(); db.close()
+
+
+def get_service_hit_summary(limit=12):
+    limit = max(1, min(int(limit or 12), 100))
+    db = conn()
+    _ensure_service_hits_table(db)
+
+    total_row = db.execute("SELECT COUNT(*) AS c FROM service_hits").fetchone()
+    last_row = db.execute("SELECT created_at FROM service_hits ORDER BY id DESC LIMIT 1").fetchone()
+    h1_row = db.execute(
+        "SELECT COUNT(*) AS c FROM service_hits WHERE created_at >= datetime('now', '-1 hour')"
+    ).fetchone()
+    h24_row = db.execute(
+        "SELECT COUNT(*) AS c FROM service_hits WHERE created_at >= datetime('now', '-24 hour')"
+    ).fetchone()
+    recent_rows = db.execute(
+        "SELECT path, ip, user_agent, created_at FROM service_hits ORDER BY id DESC LIMIT ?",
+        (limit,),
+    ).fetchall()
+    db.close()
+
+    return {
+        "total": int((total_row["c"] if total_row else 0) or 0),
+        "last_at": (last_row["created_at"] if last_row else None),
+        "last_1h": int((h1_row["c"] if h1_row else 0) or 0),
+        "last_24h": int((h24_row["c"] if h24_row else 0) or 0),
+        "recent": [dict(r) for r in recent_rows],
+    }

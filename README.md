@@ -126,3 +126,16 @@ Qadamlar:
 Eslatma:
 - `WEB_APP_URL` ga static site URL ni yozing (Render webapp deploy bo'lgach)
 - DB persistent bo'lishi uchun worker service disk (`/var/data`) ulanadi
+
+## Render Free (faqat bot)
+
+Agar Render `free` ishlatsangiz:
+- `render.yaml` ichida faqat bitta `web` service qoldirilgan.
+- Bot polling rejimda ishlaydi va ichki health server (`PORT`) ochadi.
+- Servis uxlab qolmasligi uchun Telegramga xabar yuborish emas, service URL'ga ping yuborish kerak.
+
+Tavsiya:
+- UptimeRobot/Cron-job orqali har 10 daqiqada `https://<render-service>.onrender.com/` ga GET ping yuboring.
+- Netlify'dagi web app URL ni `WEB_APP_URL` env ga kiriting.
+
+Eslatma: `free` rejimda `/tmp/engbot.db` vaqtinchalik. Deploy/restart bo'lsa ma'lumot yo'qolishi mumkin.
