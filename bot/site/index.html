@@ -5,41 +5,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Artificial Teacher - Service</title>
   <style>
-    :root { --bg:#0b1220; --card:#111827; --muted:#9ca3af; --accent:#60a5fa; --border:#1f2937; }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#e5e7eb;padding:24px}
-    .card{max-width:840px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
-    h1{margin:0 0 8px;font-size:26px}
-    p{color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
-    .item{background:#0f172a;border:1px solid var(--border);border-radius:10px;padding:12px}
-    code{background:#0f172a;padding:2px 6px;border-radius:6px}
-    a{color:var(--accent);text-decoration:none}
-    .small{font-size:12px;color:var(--muted)}
+    :root {
+      --bg: #0b1220;
+      --bg2: #0f172a;
+      --card: #111827;
+      --muted: #94a3b8;
+      --text: #e2e8f0;
+      --accent: #38bdf8;
+      --accent2: #22d3ee;
+      --border: #1f2937;
+      --ok: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(56,189,248,0.15), transparent),
+                  radial-gradient(900px 500px at 100% 0%, rgba(34,211,238,0.12), transparent),
+                  var(--bg);
+      padding: 28px;
+    }
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(17,24,39,0.95), rgba(15,23,42,0.95));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.45);
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(34,197,94,0.12);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.3);
+      font-size: 12px;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--ok);
+      box-shadow: 0 0 10px rgba(34,197,94,0.6);
+    }
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,0.35);
+    }
+    .stat label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .stat .value {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .btn {
+      text-decoration: none;
+      color: #0b1220;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .header { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Artificial Teacher</h1>
-    <p>Bot service ishlayapti. Bu sahifa ping/awake monitoring uchun.</p>
-
-    <div class="grid">
-      <div class="item"><b>Jami kirishlar</b><br><span id="total">{{total}}</span></div>
-      <div class="item"><b>Oxirgi kirish</b><br><span id="last">{{last_at}}</span></div>
-      <div class="item"><b>1 soat</b><br><span id="last1h">{{last_1h}}</span></div>
-      <div class="item"><b>24 soat</b><br><span id="last24h">{{last_24h}}</span></div>
+  <div class="shell">
+    <div class="card">
+      <div class="header">
+        <div>
+          <div class="title">Artificial Teacher Service</div>
+          <div class="subtitle">Bot va mini monitoring sahifasi ish holatida.</div>
+        </div>
+        <div class="badge"><span class="dot"></span> Online</div>
+      </div>
     </div>
 
-    <p style="margin-top:14px">Health endpoint: <a href="/health"><code>/health</code></a></p>
-    <p>Bot ichida monitoring: <code>/awake</code> (admin/owner)</p>
-    <p class="small" id="since">Oxirgi pingdan beri: hisoblanmoqda...</p>
+    <div class="card">
+      <div class="grid">
+        <div class="stat"><label>Jami kirishlar</label><div class="value" id="total">{{total}}</div></div>
+        <div class="stat"><label>Oxirgi kirish</label><div class="value" id="last">{{last_at}}</div></div>
+        <div class="stat"><label>Oxirgi 1 soat</label><div class="value" id="last1h">{{last_1h}}</div></div>
+        <div class="stat"><label>Oxirgi 24 soat</label><div class="value" id="last24h">{{last_24h}}</div></div>
+      </div>
+      <p class="muted" id="since" style="margin:12px 0 0;">Oxirgi pingdan beri: hisoblanmoqda...</p>
+      <div class="links">
+        <a class="btn" href="/health">Health check</a>
+        <span class="muted">Bot ichidan monitoring: /awake (admin)</span>
+      </div>
+    </div>
+
+    <div class="card footer">
+      <span>Render web service + Python bot</span>
+      <span id="clock"></span>
+    </div>
   </div>
 
   <script>
     const stats = {{stats_json}};
     function toDate(raw){
       if(!raw || raw==='-') return null;
-      // SQLite datetime -> ISO
       const iso = raw.replace(' ', 'T') + 'Z';
       const d = new Date(iso);
       return isNaN(d.getTime()) ? null : d;
@@ -53,8 +173,17 @@
       const secs = Math.floor((diff%60000)/1000);
       el.textContent = `Oxirgi pingdan beri: ${mins} daqiqa ${secs} soniya`;
     }
+    function clock(){
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      const ss = String(now.getSeconds()).padStart(2,'0');
+      document.getElementById('clock').textContent = `${hh}:${mm}:${ss}`;
+    }
     setInterval(tick, 1000);
+    setInterval(clock, 1000);
     tick();
+    clock();
   </script>
 </body>
 </html>
