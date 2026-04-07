@@ -1642,12 +1642,17 @@ async def admin_media_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 
 def build_group_settings_keyboard(chat_id: int, settings: dict):
+    check_icon = "✅" if settings.get("check_enabled") else "❌"
+    bot_icon = "✅" if settings.get("bot_enabled") else "❌"
+    t_icon = "✅" if settings.get("translate_enabled", 1) else "❌"
+    p_icon = "✅" if settings.get("pronunciation_enabled", 1) else "❌"
+    d_icon = "✅" if settings.get("daily_enabled") else "❌"
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton(f"{'\u2705' if settings.get('check_enabled') else '\u274C'} #check", callback_data=f"gadm_{chat_id}_check_enabled")],
-        [InlineKeyboardButton(f"{'\u2705' if settings.get('bot_enabled') else '\u274C'} #bot", callback_data=f"gadm_{chat_id}_bot_enabled")],
-        [InlineKeyboardButton(f"{'\u2705' if settings.get('translate_enabled', 1) else '\u274C'} #t", callback_data=f"gadm_{chat_id}_translate_enabled")],
-        [InlineKeyboardButton(f"{'\u2705' if settings.get('pronunciation_enabled', 1) else '\u274C'} #p", callback_data=f"gadm_{chat_id}_pronunciation_enabled")],
-        [InlineKeyboardButton(f"{'\u2705' if settings.get('daily_enabled') else '\u274C'} Kunlik so'z", callback_data=f"gadm_{chat_id}_daily_enabled")],
+        [InlineKeyboardButton(f"{check_icon} #check", callback_data=f"gadm_{chat_id}_check_enabled")],
+        [InlineKeyboardButton(f"{bot_icon} #bot", callback_data=f"gadm_{chat_id}_bot_enabled")],
+        [InlineKeyboardButton(f"{t_icon} #t", callback_data=f"gadm_{chat_id}_translate_enabled")],
+        [InlineKeyboardButton(f"{p_icon} #p", callback_data=f"gadm_{chat_id}_pronunciation_enabled")],
+        [InlineKeyboardButton(f"{d_icon} Kunlik so'z", callback_data=f"gadm_{chat_id}_daily_enabled")],
     ])
 
 

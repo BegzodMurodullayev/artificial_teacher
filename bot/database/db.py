@@ -524,10 +524,15 @@ def get_admin_ids(include_owner=True):
 
 def get_users_with_active_plans():
     db = conn()
-    rows = db.execute("""SELECT u.user_id, u.username, u.first_name, u.role, u.is_banned, u.joined_at,
-               s.plan_name, s.expires_at
+    rows = db.execute("""SELECT
+               u.user_id, u.username, u.first_name, u.role, u.is_banned, u.joined_at,
+               COALESCE((SELECT s.plan_name FROM subscriptions s
+                         WHERE s.user_id = u.user_id AND s.is_active=1
+                         ORDER BY s.expires_at DESC, s.id DESC LIMIT 1), 'free') AS plan_name,
+               (SELECT s.expires_at FROM subscriptions s
+                         WHERE s.user_id = u.user_id AND s.is_active=1
+                         ORDER BY s.expires_at DESC, s.id DESC LIMIT 1) AS expires_at
         FROM users u
-        LEFT JOIN subscriptions s ON u.user_id = s.user_id AND s.is_active=1
         ORDER BY u.joined_at DESC""").fetchall()
     db.close()
     return [dict(r) for r in rows]
@@ -537,10 +542,15 @@ def iter_users_with_active_plans(batch_size=1000):
     batch_size = max(1, int(batch_size or 1000))
     db = conn()
     try:
-        cursor = db.execute("""SELECT u.user_id, u.username, u.first_name, u.role, u.level, u.is_banned, u.joined_at,
-               COALESCE(s.plan_name, 'free') AS plan_name, s.expires_at
+        cursor = db.execute("""SELECT
+               u.user_id, u.username, u.first_name, u.role, u.level, u.is_banned, u.joined_at,
+               COALESCE((SELECT s.plan_name FROM subscriptions s
+                         WHERE s.user_id = u.user_id AND s.is_active=1
+                         ORDER BY s.expires_at DESC, s.id DESC LIMIT 1), 'free') AS plan_name,
+               (SELECT s.expires_at FROM subscriptions s
+                         WHERE s.user_id = u.user_id AND s.is_active=1
+                         ORDER BY s.expires_at DESC, s.id DESC LIMIT 1) AS expires_at
         FROM users u
-        LEFT JOIN subscriptions s ON u.user_id = s.user_id AND s.is_active=1
         ORDER BY u.joined_at DESC""")
         while True:
             rows = cursor.fetchmany(batch_size)
@@ -1225,6 +1235,7 @@ def get_global_stats():
 
     free_users = max(total_users - paid_users, 0)
     conversion_rate = round((paid_users / total_users) * 100, 2) if total_users else 0.0
+    conversion_rate = min(max(conversion_rate, 0.0), 100.0)
     return {
         "total_users": total_users,
         "total_checks": total_checks,
@@ -1241,14 +1252,15 @@ def get_sales_funnel_stats():
 
     total_users = db.execute("SELECT COUNT(*) FROM users").fetchone()[0]
     plan_rows = db.execute(
-        "SELECT plan_name, COUNT(*) AS cnt FROM subscriptions WHERE is_active=1 GROUP BY plan_name"
+        "SELECT plan_name, COUNT(DISTINCT user_id) AS cnt FROM subscriptions WHERE is_active=1 GROUP BY plan_name"
     ).fetchall()
     plan_counts = {r["plan_name"]: r["cnt"] for r in plan_rows}
 
-    paid_users = sum(cnt for name, cnt in plan_counts.items() if name != "free")
-    free_users = plan_counts.get("free", 0)
-    if total_users and (paid_users + free_users) < total_users:
-        free_users = total_users - paid_users
+    paid_users = db.execute(
+        "SELECT COUNT(DISTINCT user_id) FROM subscriptions WHERE is_active=1 AND plan_name!='free'"
+    ).fetchone()[0]
+    paid_users = min(paid_users, total_users or 0)
+    free_users = max((total_users or 0) - paid_users, 0)
 
     pending_count = db.execute("SELECT COUNT(*) FROM payments WHERE status='pending'").fetchone()[0]
     pending_amount = db.execute("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status='pending'").fetchone()[0] or 0
@@ -1265,6 +1277,7 @@ def get_sales_funnel_stats():
     db.close()
 
     conversion_rate = round((paid_users / total_users) * 100, 2) if total_users else 0.0
+    conversion_rate = min(max(conversion_rate, 0.0), 100.0)
     return {
         "total_users": total_users,
         "paid_users": paid_users,
@@ -1279,8 +1292,6 @@ def get_sales_funnel_stats():
         "new_users_7d": new_users_7d,
         "active_users_7d": active_users_7d,
     }
-
-
 def _leaderboard_base_sql():
     return """
         WITH web AS (
@@ -1615,3 +1626,8 @@ def get_service_hit_summary(limit=12):
         "last_24h": int((h24_row["c"] if h24_row else 0) or 0),
         "recent": [dict(r) for r in recent_rows],
     }
+
+
+
+
+
