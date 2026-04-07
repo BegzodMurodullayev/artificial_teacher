@@ -177,10 +177,12 @@ async def start_health_server() -> Optional[asyncio.AbstractServer]:
 
     def _resp(status: str, body: bytes, content_type: str = "text/plain; charset=utf-8") -> bytes:
         header = (
-            f"HTTP/1.1 {status}\\r\\n"
-            f"Content-Type: {content_type}\\r\\n"
-            f"Content-Length: {len(body)}\\r\\n"
-            "Connection: close\\r\\n\\r\\n"
+            f"HTTP/1.1 {status}\r\n"
+            f"Content-Type: {content_type}\r\n"
+            f"Content-Length: {len(body)}\r\n"
+            "Connection: close\r\n"
+            "Cache-Control: no-store\r\n"
+            "\r\n"
         ).encode("utf-8")
         return header + body
 
