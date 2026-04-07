@@ -861,13 +861,10 @@ async def attach_inline_export_info(
     label: str,
     links: list[tuple[str, str | None]] | None = None,
 ):
-    extra_lines = [f"{label} ID: {export_id}"]
-    if links:
-        for title, link in links:
-            if link:
-                extra_lines.append(f"{title}: {link}")
-    if len(extra_lines) == 1:
-        extra_lines.append("Qo'shimcha fayl kanalga yuklandi.")
+    extra_lines = [
+        f"{label} ID: {export_id}",
+        "Qo'shimcha fayl tayyorlandi.",
+    ]
     extra = "\n\n" + "\n".join(extra_lines)
     inline_message_id = getattr(chosen, "inline_message_id", None)
     if inline_message_id:
@@ -875,7 +872,6 @@ async def attach_inline_export_info(
             await context.bot.edit_message_text(
                 inline_message_id=inline_message_id,
                 text=(answer.strip() + extra)[:4096],
-                reply_markup=build_inline_export_markup(links),
             )
             return
         except Exception as e:
@@ -1686,7 +1682,8 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("\U0001F519 Orqaga", callback_data="do_rules")]]),
                 parse_mode="Markdown",
             )
-            return
+            return
+
         static_rule = get_static_rule_text(rule)
         prompts = {
             "tenses": "Ingliz tilidagi barcha zamonlar: Simple, Continuous, Perfect, Perfect Continuous - batafsil o'zbekcha tushuntir, misollar bilan.",
@@ -2944,4 +2941,6 @@ if __name__ == "__main__":
             logger.info("Bot to'xtatildi.")
         else:
             raise
+
+
 
