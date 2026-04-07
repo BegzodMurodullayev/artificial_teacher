@@ -6,6 +6,7 @@ import re
 import json
 import asyncio
 from database.db import get_user, get_history, add_history
+from utils.content_bank import moderation_warning
 
 logger = logging.getLogger(__name__)
 
@@ -267,6 +268,11 @@ async def _call(messages, max_tokens=1500, temp=0.4):
 
 
 async def ask_ai(text, mode="auto", user_id=None, use_history=False):
+    if mode in ("pronunciation", "translate", "uz_to_en", "en_to_uz"):
+        warning = moderation_warning(text)
+        if warning:
+            return warning
+
     level = "A1"
     if user_id:
         u = get_user(user_id)

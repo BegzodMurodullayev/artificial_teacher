@@ -8,6 +8,7 @@ from io import BytesIO
 from typing import Any
 
 import httpx
+from utils.content_bank import moderation_warning
 
 logger = logging.getLogger(__name__)
 
@@ -199,6 +200,8 @@ async def synthesize_pronunciation(text: str, accent: str = "us") -> dict[str, A
     clean_text = (text or "").strip()
     if not clean_text:
         return {"ok": False, "error": "empty_text"}
+    if moderation_warning(clean_text):
+        return {"ok": False, "error": "blocked"}
     if len(clean_text) > 500:
         clean_text = clean_text[:500]
     accent = "uk" if accent == "uk" else "us"

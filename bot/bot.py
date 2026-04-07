@@ -50,6 +50,7 @@ from handlers.admin import (
     group_admin_command, group_admin_callback, is_owner, OWNER_ID
 )
 from utils.ai import ask_ai, ask_json
+from utils.content_bank import get_static_lesson_pack, get_static_rule_text, moderation_warning
 from utils.tts import synthesize_pronunciation, make_audio_file
 from html_maker import render_html_document, html_open_guide
 from database.db import (
@@ -1015,7 +1016,7 @@ def render_lesson_html(topic: str, level: str, pack: dict) -> str:
 
 
 async def build_lesson_outputs(user_id: int, topic: str, level: str):
-    pack = await ask_json(topic, mode="lesson_pack", level=level)
+    pack = get_static_lesson_pack(topic, level) or await ask_json(topic, mode="lesson_pack", level=level)
     if not isinstance(pack, dict):
         return None, None, None
 
@@ -1394,12 +1395,16 @@ async def send_pronunciation_audio(
     accent: str,
     caption: Optional[str] = None,
 ):
+    warning = moderation_warning(text)
+    if warning:
+        return False, warning
     result = await synthesize_pronunciation(text, accent=accent)
     if not result.get("ok"):
         err = result.get("error", "unknown")
         msg = {
             "missing_api_key": "Talaffuz audio API kaliti topilmadi. `TOPMEDIAI_API_KEY` ni sozlang.",
             "empty_text": "Matn bo'sh.",
+            "blocked": "Bu so'z yoki ibora bolalar auditoriyasi uchun mos emas.",
             "busy": "Talaffuz serveri band. 10-20 soniyadan keyin qayta urinib ko'ring.",
             "speaker_not_found": "US/UK ovoz topilmadi. Speaker IDlarni sozlash kerak.",
             "http_401": "Talaffuz API kaliti xato (401).",
@@ -1681,7 +1686,8 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("\U0001F519 Orqaga", callback_data="do_rules")]]),
                 parse_mode="Markdown",
             )
-            return
+            return
+        static_rule = get_static_rule_text(rule)
         prompts = {
             "tenses": "Ingliz tilidagi barcha zamonlar: Simple, Continuous, Perfect, Perfect Continuous - batafsil o'zbekcha tushuntir, misollar bilan.",
             "articles": "a, an, the articlelar qachon ishlatilishi - batafsil o'zbekcha tushuntir, misollar bilan.",
@@ -1691,7 +1697,7 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "passive": "Passive Voice barcha zamonlarda - Active va Passive farqini misol bilan.",
         }
         await safe_edit(query, "\u23F3 Tayyorlanmoqda...")
-        response = await ask_ai(prompts.get(rule, rule), mode="rule", user_id=user.id)
+        response = static_rule or await ask_ai(prompts.get(rule, rule), mode="rule", user_id=user.id)
         kb = [[InlineKeyboardButton("\U0001F519 Grammatika", callback_data="do_rules")]]
         await safe_edit(query, response, reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
         return
@@ -1959,7 +1965,7 @@ async def private_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.user_data.get("awaiting_custom_rule"):
         context.user_data.pop("awaiting_custom_rule")
         status_msg = await safe_reply(message, "\u23F3 Grammatika mavzusi tayyorlanmoqda...")
-        response = await ask_ai(f"{text} mavzusini batafsil va uzunroq tushuntir, misollar, xatolar va mini mashqlar bilan.", mode="rule", user_id=user.id)
+        response = get_static_rule_text(text) or await ask_ai(f"{text} mavzusini batafsil va uzunroq tushuntir, misollar, xatolar va mini mashqlar bilan.", mode="rule", user_id=user.id)
         await safe_delete(status_msg)
         await safe_reply(message, response, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("\U0001F3E0 Menyu", callback_data="menu_back")]]), parse_mode="Markdown")
         return
@@ -2938,74 +2944,4 @@ if __name__ == "__main__":
             logger.info("Bot to'xtatildi.")
         else:
             raise
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
