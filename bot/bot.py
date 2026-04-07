@@ -61,7 +61,7 @@ from database.db import (
     record_level_signal, auto_adjust_level_from_signals,
     get_admin_ids, get_points, get_cash_balance, get_reward_wallet, apply_referral_code, redeem_promo_code,
     add_webapp_progress, set_webapp_progress_snapshot, get_user_rank_snapshot, get_leaderboard, get_webapp_totals,
-    record_service_hit, get_service_hit_summary,
+    record_service_hit, get_service_hit_summary, get_pay_config,
 )
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -830,7 +830,12 @@ def build_inline_export_markup(links: list[tuple[str, str | None]] | None = None
     rows = []
     for title, link in links or []:
         if link:
-            rows.append([InlineKeyboardButton(title, url=link)])
+            pretty_title = str(title or "").strip()
+            if pretty_title.lower().startswith("audio"):
+                pretty_title = "🎧 Audio fayl"
+            elif pretty_title.lower().startswith("html"):
+                pretty_title = "📄 HTML fayl"
+            rows.append([InlineKeyboardButton(pretty_title or "📎 Fayl", url=link)])
     return InlineKeyboardMarkup(rows) if rows else None
 
 async def update_inline_text_result(context: ContextTypes.DEFAULT_TYPE, chosen, user_id: int, text: str):
@@ -872,12 +877,17 @@ async def attach_inline_export_info(
             await context.bot.edit_message_text(
                 inline_message_id=inline_message_id,
                 text=(answer.strip() + extra)[:4096],
+                reply_markup=build_inline_export_markup(links),
             )
             return
         except Exception as e:
             logger.warning("Inline xabarni yangilab bo'lmadi: %s", e)
     try:
-        await context.bot.send_message(user_id, extra.strip())
+        await context.bot.send_message(
+            user_id,
+            extra.strip(),
+            reply_markup=build_inline_export_markup(links),
+        )
     except Exception as e:
         logger.warning("Inline export DM yuborilmadi: %s", e)
 
@@ -1421,9 +1431,33 @@ async def send_pronunciation_audio(
     )
     return True, ""
 
+def _build_tg_profile_url(value: str) -> str | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    if raw.startswith("http://") or raw.startswith("https://"):
+        return raw
+    return f"https://t.me/{raw.lstrip('@')}"
+
+
+def get_contact_settings() -> dict:
+    developer = (get_pay_config("contact_developer_username", DEVELOPER) or DEVELOPER).strip()
+    if developer and not developer.startswith("@") and not developer.startswith("http"):
+        developer = f"@{developer.lstrip('@')}"
+    return {
+        "developer": developer,
+        "note": (get_pay_config("contact_note", "Hamkorlik, reklama va fikr-mulohaza uchun pastdagi tugmalardan foydalaning.") or "").strip(),
+        "support_url": (get_pay_config("contact_support_url", SUPPORT_URL) or "").strip(),
+        "telegram_channel_url": (get_pay_config("contact_telegram_channel_url", TELEGRAM_CHANNEL_URL) or "").strip(),
+        "instagram_url": (get_pay_config("contact_instagram_url", INSTAGRAM_URL) or "").strip(),
+        "website_url": (get_pay_config("contact_website_url", WEBSITE_URL) or "").strip(),
+    }
+
+
 def build_about_text() -> str:
+    contact = get_contact_settings()
     return (
-        f"\u2139\ufe0f *{BOT_NAME}*\n\n"
+        f"ℹ️ *{BOT_NAME}*\n\n"
         f"{BOT_BIO}\n\n"
         f"Bot useri: {BOT_USERNAME}\n\n"
         "*Asosiy yo'nalishlar:*\n"
@@ -1432,8 +1466,8 @@ def build_about_text() -> str:
         "- darajaga mos quiz va darslar\n"
         "- statistika va rivojlanish kuzatuvi\n\n"
         "*Aloqa va loyiha:*\n"
-        f"- Dasturchi: {DEVELOPER}\n"
-        "- Hamkorlik, reklama va fikr-mulohaza uchun pastdagi tugmalardan foydalaning.\n\n"
+        f"- Dasturchi: {contact['developer']}\n"
+        f"- {contact['note']}\n\n"
         "*Inline rejim:*\n"
         f"{BOT_USERNAME} your text - tekshiruv\n"
         f"{BOT_USERNAME} tr: matn - tarjima\n"
@@ -1442,22 +1476,26 @@ def build_about_text() -> str:
     )
 
 
+
 def build_about_buttons():
+    contact = get_contact_settings()
     buttons = [
-        [InlineKeyboardButton("\U0001F4B3 Obuna", callback_data="menu_subscribe")],
-        [InlineKeyboardButton("\U0001F519 Menyu", callback_data="menu_back")],
+        [InlineKeyboardButton("💳 Obuna", callback_data="menu_subscribe")],
+        [InlineKeyboardButton("🔙 Menyu", callback_data="menu_back")],
     ]
-    if SUPPORT_URL:
-        buttons.append([InlineKeyboardButton("\U0001F4AC Aloqa", url=SUPPORT_URL)])
-    if TELEGRAM_CHANNEL_URL:
-        buttons.append([InlineKeyboardButton("\U0001F4E2 Telegram kanal", url=TELEGRAM_CHANNEL_URL)])
-    if INSTAGRAM_URL:
-        buttons.append([InlineKeyboardButton("\U0001F4F8 Instagram", url=INSTAGRAM_URL)])
-    if WEBSITE_URL:
-        buttons.append([InlineKeyboardButton("\U0001F310 Sayt", url=WEBSITE_URL)])
+    if contact["support_url"]:
+        buttons.append([InlineKeyboardButton("💬 Aloqa", url=contact["support_url"])])
+    if contact["telegram_channel_url"]:
+        buttons.append([InlineKeyboardButton("📢 Telegram kanal", url=contact["telegram_channel_url"])])
+    if contact["instagram_url"]:
+        buttons.append([InlineKeyboardButton("📸 Instagram", url=contact["instagram_url"])])
+    if contact["website_url"]:
+        buttons.append([InlineKeyboardButton("🌐 Sayt", url=contact["website_url"])])
     if WEB_APP_URL:
-        buttons.append([InlineKeyboardButton("\U0001F4F1 Web App", web_app=WebAppInfo(url=WEB_APP_URL))])
-    buttons.append([InlineKeyboardButton("\U0001F4DE Dasturchi", url="https://t.me/murodullayev_web")])
+        buttons.append([InlineKeyboardButton("📱 Web App", web_app=WebAppInfo(url=WEB_APP_URL))])
+    developer_url = _build_tg_profile_url(contact["developer"])
+    if developer_url:
+        buttons.append([InlineKeyboardButton("📞 Dasturchi", url=developer_url)])
     return InlineKeyboardMarkup(buttons)
 
 
@@ -2941,6 +2979,9 @@ if __name__ == "__main__":
             logger.info("Bot to'xtatildi.")
         else:
             raise
+
+
+
 
 
 

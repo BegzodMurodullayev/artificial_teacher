@@ -187,13 +187,17 @@ def normalize_admin_text(text: str) -> str:
         "sponsors": "homiy kanallar",
         "ads": "reklama",
         "owner": "adminlar",
+        "contact": "aloqa sozlamalari",
+        "aloqa sozlamalari": "aloqa sozlamalari",
         "back": "admin panel",
     }
     return aliases.get(cleaned, cleaned)
+
 def is_owner_only_callback(data: str) -> bool:
     owner_only_exact = {
         "adm_pay_config",
         "adm_admins",
+        "adm_contact_config",
         "adm_marketing",
         "adm_pack_add",
         "adm_code_add",
@@ -204,9 +208,9 @@ def is_owner_only_callback(data: str) -> bool:
         "adm_reward_",
         "adm_pack_del_",
         "adm_confirm_admin_",
+        "contactcfg_",
     )
     return data in owner_only_exact or any(data.startswith(prefix) for prefix in owner_only_prefixes)
-
 
 def admin_reply_kb(user_id: int):
     rows = [
@@ -216,10 +220,10 @@ def admin_reply_kb(user_id: int):
         ["📦 Rejalar", "📣 Reklama"],
     ]
     if is_owner(user_id):
-        rows.append(["⚙️ To'lov sozlamalari", "🎁 Marketing", "👮 Adminlar"])
+        rows.append(["⚙️ To'lov sozlamalari", "ℹ️ Aloqa sozlamalari"])
+        rows.append(["🎁 Marketing", "👮 Adminlar"])
     rows.append(["👤 User panel"])
     return ReplyKeyboardMarkup(rows, resize_keyboard=True, input_field_placeholder="Admin bo'limini tanlang...")
-
 
 def _build_html_reports_markup(back_callback: str = "adm_back"):
     return InlineKeyboardMarkup([
@@ -348,6 +352,35 @@ def _build_payment_config_keyboard(cfg: dict):
         [InlineKeyboardButton("\U0001F519 Orqaga", callback_data="adm_back")],
     ])
 
+
+def _build_contact_config_text(cfg: dict) -> str:
+    developer = str(cfg.get("contact_developer_username") or "@murodullayev_web").strip() or "@murodullayev_web"
+    if developer and not developer.startswith("@") and not developer.startswith("http"):
+        developer = f"@{developer.lstrip('@')}"
+    note = str(cfg.get("contact_note") or "Hamkorlik, reklama va fikr-mulohaza uchun pastdagi tugmalardan foydalaning.").strip()
+    support_url = str(cfg.get("contact_support_url") or "").strip() or "yo'q"
+    tg_url = str(cfg.get("contact_telegram_channel_url") or "").strip() or "yo'q"
+    insta_url = str(cfg.get("contact_instagram_url") or "").strip() or "yo'q"
+    website_url = str(cfg.get("contact_website_url") or "").strip() or "yo'q"
+    return (
+        "ℹ️ *Aloqa sozlamalari*\n\n"
+        f"Dasturchi: *{escape_md(developer)}*\n"
+        f"Aloqa link: {escape_md(support_url)}\n"
+        f"Telegram kanal: {escape_md(tg_url)}\n"
+        f"Instagram: {escape_md(insta_url)}\n"
+        f"Sayt: {escape_md(website_url)}\n\n"
+        f"Izoh: {escape_md(note[:220])}"
+    )
+
+
+def _build_contact_config_keyboard(cfg: dict):
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("Dasturchi", callback_data="contactcfg_contact_developer_username")],
+        [InlineKeyboardButton("Aloqa link", callback_data="contactcfg_contact_support_url"), InlineKeyboardButton("Telegram kanal", callback_data="contactcfg_contact_telegram_channel_url")],
+        [InlineKeyboardButton("Instagram", callback_data="contactcfg_contact_instagram_url"), InlineKeyboardButton("Sayt", callback_data="contactcfg_contact_website_url")],
+        [InlineKeyboardButton("Izoh", callback_data="contactcfg_contact_note")],
+        [InlineKeyboardButton("🔙 Orqaga", callback_data="adm_back")],
+    ])
 
 def _build_leaderboard_admin_text(limit: int = 10) -> str:
     rows = get_leaderboard(limit)
@@ -548,6 +581,7 @@ def _user_detail_markup(user_row):
 def _clear_admin_context_flags(context):
     for key in (
         "setting_pay_config",
+        "setting_contact_config",
         "editing_plan",
         "editing_reward_setting",
         "adding_admin",
@@ -561,7 +595,6 @@ def _clear_admin_context_flags(context):
         "promo_code_form",
     ):
         context.user_data.pop(key, None)
-
 
 async def check_admin(update, context):
     user_id = update.effective_user.id
@@ -780,6 +813,30 @@ async def admin_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await safe_edit(query, _build_payment_config_text(cfg), reply_markup=_build_payment_config_keyboard(cfg), parse_mode="Markdown")
         return
 
+    if data == "adm_contact_config":
+        _clear_admin_context_flags(context)
+        cfg = get_all_pay_config()
+        await safe_edit(query, _build_contact_config_text(cfg), reply_markup=_build_contact_config_keyboard(cfg), parse_mode="Markdown")
+        return
+
+    if data.startswith("contactcfg_"):
+        field = data.replace("contactcfg_", "", 1)
+        labels = {
+            "contact_developer_username": "Dasturchi username yoki linkini yuboring:",
+            "contact_support_url": "Aloqa linkini yuboring:",
+            "contact_telegram_channel_url": "Telegram kanal linkini yuboring:",
+            "contact_instagram_url": "Instagram linkini yuboring:",
+            "contact_website_url": "Sayt linkini yuboring:",
+            "contact_note": "Aloqa bo'limi izohini yuboring:",
+        }
+        context.user_data["setting_contact_config"] = field
+        await safe_edit(
+            query,
+            f"✏️ *{labels.get(field, field)}*\n\nTozalash uchun `clear` deb yozishingiz mumkin.",
+            reply_markup=_input_back_markup("adm_contact_config"),
+            parse_mode="Markdown",
+        )
+        return
     if data == "adm_leaderboard":
         await safe_edit(query, _build_leaderboard_admin_text(limit=10), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Orqaga", callback_data="adm_back")]]), parse_mode="Markdown")
         return
@@ -1188,7 +1245,7 @@ async def admin_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     text = update.message.text.strip()
     menu_text = normalize_admin_text(text)
-    owner_only_sections = {"to'lov sozlamalari", "adminlar", "marketing"}
+    owner_only_sections = {"to'lov sozlamalari", "aloqa sozlamalari", "adminlar", "marketing"}
 
     if menu_text in owner_only_sections and not is_owner(user.id):
         await update.message.reply_text("Bu bo'lim faqat owner uchun.")
@@ -1219,6 +1276,22 @@ async def admin_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
             set_pay_config("payment_method", value)
         cfg = get_all_pay_config()
         await update.message.reply_text(_build_payment_config_text(cfg), reply_markup=_build_payment_config_keyboard(cfg), parse_mode="Markdown")
+        return True
+
+    if context.user_data.get("setting_contact_config"):
+        if not is_owner(user.id):
+            context.user_data.pop("setting_contact_config", None)
+            await update.message.reply_text("Bu sozlama faqat owner uchun.", reply_markup=_input_back_markup("adm_back"))
+            return True
+        field = context.user_data.pop("setting_contact_config")
+        value = text.strip().strip('"').strip("'")
+        if value.lower() in {"clear", "none", "bo'sh", "empty", "-"}:
+            value = ""
+        if field == "contact_developer_username" and value and not value.startswith("@") and not value.startswith("http"):
+            value = f"@{value.lstrip('@')}"
+        set_pay_config(field, value)
+        cfg = get_all_pay_config()
+        await update.message.reply_text(_build_contact_config_text(cfg), reply_markup=_build_contact_config_keyboard(cfg), parse_mode="Markdown")
         return True
 
     if context.user_data.get("editing_plan"):
@@ -1398,7 +1471,7 @@ async def admin_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     if context.user_data.get("broadcasting"):
         menu_actions = {
-            "user panel", "admin panel", "dashboard", "to'lovlar", "userlar", "to'lov sozlamalari",
+            "user panel", "admin panel", "dashboard", "to'lovlar", "userlar", "to'lov sozlamalari", "aloqa sozlamalari",
             "statistika", "funnel", "analitika", "export", "export users", "html hisobotlar", "reklama", "homiy kanallar",
             "rejalar", "adminlar", "marketing", "reyting",
         }
@@ -1463,6 +1536,12 @@ async def admin_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         _clear_admin_context_flags(context)
         cfg = get_all_pay_config()
         await update.message.reply_text(_build_payment_config_text(cfg), reply_markup=_build_payment_config_keyboard(cfg), parse_mode="Markdown")
+        return True
+
+    if menu_text == "aloqa sozlamalari":
+        _clear_admin_context_flags(context)
+        cfg = get_all_pay_config()
+        await update.message.reply_text(_build_contact_config_text(cfg), reply_markup=_build_contact_config_keyboard(cfg), parse_mode="Markdown")
         return True
 
     if menu_text == "analitika":
@@ -1688,6 +1767,13 @@ async def group_admin_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     set_group(chat_id, field, new_val)
     settings = get_group(chat_id)
     await query.edit_message_reply_markup(reply_markup=build_group_settings_keyboard(chat_id, settings))
+
+
+
+
+
+
+
 
 
 
