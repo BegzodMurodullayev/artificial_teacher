@@ -202,16 +202,33 @@ async def start_health_server() -> Optional[asyncio.AbstractServer]:
                 if h.lower().startswith("user-agent:"):
                     ua = h.split(":", 1)[1].strip()
                     break
+        except Exception:
+            pass
+
+        try:
             peer = writer.get_extra_info("peername")
             if isinstance(peer, tuple) and peer:
                 ip = str(peer[0])
+        except Exception:
+            pass
+
+        try:
             record_service_hit(path=path, ip=ip, user_agent=ua)
+        except Exception:
+            pass
+
+        try:
             if path in ("/", "/index.html", "/status"):
-                writer.write(_resp("200 OK", _site_html(), "text/html; charset=utf-8"))
+                payload = _resp("200 OK", _site_html(), "text/html; charset=utf-8")
             elif path in ("/health", "/ping"):
-                writer.write(_resp("200 OK", b"ok"))
+                payload = _resp("200 OK", b"ok")
             else:
-                writer.write(_resp("404 Not Found", b"not found"))
+                payload = _resp("404 Not Found", b"not found")
+        except Exception:
+            payload = _resp("500 Internal Server Error", b"error")
+
+        try:
+            writer.write(payload)
             await writer.drain()
         except Exception:
             pass
@@ -221,7 +238,6 @@ async def start_health_server() -> Optional[asyncio.AbstractServer]:
                 await writer.wait_closed()
             except Exception:
                 pass
-
     try:
         server = await asyncio.start_server(_handle, host="0.0.0.0", port=port)
         logger.info("Health/site server ishlamoqda: 0.0.0.0:%s", port)
@@ -2920,6 +2936,8 @@ if __name__ == "__main__":
             logger.info("Bot to'xtatildi.")
         else:
             raise
+
+
 
 
 
