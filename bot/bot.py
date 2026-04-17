@@ -49,8 +49,28 @@ from handlers.admin import (
     admin_command, admin_callback, admin_text_handler, admin_media_handler,
     group_admin_command, group_admin_callback, is_owner, OWNER_ID
 )
+from handlers.games import (
+    games_center_command,
+    game_settings_command,
+    game_stats_command,
+    handle_group_game_message,
+    join_game_command,
+    leave_game_command,
+    mafia_check_command,
+    mafia_heal_command,
+    mafia_kill_command,
+    mafia_role_command,
+    mafia_skip_command,
+    mafia_vote_command,
+    reset_game_scores_command,
+    set_game_points_command,
+    set_game_time_command,
+    start_game_command,
+    stop_game_command,
+)
 from utils.ai import ask_ai, ask_json
 from utils.content_bank import get_static_lesson_pack, get_static_rule_text, moderation_warning
+from utils.menu_data import USER_BASE_MENU_ROWS, USER_MENU_ALIASES
 from utils.tts import synthesize_pronunciation, make_audio_file
 from html_maker import render_html_document, html_open_guide
 from database.db import (
@@ -303,34 +323,7 @@ def normalize_quick_menu_text(text: str) -> str:
     source = source.replace("—", "-").replace("–", "-")
     cleaned = re.sub(r"^[^a-z0-9']+\s*", "", source)
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
-    aliases = {
-        "tekshirish": "tekshiruv",
-        "tekshiruv": "tekshiruv",
-        "progress": "progress",
-        "statistika": "progress",
-        "darajam": "progress",
-        "reyting": "progress",
-        "darajam / reyting": "progress",
-        "darajam/reyting": "progress",
-        "bonus": "bonuslar",
-        "bonuslar": "bonuslar",
-        "promo": "bonuslar",
-        "tolovlar": "to'lovlar",
-        "to'lovlar": "to'lovlar",
-        "payments": "to'lovlar",
-        "obuna": "tariflar",
-        "tariflar": "tariflar",
-        "grammatika": "grammatika",
-        "grammar": "grammatika",
-        "kunlik so'z": "kunlik so'z",
-        "kunlik soz": "kunlik so'z",
-        "daily word": "kunlik so'z",
-        "dailyword": "kunlik so'z",
-        "bosh sahifa": "menyu",
-        "home": "menyu",
-        "iq testi": "iq test",
-    }
-    return aliases.get(cleaned, cleaned)
+    return USER_MENU_ALIASES.get(cleaned, cleaned)
 
 
 def extract_level_guess(text: str) -> str | None:
@@ -550,12 +543,7 @@ def build_web_app_markup(user_id: int, include_back: bool = True):
 
 
 def quick_menu_kb(role: str = "user", user_id: Optional[int] = None):
-    rows = [
-        ["\u2705 Tekshiruv", "\U0001F501 Tarjima", "\U0001F50A Talaffuz"],
-        ["\U0001F3AF Quiz", "\U0001F9E0 IQ test", "\U0001F4DA Dars"],
-        ["\U0001F4D6 Grammatika", "\U0001F4C5 Kunlik so'z", "\U0001F4C8 Darajam / Reyting"],
-        ["\U0001F381 Bonuslar", "\U0001F4B3 Tariflar", "\u2139\ufe0f Aloqa"],
-    ]
+    rows = [list(row) for row in USER_BASE_MENU_ROWS]
     web_url = build_web_app_url(user_id)
     if web_url:
         rows.append([KeyboardButton("\U0001F4F1 Web App", web_app=WebAppInfo(url=web_url))])
@@ -570,10 +558,199 @@ def quick_menu_kb(role: str = "user", user_id: Optional[int] = None):
     )
 
 
-def build_main_menu_hint() -> str:
+def build_main_menu_markup(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
+    rows = [
+        [
+            InlineKeyboardButton("📚 O'rganish", callback_data="menu_section_learn"),
+            InlineKeyboardButton("🧪 Mashq", callback_data="menu_section_practice"),
+        ],
+        [
+            InlineKeyboardButton("📈 Progress", callback_data="menu_section_progress"),
+            InlineKeyboardButton("💳 Tariflar", callback_data="menu_subscribe"),
+        ],
+        [
+            InlineKeyboardButton("🎮 O'yinlar", callback_data="menu_section_games"),
+            InlineKeyboardButton("ℹ️ Aloqa", callback_data="do_about"),
+        ],
+    ]
+    web_markup_row = None
+    if user_id is not None:
+        web_url = build_web_app_url(user_id)
+        if web_url:
+            web_markup_row = [InlineKeyboardButton("📱 Web App", web_app=WebAppInfo(url=web_url))]
+        user_row = get_user(user_id) or {}
+        if user_row.get("role") in ("admin", "owner"):
+            rows.append([InlineKeyboardButton("🛡 Admin panel", callback_data="menu_admin_hint")])
+    if web_markup_row:
+        rows.append(web_markup_row)
+    return InlineKeyboardMarkup(rows)
+
+
+def build_learn_menu_text() -> str:
     return (
-        "\U0001F3E0 *Asosiy boshqaruv klaviaturada tayyor.*\n\n"
-        "Kerakli bo'limni pastdagi keyboarddan tanlang."
+        "📚 *O'rganish markazi*\n\n"
+        "Bu bo'limda tushuntirish va kundalik o'rganish vositalari jamlangan.\n"
+        "Bir yo'nalishni tanlang."
+    )
+
+
+def build_learn_menu_markup(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
+    rows = [
+        [
+            InlineKeyboardButton("📚 Dars", callback_data="do_lesson"),
+            InlineKeyboardButton("📖 Grammatika", callback_data="do_rules"),
+        ],
+        [
+            InlineKeyboardButton("📅 Kunlik so'z", callback_data="do_daily"),
+            InlineKeyboardButton("🔁 Tarjima", callback_data="do_translate"),
+        ],
+        [InlineKeyboardButton("🔊 Talaffuz", callback_data="do_pron")],
+        [InlineKeyboardButton("🏠 Asosiy bo'limlar", callback_data="menu_back")],
+    ]
+    if user_id is not None:
+        web_url = build_web_app_url(user_id)
+        if web_url:
+            rows.insert(3, [InlineKeyboardButton("📱 Web App", web_app=WebAppInfo(url=web_url))])
+    return InlineKeyboardMarkup(rows)
+
+
+def build_practice_menu_text() -> str:
+    return (
+        "🧪 *Mashq markazi*\n\n"
+        "Bu bo'limda test, tekshiruv va faol mashq vositalari bor.\n"
+        "Kerakli usulni tanlang."
+    )
+
+
+def build_practice_menu_markup() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("✅ Tekshiruv", callback_data="do_check"),
+            InlineKeyboardButton("🎯 Quiz", callback_data="do_quiz"),
+        ],
+        [
+            InlineKeyboardButton("🧠 IQ test", callback_data="do_iq"),
+            InlineKeyboardButton("🎯 Daraja tanlash", callback_data="do_level"),
+        ],
+        [InlineKeyboardButton("🤖 Auto daraja", callback_data="do_level_auto")],
+        [InlineKeyboardButton("🏠 Asosiy bo'limlar", callback_data="menu_back")],
+    ])
+
+
+def build_progress_menu_text() -> str:
+    return (
+        "📈 *Progress markazi*\n\n"
+        "Natijalar, bonuslar, to'lovlar va daraja boshqaruvi shu bo'limda."
+    )
+
+
+def build_progress_menu_markup(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
+    rows = [
+        [
+            InlineKeyboardButton("📊 Natijalarim", callback_data="menu_progress_panel"),
+            InlineKeyboardButton("🎁 Bonuslar", callback_data="menu_bonus_center"),
+        ],
+        [
+            InlineKeyboardButton("💳 To'lovlar", callback_data="menu_mypayments"),
+            InlineKeyboardButton("💎 Tariflar", callback_data="menu_subscribe"),
+        ],
+        [
+            InlineKeyboardButton("🎯 Daraja tanlash", callback_data="do_level"),
+            InlineKeyboardButton("🤖 Auto daraja", callback_data="do_level_auto"),
+        ],
+        [InlineKeyboardButton("🏠 Asosiy bo'limlar", callback_data="menu_back")],
+    ]
+    if user_id is not None:
+        web_url = build_web_app_url(user_id)
+        if web_url:
+            rows.insert(3, [InlineKeyboardButton("📱 Web App", web_app=WebAppInfo(url=web_url))])
+    return InlineKeyboardMarkup(rows)
+
+
+def build_games_menu_text() -> str:
+    return (
+        "🎮 *O'yinlar markazi*\n\n"
+        "O'yinlar guruhda ishlaydi. Siz admin bo'lgan guruhda quyidagilarni ishga tushirasiz:\n"
+        "- `/start_game word`\n"
+        "- `/start_game error`\n"
+        "- `/start_game translation`\n"
+        "- `/start_game mafia`\n\n"
+        "Har bir o'yin uchun qoidalar, ball berish va group admin buyruqlari pastdagi bo'limlarda tartiblangan."
+    )
+
+
+def build_games_menu_markup() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🔤 So'z topish", callback_data="games_info_word"),
+            InlineKeyboardButton("❌ Xatoni top", callback_data="games_info_error"),
+        ],
+        [
+            InlineKeyboardButton("🏃 Tarjima poygasi", callback_data="games_info_translation"),
+            InlineKeyboardButton("🏆 Mukofotlar", callback_data="games_info_rewards"),
+        ],
+        [
+            InlineKeyboardButton("👥 Guruh admin", callback_data="games_info_admin"),
+            InlineKeyboardButton("🕵️ Mafia", callback_data="games_info_mafia"),
+        ],
+        [InlineKeyboardButton("🏠 Asosiy bo'limlar", callback_data="menu_back")],
+    ])
+
+
+def build_games_info_text(kind: str) -> str:
+    texts = {
+        "word": (
+            "🔤 *So'z topish*\n\n"
+            "Bot antonim yoki sinonim so'z beradi.\n"
+            "Kim birinchi to'g'ri topsa, ball oladi.\n"
+            "Ishga tushirish: `/start_game word` yoki `/start_game antonym`"
+        ),
+        "error": (
+            "❌ *Xatoni top*\n\n"
+            "Bot noto'g'ri gap yuboradi.\n"
+            "Format: `xato -> to'g'ri`\n"
+            "Ishga tushirish: `/start_game error`"
+        ),
+        "translation": (
+            "🏃 *Tarjima poygasi*\n\n"
+            "Bot o'zbekcha gap yuboradi.\n"
+            "Inglizchaga eng to'g'ri va tez tarjima ball oladi.\n"
+            "Ishga tushirish: `/start_game translation`"
+        ),
+        "rewards": (
+            "🏆 *Mukofotlar*\n\n"
+            "Har bir guruh uchun alohida leaderboard yuradi.\n"
+            "Topshiriq turiga qarab ball beriladi.\n"
+            "Natijalarni ko'rish: `/game_stats`"
+        ),
+        "admin": (
+            "👥 *Guruh admin boshqaruvi*\n\n"
+            "O'yinni admin yoki group owner boshqaradi.\n"
+            "- Boshlash: `/start_game word|error|translation|mafia`\n"
+            "- To'xtatish: `/stop_game`\n"
+            "- Sozlamalar: `/game_settings`\n"
+            "- Vaqt: `/set_game_time mafia_night 45`\n"
+            "- Ball: `/set_game_points 15`\n"
+            "- Reytingni tozalash: `/reset_game_scores`"
+        ),
+        "mafia": (
+            "🕵️ *Mafia*\n\n"
+            "To'liq tun/kun oqimi ishlaydi.\n"
+            "Boshlash: `/start_game mafia`\n"
+            "Ro'yxat: `/join`, `/leave`\n"
+            "Tun: `/kill`, `/heal`, `/check`, `/skip`\n"
+            "Kun: `/vote`, `/skip`\n"
+            "Roli ko'rish: `/my_role`"
+        ),
+    }
+    return texts.get(kind, "O'yin bo'limi")
+
+
+def build_main_menu_hint(user_id: Optional[int] = None) -> str:
+    return (
+        "\U0001F3E0 *Asosiy bo'limlar markazi*\n\n"
+        "Userlar ko'p tugmadan cho'chimasligi uchun tizim 6 ta katta bo'limga ajratildi.\n"
+        "Pastdagi keyboarddan katta bo'limni tanlang yoki shu xabardagi submenu orqali ichkariga kiring."
     )
 
 
@@ -673,14 +850,18 @@ async def ensure_sponsor_access(update: Update, context: ContextTypes.DEFAULT_TY
 
     missing = []
     for row in channels:
-        cache_key = (str(row["chat_ref"]), int(user.id))
+        channel_ref = str(row.get("chat_id_text") or row.get("chat_ref") or "").strip()
+        if not channel_ref:
+            missing.append(row)
+            continue
+        cache_key = (channel_ref, int(user.id))
         cached = _SPONSOR_ACCESS_CACHE.get(cache_key)
         if cached and cached.get("expires", 0) > now_ts:
             if not cached.get("ok", False):
                 missing.append(row)
             continue
         try:
-            member = await context.bot.get_chat_member(row["chat_ref"], user.id)
+            member = await context.bot.get_chat_member(channel_ref, user.id)
             is_joined = member.status in ("member", "administrator", "creator")
         except Exception:
             is_joined = False
@@ -866,10 +1047,12 @@ async def attach_inline_export_info(
     label: str,
     links: list[tuple[str, str | None]] | None = None,
 ):
-    extra_lines = [
-        f"{label} ID: {export_id}",
-        "Qo'shimcha fayl tayyorlandi.",
-    ]
+    extra_lines = [f"{label} ID: {export_id}"]
+    for title, link in links or []:
+        if link:
+            line_title = str(title or "").strip()
+            extra_lines.append(f"{line_title}: {link}")
+    extra_lines.append("Qo'shimcha fayl tayyorlandi.")
     extra = "\n\n" + "\n".join(extra_lines)
     inline_message_id = getattr(chosen, "inline_message_id", None)
     if inline_message_id:
@@ -1336,11 +1519,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Salom, *{name_safe}*!\n\n"
         f"*{BOT_NAME}* - ingliz tilini o'zbekcha o'rgatadigan AI yordamchi.\n\n"
         f"Sizning rejangiz: *{plan_display_name(plan, with_icon=True)}*\n\n"
-        "Asosiy bo'limlar pastdagi klaviaturada."
+        "Asosiy bo'limlar pastdagi klaviaturada. Ichki yo'nalishlar esa shu xabardagi submenu orqali ochiladi."
     )
     cleanup_msg = await safe_reply(update.message, "\u2063", reply_markup=ReplyKeyboardRemove())
     await safe_delete(cleanup_msg)
     await safe_reply(update.message, text, reply_markup=quick_menu_kb((db_user or {}).get("role", "user"), user_id=user.id), parse_mode="Markdown")
+    await safe_reply(update.message, build_main_menu_hint(user.id), reply_markup=build_main_menu_markup(user.id), parse_mode="Markdown")
 
 
 def build_topic_keyboard(topics):
@@ -1554,10 +1738,45 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "sponsor_recheck":
         if await ensure_sponsor_access(update, context):
-            await safe_edit(query, build_main_menu_hint(), parse_mode="Markdown")
+            await safe_edit(query, build_main_menu_hint(user.id), reply_markup=build_main_menu_markup(user.id), parse_mode="Markdown")
         return
 
     if not await ensure_sponsor_access(update, context):
+        return
+
+    if data == "menu_section_learn":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_edit(query, build_learn_menu_text(), reply_markup=build_learn_menu_markup(user.id), parse_mode="Markdown")
+        return
+
+    if data == "menu_section_practice":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_edit(query, build_practice_menu_text(), reply_markup=build_practice_menu_markup(), parse_mode="Markdown")
+        return
+
+    if data == "menu_section_progress":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_edit(query, build_progress_menu_text(), reply_markup=build_progress_menu_markup(user.id), parse_mode="Markdown")
+        return
+
+    if data == "menu_section_games":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_edit(query, build_games_menu_text(), reply_markup=build_games_menu_markup(), parse_mode="Markdown")
+        return
+
+    if data == "menu_admin_hint":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_edit(
+            query,
+            "🛡 *Admin panel*\n\nAdmin boshqaruv reply keyboard orqali ochiladi. Pastdagi keyboarddan `Admin panel` ni bosing yoki `/admin` yuboring.",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🏠 Asosiy bo'limlar", callback_data="menu_back")]]),
+            parse_mode="Markdown",
+        )
+        return
+
+    if data.startswith("games_info_"):
+        kind = data.split("_", 2)[2]
+        await safe_edit(query, build_games_info_text(kind), reply_markup=build_games_menu_markup(), parse_mode="Markdown")
         return
 
     if data == "do_check":
@@ -1778,10 +1997,12 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "do_about":
+        reset_user_session_state(context, keep_pron_accent=True)
         await safe_edit(query, build_about_text(), reply_markup=build_about_buttons(), parse_mode="Markdown")
         return
 
     if data == "do_webapp":
+        reset_user_session_state(context, keep_pron_accent=True)
         markup = build_web_app_markup(user.id)
         if not markup:
             await safe_edit(query, "Web App URL hozircha sozlanmagan. Admin `.env` ichida `WEB_APP_URL` ni kiritishi kerak.", parse_mode="Markdown")
@@ -1790,10 +2011,12 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "menu_subscribe":
+        reset_user_session_state(context, keep_pron_accent=True)
         await subscription_command_from_callback(query, context)
         return
 
     if data == "menu_mypayments":
+        reset_user_session_state(context, keep_pron_accent=True)
         await my_payments_command(update, context)
         return
 
@@ -1803,9 +2026,11 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "menu_bonus_center":
+        reset_user_session_state(context, keep_pron_accent=True)
         await safe_edit(query, build_bonus_center_text(user.id, user.first_name or "Foydalanuvchi"), reply_markup=build_bonus_center_markup(user.id), parse_mode="Markdown")
         return
     if data == "menu_referral_panel":
+        reset_user_session_state(context, keep_pron_accent=True)
         await safe_edit(
             query,
             build_referral_panel_text(user.id, user.first_name or "Foydalanuvchi"),
@@ -1816,6 +2041,7 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     if data == "menu_progress_panel":
+        reset_user_session_state(context, keep_pron_accent=True)
         progress_text = build_progress_panel_text(user.id, user.first_name or "Foydalanuvchi", leaderboard_limit=5)
         if not progress_text:
             await safe_edit(query, "Statistika hozircha yo'q.")
@@ -1824,6 +2050,7 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "menu_progress_html":
+        reset_user_session_state(context, keep_pron_accent=True)
         doc = build_progress_report_doc(user.id, user.first_name or "Foydalanuvchi")
         if not doc:
             await safe_edit(query, "Statistika hozircha yo'q.", reply_markup=build_progress_action_markup(user.id))
@@ -1833,11 +2060,13 @@ async def main_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "menu_leaderboard":
+        reset_user_session_state(context, keep_pron_accent=True)
         await safe_edit(query, build_leaderboard_text(limit=10), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("\U0001F4C8 Darajam / Reyting", callback_data="menu_progress_panel")], [InlineKeyboardButton("\U0001F3E0 Menyu", callback_data="menu_back")]]), parse_mode="Markdown")
         return
 
     if data == "menu_back":
-        await safe_edit(query, build_main_menu_hint(), parse_mode="Markdown")
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_edit(query, build_main_menu_hint(user.id), reply_markup=build_main_menu_markup(user.id), parse_mode="Markdown")
         return
 
 
@@ -1877,18 +2106,35 @@ async def private_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     menu_text = normalize_quick_menu_text(text)
     if menu_text == "menyu":
-        await start(update, context)
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_reply(message, build_main_menu_hint(user.id), reply_markup=build_main_menu_markup(user.id), parse_mode="Markdown")
+        return
+    if menu_text == "o'rganish":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_reply(message, build_learn_menu_text(), reply_markup=build_learn_menu_markup(user.id), parse_mode="Markdown")
+        return
+    if menu_text == "mashq":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_reply(message, build_practice_menu_text(), reply_markup=build_practice_menu_markup(), parse_mode="Markdown")
+        return
+    if menu_text == "progress":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_reply(message, build_progress_menu_text(), reply_markup=build_progress_menu_markup(user.id), parse_mode="Markdown")
         return
     if menu_text in ("obuna", "tariflar"):
+        reset_user_session_state(context, keep_pron_accent=True)
         await subscription_command(update, context)
         return
     if menu_text == "bonuslar":
+        reset_user_session_state(context, keep_pron_accent=True)
         await safe_reply(message, build_bonus_center_text(user.id, user.first_name or "Foydalanuvchi"), reply_markup=build_bonus_center_markup(user.id), parse_mode="Markdown")
         return
     if menu_text == "to'lovlar":
+        reset_user_session_state(context, keep_pron_accent=True)
         await my_payments_command(update, context)
         return
     if menu_text in ("web app", "webapp", "app"):
+        reset_user_session_state(context, keep_pron_accent=True)
         markup = build_web_app_markup(user.id, include_back=False)
         if not markup:
             await safe_reply(message, "Web App URL hozircha sozlanmagan. Admin `WEB_APP_URL` ni kiritishi kerak.")
@@ -1896,14 +2142,8 @@ async def private_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await safe_reply(message, build_webapp_intro_text(user.id), reply_markup=markup, parse_mode="Markdown")
         return
     if menu_text == "aloqa":
+        reset_user_session_state(context, keep_pron_accent=True)
         await safe_reply(message, build_about_text(), reply_markup=build_about_buttons(), parse_mode="Markdown")
-        return
-    if menu_text == "progress":
-        progress_text = build_progress_panel_text(user.id, user.first_name or "Foydalanuvchi", leaderboard_limit=5)
-        if not progress_text:
-            await safe_reply(message, "Statistika hozircha yo'q.")
-        else:
-            await safe_reply(message, progress_text, reply_markup=build_progress_action_markup(user.id), parse_mode="Markdown")
         return
     if menu_text == "tekshiruv":
         context.user_data["mode"] = "check"
@@ -1950,6 +2190,10 @@ async def private_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             daily_text = build_daily_word_text(data_json)
             kb = [[InlineKeyboardButton("🔊 Talaffuz", callback_data=f"pron__{data_json.get('word', '')}"), InlineKeyboardButton("🏠 Menyu", callback_data="menu_back")]]
             await safe_reply(message, daily_text, reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+        return
+    if menu_text == "o'yinlar":
+        reset_user_session_state(context, keep_pron_accent=True)
+        await safe_reply(message, build_games_menu_text(), reply_markup=build_games_menu_markup(), parse_mode="Markdown")
         return
 
     if context.user_data.get("awaiting_level_test"):
@@ -2116,6 +2360,9 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     upsert_user(user.id, user.username, user.first_name)
     settings = get_group(chat_id)
     inc_stat(user.id, "messages_total")
+
+    if await handle_group_game_message(update, context):
+        return
 
     mention_payload = extract_mention_payload(text)
     if mention_payload is not None and settings["bot_enabled"]:
@@ -2632,7 +2879,10 @@ async def joined_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "#check [matn] - tekshiruv\n"
                 "#bot [savol] - AI savol\n"
                 "#t [matn] - tarjima\n"
-                "#p [so'z] - talaffuz\n\n"
+                "#p [so'z] - talaffuz\n"
+                "/games - o'yinlar markazi\n"
+                "/start_game word - group game boshlash\n"
+                "/start_game mafia - mafia boshlash\n\n"
                 f"Mention bilan ham ishlaydi: {BOT_USERNAME} your text\n\n"
                 "/admin - guruh sozlamalari\n/help - batafsil yordam",
                 parse_mode="Markdown",
@@ -2677,12 +2927,18 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/quiz - Quiz boshlash\n"
         "/iqtest - IQ test boshlash\n"
         "/app - Telegram Web App\n"
+        "/games - O'yinlar markazi\n"
         "/admin - Admin panel\n\n"
         "*Guruhda:*\n"
         "#check [matn] - tekshiruv\n"
         "#bot [savol] - AI savol\n"
         "#t [matn] - tarjima\n"
-        "#p [so'z] - talaffuz\n\n"
+        "#p [so'z] - talaffuz\n"
+        "/games - o'yinlar markazi\n"
+        "/start_game word - o'yin boshlash\n"
+        "/start_game mafia - mafia boshlash\n"
+        "/stop_game - joriy o'yinni to'xtatish\n"
+        "/game_stats - group leaderboard\n\n"
         "*Inline:*\n"
         f"{BOT_USERNAME} your text - tekshiruv\n"
         f"{BOT_USERNAME} tr: matn - tarjima\n"
@@ -2843,6 +3099,22 @@ async def main():
     app.add_handler(CommandHandler("quiz",        quiz_command_guarded))
     app.add_handler(CommandHandler("iqtest",      iq_command_guarded))
     app.add_handler(CommandHandler("app",         app_command))
+    app.add_handler(CommandHandler("games",       games_center_command))
+    app.add_handler(CommandHandler("start_game",  start_game_command))
+    app.add_handler(CommandHandler("stop_game",   stop_game_command))
+    app.add_handler(CommandHandler("game_settings", game_settings_command))
+    app.add_handler(CommandHandler("game_stats",  game_stats_command))
+    app.add_handler(CommandHandler("set_game_time", set_game_time_command))
+    app.add_handler(CommandHandler("set_game_points", set_game_points_command))
+    app.add_handler(CommandHandler("reset_game_scores", reset_game_scores_command))
+    app.add_handler(CommandHandler("join",        join_game_command))
+    app.add_handler(CommandHandler("leave",       leave_game_command))
+    app.add_handler(CommandHandler("my_role",     mafia_role_command))
+    app.add_handler(CommandHandler("kill",        mafia_kill_command))
+    app.add_handler(CommandHandler("heal",        mafia_heal_command))
+    app.add_handler(CommandHandler("check",       mafia_check_command))
+    app.add_handler(CommandHandler("vote",        mafia_vote_command))
+    app.add_handler(CommandHandler("skip",        mafia_skip_command))
 
     # Quiz callbacklar
     app.add_handler(CallbackQueryHandler(quiz_callback,      pattern=r"^qans_\d+_[A-D]_(quiz|iq)$"))
@@ -2910,6 +3182,7 @@ async def main():
             BotCommand("quiz",       "Quiz"),
             BotCommand("iqtest",     "IQ test"),
             BotCommand("app",        "Web App"),
+            BotCommand("games",      "O'yinlar"),
         ])
 
         admin_commands = [
@@ -2925,6 +3198,7 @@ async def main():
             BotCommand("quiz",       "Quiz"),
             BotCommand("iqtest",     "IQ test"),
             BotCommand("app",        "Web App"),
+            BotCommand("games",      "O'yinlar"),
         ]
         for admin_id in get_admin_ids(include_owner=True):
             try:

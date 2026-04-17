@@ -2,6 +2,7 @@
 database/db.py - To'liq ma'lumotlar bazasi
 Obuna, to'lov, foydalanuvchi, guruh, statistika
 """
+import json
 import sqlite3, os
 from pathlib import Path
 from datetime import datetime, date, timedelta
@@ -214,10 +215,57 @@ def init_db():
     c.execute("""CREATE TABLE IF NOT EXISTS sponsor_channels (
         id          INTEGER PRIMARY KEY AUTOINCREMENT,
         chat_ref    TEXT UNIQUE,
+        chat_id_text TEXT DEFAULT '',
         title       TEXT DEFAULT '',
         join_url    TEXT DEFAULT '',
+        bot_is_admin INTEGER DEFAULT 0,
+        member_check_ok INTEGER DEFAULT 0,
+        last_checked_at TEXT DEFAULT '',
         is_active   INTEGER DEFAULT 1,
         created_at  TEXT DEFAULT (datetime('now'))
+    )""")
+    sponsor_cols = {row[1] for row in c.execute("PRAGMA table_info(sponsor_channels)").fetchall()}
+    if "chat_id_text" not in sponsor_cols:
+        c.execute("ALTER TABLE sponsor_channels ADD COLUMN chat_id_text TEXT DEFAULT ''")
+    if "bot_is_admin" not in sponsor_cols:
+        c.execute("ALTER TABLE sponsor_channels ADD COLUMN bot_is_admin INTEGER DEFAULT 0")
+    if "member_check_ok" not in sponsor_cols:
+        c.execute("ALTER TABLE sponsor_channels ADD COLUMN member_check_ok INTEGER DEFAULT 0")
+    if "last_checked_at" not in sponsor_cols:
+        c.execute("ALTER TABLE sponsor_channels ADD COLUMN last_checked_at TEXT DEFAULT ''")
+
+    c.execute("""CREATE TABLE IF NOT EXISTS active_group_games (
+        chat_id      INTEGER PRIMARY KEY,
+        game_type    TEXT NOT NULL,
+        status       TEXT DEFAULT 'running',
+        payload      TEXT DEFAULT '{}',
+        updated_at   TEXT DEFAULT (datetime('now'))
+    )""")
+
+    c.execute("""CREATE TABLE IF NOT EXISTS group_game_scores (
+        chat_id      INTEGER NOT NULL,
+        user_id      INTEGER NOT NULL,
+        username     TEXT DEFAULT '',
+        points       REAL DEFAULT 0,
+        wins         INTEGER DEFAULT 0,
+        played       INTEGER DEFAULT 0,
+        updated_at   TEXT DEFAULT (datetime('now')),
+        PRIMARY KEY(chat_id, user_id)
+    )""")
+
+    c.execute("""CREATE TABLE IF NOT EXISTS group_game_settings (
+        chat_id                        INTEGER PRIMARY KEY,
+        word_time_limit                INTEGER DEFAULT 30,
+        word_points                    INTEGER DEFAULT 10,
+        error_time_limit               INTEGER DEFAULT 45,
+        error_points                   INTEGER DEFAULT 15,
+        translation_time_limit         INTEGER DEFAULT 60,
+        translation_points_perfect     INTEGER DEFAULT 20,
+        translation_points_partial     INTEGER DEFAULT 5,
+        mafia_min_players              INTEGER DEFAULT 6,
+        mafia_max_players              INTEGER DEFAULT 12,
+        mafia_night_time               INTEGER DEFAULT 60,
+        mafia_day_time                 INTEGER DEFAULT 120
     )""")
 
     c.execute("""CREATE TABLE IF NOT EXISTS reward_wallet (
@@ -285,6 +333,8 @@ def init_db():
     c.execute("CREATE INDEX IF NOT EXISTS idx_level_signals_user_id ON level_signals(user_id, id)")
     c.execute("CREATE INDEX IF NOT EXISTS idx_sponsor_active_id ON sponsor_channels(is_active, id)")
     c.execute("CREATE INDEX IF NOT EXISTS idx_webapp_progress_user_date ON webapp_progress(user_id, progress_date)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_group_games_status ON active_group_games(status, updated_at)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_group_game_scores_chat_points ON group_game_scores(chat_id, points DESC)")
 
     # â”€â”€ Default rejalar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     plans = [
@@ -1471,12 +1521,21 @@ def get_daily_groups():
     return [dict(r) for r in rows]
 
 
-def add_sponsor_channel(chat_ref, title, join_url):
+def add_sponsor_channel(chat_ref, title, join_url, chat_id_text="", bot_is_admin=0, member_check_ok=0, last_checked_at=""):
     db = conn()
     db.execute(
-        """INSERT OR REPLACE INTO sponsor_channels (chat_ref, title, join_url, is_active)
-           VALUES (?, ?, ?, 1)""",
-        (chat_ref, title, join_url),
+        """INSERT OR REPLACE INTO sponsor_channels
+           (chat_ref, chat_id_text, title, join_url, bot_is_admin, member_check_ok, last_checked_at, is_active)
+           VALUES (?, ?, ?, ?, ?, ?, ?, 1)""",
+        (
+            str(chat_ref or "").strip(),
+            str(chat_id_text or "").strip(),
+            str(title or "").strip(),
+            str(join_url or "").strip(),
+            int(bool(bot_is_admin)),
+            int(bool(member_check_ok)),
+            str(last_checked_at or "").strip(),
+        ),
     )
     db.commit(); db.close()
 
@@ -1494,6 +1553,134 @@ def get_sponsor_channels(active_only=False):
     rows = db.execute(sql).fetchall()
     db.close()
     return [dict(r) for r in rows]
+
+
+def get_group_game(chat_id):
+    db = conn()
+    row = db.execute("SELECT * FROM active_group_games WHERE chat_id=?", (chat_id,)).fetchone()
+    db.close()
+    return dict(row) if row else None
+
+
+def get_active_group_games(game_type=None, status=None):
+    db = conn()
+    sql = "SELECT * FROM active_group_games WHERE 1=1"
+    params = []
+    if game_type:
+        sql += " AND game_type=?"
+        params.append(str(game_type))
+    if status:
+        if isinstance(status, (list, tuple, set)):
+            marks = ",".join("?" for _ in status)
+            sql += f" AND status IN ({marks})"
+            params.extend(str(item) for item in status)
+        else:
+            sql += " AND status=?"
+            params.append(str(status))
+    sql += " ORDER BY updated_at DESC"
+    rows = db.execute(sql, tuple(params)).fetchall()
+    db.close()
+    return [dict(r) for r in rows]
+
+
+def save_group_game(chat_id, game_type, status="running", payload=None):
+    payload_text = json.dumps(payload or {}, ensure_ascii=False)
+    db = conn()
+    db.execute(
+        """INSERT OR REPLACE INTO active_group_games (chat_id, game_type, status, payload, updated_at)
+           VALUES (?, ?, ?, ?, datetime('now'))""",
+        (chat_id, game_type, status, payload_text),
+    )
+    db.commit(); db.close()
+
+
+def clear_group_game(chat_id):
+    db = conn()
+    db.execute("DELETE FROM active_group_games WHERE chat_id=?", (chat_id,))
+    db.commit(); db.close()
+
+
+def get_group_game_scores(chat_id, limit=10):
+    db = conn()
+    rows = db.execute(
+        """SELECT * FROM group_game_scores
+           WHERE chat_id=?
+           ORDER BY points DESC, wins DESC, updated_at ASC
+           LIMIT ?""",
+        (chat_id, int(limit)),
+    ).fetchall()
+    db.close()
+    return [dict(r) for r in rows]
+
+
+def add_group_game_points(chat_id, user_id, username, points, won=0):
+    db = conn()
+    db.execute(
+        """INSERT OR IGNORE INTO group_game_scores (chat_id, user_id, username, points, wins, played)
+           VALUES (?, ?, ?, 0, 0, 0)""",
+        (chat_id, user_id, str(username or "")),
+    )
+    db.execute(
+        """UPDATE group_game_scores
+           SET username=?,
+               points=points + ?,
+               wins=wins + ?,
+               played=played + 1,
+               updated_at=datetime('now')
+           WHERE chat_id=? AND user_id=?""",
+        (str(username or ""), float(points or 0), int(won or 0), chat_id, user_id),
+    )
+    db.commit(); db.close()
+
+
+def reset_group_game_scores(chat_id):
+    db = conn()
+    db.execute("DELETE FROM group_game_scores WHERE chat_id=?", (chat_id,))
+    db.commit(); db.close()
+
+
+def get_group_game_settings(chat_id):
+    db = conn()
+    db.execute("INSERT OR IGNORE INTO group_game_settings (chat_id) VALUES (?)", (chat_id,))
+    db.commit()
+    row = db.execute("SELECT * FROM group_game_settings WHERE chat_id=?", (chat_id,)).fetchone()
+    db.close()
+    return dict(row) if row else {
+        "chat_id": chat_id,
+        "word_time_limit": 30,
+        "word_points": 10,
+        "error_time_limit": 45,
+        "error_points": 15,
+        "translation_time_limit": 60,
+        "translation_points_perfect": 20,
+        "translation_points_partial": 5,
+        "mafia_min_players": 6,
+        "mafia_max_players": 12,
+        "mafia_night_time": 60,
+        "mafia_day_time": 120,
+    }
+
+
+def update_group_game_setting(chat_id, field, value):
+    allowed_fields = {
+        "word_time_limit",
+        "word_points",
+        "error_time_limit",
+        "error_points",
+        "translation_time_limit",
+        "translation_points_perfect",
+        "translation_points_partial",
+        "mafia_min_players",
+        "mafia_max_players",
+        "mafia_night_time",
+        "mafia_day_time",
+    }
+    if field not in allowed_fields:
+        return
+    db = conn()
+    db.execute("INSERT OR IGNORE INTO group_game_settings (chat_id) VALUES (?)", (chat_id,))
+    db.execute(f"UPDATE group_game_settings SET {field}=? WHERE chat_id=?", (value, chat_id))
+    db.commit(); db.close()
 
 
 

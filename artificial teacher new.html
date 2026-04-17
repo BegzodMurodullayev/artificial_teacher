@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Artificial Teacher - Interaktiv Arxitektura</title>
+    <style>
+        :root {
+            --bg-color: #050510;
+            --card-bg: rgba(20, 20, 40, 0.7);
+            --card-border: rgba(0, 255, 255, 0.3);
+            --text-main: #ffffff;
+            --text-secondary: #a0a0c0;
+            --accent-cyan: #00f3ff;
+            --accent-purple: #bc13fe;
+            --accent-green: #00ff88;
+            --accent-orange: #ff9d00;
+            --accent-red: #ff0055;
+            --line-color: #2d2d50;
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(188, 19, 254, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 30%);
+            position: relative;
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background: rgba(5, 5, 16, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--accent-cyan);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.7);
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .zoom-controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid var(--accent-cyan);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            outline: none;
+            width: 200px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+            width: 250px;
+        }
+
+        button.ctrl-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+
+        button.ctrl-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(188, 19, 254, 0.6);
+        }
+
+        button.ctrl-btn:active {
+            transform: translateY(0);
+        }
+
+        button.zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .zoom-level {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: rgba(0, 243, 255, 0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--accent-cyan);
+        }
+
+        /* Tree Container with Pan/Zoom */
+        #viewport {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            cursor: grab;
+            margin-top: 140px;
+        }
+
+        #viewport.dragging {
+            cursor: grabbing;
+        }
+
+        #tree-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+            padding: 50px;
+            min-width: 2000px;
+            min-height: 2000px;
+        }
+
+        .tree {
+            display: inline-block;
+        }
+
+        .tree ul {
+            padding-top: 30px;
+            position: relative;
+            transition: all 0.5s;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tree li {
+            float: left;
+            text-align: center;
+            list-style-type: none;
+            position: relative;
+            padding: 30px 10px 0 10px;
+            transition: all 0.5s;
+        }
+
+        .tree li::before, .tree li::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 50%;
+            border-top: 2px solid var(--line-color);
+            width: 50%;
+            height: 30px;
+            z-index: 1;
+        }
+
+        .tree li::after {
+            right: auto;
+            left: 50%;
+            border-left: 2px solid var(--line-color);
+        }
+
+        .tree li:only-child::after, .tree li:only-child::before {
+            display: none;
+        }
+
+        .tree li:only-child {
+            padding-top: 0;
+        }
+
+        .tree li:first-child::before, .tree li:last-child::after {
+            border: 0 none;
+        }
+
+        .tree li:last-child::before {
+            border-right: 2px solid var(--line-color);
+            border-radius: 0 8px 0 0;
+        }
+
+        .tree li:first-child::after {
+            border-radius: 8px 0 0 0;
+        }
+
+        .tree ul ul::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            border-left: 2px solid var(--line-color);
+            width: 0;
+            height: 30px;
+        }
+
+        .node-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--text-main);
+            display: inline-block;
+            border-radius: 10px;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 2;
+            min-width: 120px;
+            max-width: 200px;
+            font-size: 0.8rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            line-height: 1.4;
+            user-select: none;
+        }
+
+        .node-card:hover {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .node-card.root {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.3), rgba(188, 19, 254, 0.3));
+            border: 3px solid var(--accent-cyan);
+            font-weight: bold;
+            font-size: 0.95rem;
+            padding: 15px 25px;
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.4);
+        }
+
+        .node-card.admin {
+            border-color: var(--accent-purple);
+            background: rgba(188, 19, 254, 0.1);
+        }
+
+        .node-card.admin:hover {
+            box-shadow: 0 0 25px rgba(188, 19, 254, 0.6);
+            background: rgba(188, 19, 254, 0.2);
+        }
+
+        .node-card.game {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .node-card.game:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+            background: rgba(0, 255, 136, 0.2);
+        }
+
+        .node-card.webapp {
+            border-color: var(--accent-orange);
+            background: rgba(255, 157, 0, 0.1);
+        }
+
+        .node-card.webapp:hover {
+            box-shadow: 0 0 25px rgba(255, 157, 0, 0.6);
+            background: rgba(255, 157, 0, 0.2);
+        }
+
+        .node-card.callback {
+            border-color: var(--accent-red);
+            background: rgba(255, 0, 85, 0.1);
+            font-size: 0.7rem;
+        }
+
+        .node-card.callback:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
+        }
+
+        .toggle-icon {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .highlight {
+            background: rgba(255, 255, 0, 0.3) !important;
+            border-color: yellow !important;
+            box-shadow: 0 0 20px yellow !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0;
+            flex-wrap: wrap;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.7rem;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 4px;
+            border: 2px solid;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            h1 { font-size: 1rem; }
+            
+            input[type="text"] {
+                width: 150px;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+            
+            input[type="text"]:focus { width: 180px; }
+            
+            button.ctrl-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            
+            .legend {
+                gap: 5px;
+                padding: 5px;
+            }
+            
+            .legend-item {
+                font-size: 0.65rem;
+            }
+            
+            .node-card {
+                font-size: 0.7rem;
+                padding: 8px 12px;
+                min-width: 100px;
+            }
+            
+            .node-card.root {
+                font-size: 0.85rem;
+                padding: 12px 20px;
+            }
+        }
+
+        /* Instructions overlay */
+        .instructions {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(5, 5, 16, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--accent-cyan);
+            font-size: 0.75rem;
+            max-width: 250px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .instructions h3 {
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            margin: 5px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+        }
+
+        .close-instructions {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .instructions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🤖 Artificial Teacher - To'liq Arxitektura</h1>
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="🔍 Qidirish...">
+        <button class="ctrl-btn" onclick="expandAll()">📂 Ochish</button>
+        <button class="ctrl-btn" onclick="collapseAll()">📁 Yopish</button>
+        <button class="ctrl-btn" onclick="expandGames()">🎮 O'yinlar</button>
+    </div>
+    <div class="zoom-controls">
+        <button class="ctrl-btn zoom-btn" onclick="zoomOut()" title="Kichiklashtirish">−</button>
+        <span class="zoom-level" id="zoomLevel">100%</span>
+        <button class="ctrl-btn zoom-btn" onclick="zoomIn()" title="Kattalashtirish">+</button>
+        <button class="ctrl-btn" onclick="resetView()" style="margin-left: 10px;"> Reset</button>
+        <button class="ctrl-btn" onclick="fitToScreen()" style="margin-left: 5px;">📐 Ekranga Sig'dirish</button>
+    </div>
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="border-color: var(--accent-cyan); background: rgba(0,243,255,0.2);"></div>
+            <span>Bot</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="border-color: var(--accent-purple); background: rgba(188,19,254,0.2);"></div>
+            <span>Admin</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="border-color: var(--accent-green); background: rgba(0,255,136,0.2);"></div>
+            <span>O'yinlar</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="border-color: var(--accent-orange); background: rgba(255,157,0,0.2);"></div>
+            <span>Web App</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="border-color: var(--accent-red); background: rgba(255,0,85,0.2);"></div>
+            <span>Callback</span>
+        </div>
+    </div>
+</header>
+
+<div id="viewport">
+    <div id="tree-wrapper">
+        <div class="tree">
+            <ul>
+                <!-- TELEGRAM BOT -->
+                <li>
+                    <div class="node-card root" onclick="toggleNode(this)">
+                        📱 Telegram Bot<br>
+                        <span class="toggle-icon">▼ Asosiy tizim</span>
+                    </div>
+                    <ul>
+                        <!-- Sponsor -->
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card" onclick="toggleNode(this)">
+                                📢 Sponsor<br>
+                                <span class="toggle-icon">▼ Tekshiruv</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card">📢 Kanal nomi → t.me/...</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">Tekshirdim → Obuna tekshirish</div></li>
+                            </ul>
+                        </li>
+
+                        <!-- User Panel -->
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card" onclick="toggleNode(this)">
+                                👤 User Panel<br>
+                                <span class="toggle-icon">▼ Reply Keyboard</span>
+                            </div>
+                            <ul>
+                                <!-- Tekshiruv -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        ✅ Tekshiruv<br>
+                                        <span class="toggle-icon">▼ Grammar Check</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">User matn yuboradi</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Xatolar tahlili</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">To'g'ri variant</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Daraja signali</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">HTML export</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Tarjima -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        🔁 Tarjima<br>
+                                        <span class="toggle-icon">▼ Tillar</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🇺 UZ → EN</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🇬🇧 EN → UZ</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">HTML export</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🏠 Menyu</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Talaffuz -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        🔊 Talaffuz<br>
+                                        <span class="toggle-icon">▼ Aksentlar</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🇺🇸 US (Amerika)</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🇬🇧 UK (Britaniya)</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Audio + AI tahlil</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">HTML pronunciation</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Quiz -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        🎯 Quiz<br>
+                                        <span class="toggle-icon">▼ Test rejimi</span>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="connector-mobile"></div>
+                                            <div class="node-card" onclick="toggleNode(this)">
+                                                Savol soni<br>
+                                                <span class="toggle-icon">▼ Tanlash</span>
+                                            </div>
+                                            <ul>
+                                                <li><div class="connector-mobile"></div><div class="node-card">5 ta savol</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">10 ta savol</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">15 ta savol</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">20 ta savol</div></li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <div class="connector-mobile"></div>
+                                            <div class="node-card" onclick="toggleNode(this)">
+                                                Vaqt<br>
+                                                <span class="toggle-icon">▼ Limit</span>
+                                            </div>
+                                            <ul>
+                                                <li><div class="connector-mobile"></div><div class="node-card">30 soniya</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">45 soniya</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">60 soniya</div></li>
+                                            </ul>
+                                        </li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">English / O'zbekcha</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">A/B/C/D variantlar</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">To'g'ri/Noto'g'ri feedback</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Auto level update</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">HTML result</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- IQ Test -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        🧠 IQ Test<br>
+                                        <span class="toggle-icon">▼ Pro/Premium</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Faqat Pro/Premium</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">💎 Pro olish</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">IQ estimate</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">HTML result</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Darslar -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        📚 Dars<br>
+                                        <span class="toggle-icon">▼ Levelga mos</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">User level aniqlanadi</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Topic tugmalari</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">AI/Content bank</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">HTML lesson pack</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Limit → 💳 Obuna</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Grammatika -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        📖 Grammatika<br>
+                                        <span class="toggle-icon">▼ Mavzular</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📖 Tenses</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📖 Articles</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📖 Prepositions</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">❓ Questions</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📖 Conditionals</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📖 Passive Voice</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">✍️ O'z mavzum (AI)</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Kunlik so'z -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card">
+                                        📅 Kunlik so'z<br>
+                                        <span class="toggle-icon">So'z + misol</span>
+                                    </div>
+                                </li>
+
+                                <!-- Darajam/Reyting -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        📈 Darajam/Reyting<br>
+                                        <span class="toggle-icon">▼ Progress</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">User stats</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Reyting snapshot</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📄 HTML hisobot</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🏆 Top 10</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🎁 Bonuslar</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">💳 To'lovlar</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📦 Tariflar</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📱 Web App</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Bonuslar -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        🎁 Bonuslar<br>
+                                        <span class="toggle-icon">▼ Marketing</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Referral ball</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Referral cashback</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🎫 Promo kod</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🔗 Referral</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📱 Web App</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Tariflar -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        💳 Tariflar<br>
+                                        <span class="toggle-icon">▼ To'lov</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">⭐ Standard</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">💎 Pro</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">👑 Premium</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🎁 Ball paketlar</div></li>
+                                        <li>
+                                            <div class="connector-mobile"></div>
+                                            <div class="node-card" onclick="toggleNode(this)">
+                                                Auto to'lov<br>
+                                                <span class="toggle-icon">▼ Checkout</span>
+                                            </div>
+                                            <ul>
+                                                <li><div class="connector-mobile"></div><div class="node-card">⚡ Auto 1 oy</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">⚡ Auto 1 yil</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">Provider button</div></li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <div class="connector-mobile"></div>
+                                            <div class="node-card" onclick="toggleNode(this)">
+                                                Qo'lda to'lash<br>
+                                                <span class="toggle-icon">▼ Manual</span>
+                                            </div>
+                                            <ul>
+                                                <li><div class="connector-mobile"></div><div class="node-card">🧾 Chek yuborish</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">Karta ma'lumotlari</div></li>
+                                                <li><div class="connector-mobile"></div><div class="node-card">Admin approve</div></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Aloqa -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card" onclick="toggleNode(this)">
+                                        ℹ️ Aloqa<br>
+                                        <span class="toggle-icon">▼ Contact</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">💬 Aloqa</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📢 Telegram</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📸 Instagram</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🌐 Sayt</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">📞 Dasturchi</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Web App -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card webapp">
+                                        📱 Web App<br>
+                                        <span class="toggle-icon">Mini App</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- GROUP GAMES -->
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card game" onclick="toggleNode(this)">
+                                🎮 Guruh O'yinlari<br>
+                                <span class="toggle-icon">▼ Multiplayer</span>
+                            </div>
+                            <ul>
+                                <!-- Mafia -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card game" onclick="toggleNode(this)">
+                                        🕵️ Mafia<br>
+                                        <span class="toggle-icon">▼ Roleplay</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Rollar taqsimlash</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Tun: Mafia ovoz</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Kun: Muzokara</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Bot avtomatik</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">G'olib aniqlash</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- So'z Topish -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card game" onclick="toggleNode(this)">
+                                        🔤 So'z Topish<br>
+                                        <span class="toggle-icon">▼ Antonim/Sinonim</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Bot so'z yuboradi</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Antonim/Sinonim</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Chatga yozish</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Inline button</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Birinchi = Ball</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Xatoni Top -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card game" onclick="toggleNode(this)">
+                                        ❌ Xatoni Top<br>
+                                        <span class="toggle-icon">▼ Grammar</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Noto'g'ri gap</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Masalan: "He go"</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Xato so'z yozish</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">To'g'rilash</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Tezkorlik bonus</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Tarjima Poygasi -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card game" onclick="toggleNode(this)">
+                                        🏃 Tarjima<br>
+                                        <span class="toggle-icon">▼ UZ ↔ EN</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Bot gap yuboradi</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Tarjima qilish</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">AI tekshiruvi</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Imlo kam bo'lsa OK</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Ball hisoblash</div></li>
+                                    </ul>
+                                </li>
+
+                                <!-- Mukofotlar -->
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card game" onclick="toggleNode(this)">
+                                        🏆 Mukofotlar<br>
+                                        <span class="toggle-icon">▼ Natijalar</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Top Player</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Bonus Ball</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Level Up</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Leaderboard</div></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- ADMIN PANEL -->
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card admin" onclick="toggleNode(this)">
+                                🛡 Admin Panel<br>
+                                <span class="toggle-icon">▼ Boshqaruv</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card admin">📊 Dashboard</div></li>
+                                
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card admin" onclick="toggleNode(this)">
+                                        💳 To'lovlar<br>
+                                        <span class="toggle-icon">▼ Pending</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">#ID Ko'rish</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">✅ Tasdiqlash</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">❌ Rad etish</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Cashback</div></li>
+                                    </ul>
+                                </li>
+
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card admin" onclick="toggleNode(this)">
+                                        👥 Userlar<br>
+                                        <span class="toggle-icon">▼ Qidiruv</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">ID/@username</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🚫 Ban/✅Unban</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🎁 Obuna berish</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">🆓 Free</div></li>
+                                    </ul>
+                                </li>
+
+                                <li><div class="connector-mobile"></div><div class="node-card admin">📊 Statistika + HTML</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card admin">📈 Funnel + HTML</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card admin">🏆 Reyting</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card admin">📄 User eksport</div></li>
+
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card admin" onclick="toggleNode(this)">
+                                        📢 Homiy kanallar<br>
+                                        <span class="toggle-icon">▼ Sponsor</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">➕ Qo'shish</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card">❌ O'chirish #id</div></li>
+                                    </ul>
+                                </li>
+
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card admin" onclick="toggleNode(this)">
+                                        📦 Rejalar<br>
+                                        <span class="toggle-icon">▼ Narxlar</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card">Narx o'zgartirish</div></li>
+                                    </ul>
+                                </li>
+
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card admin">
+                                        📣 Reklama<br>
+                                        <span class="toggle-icon">Broadcast</span>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="connector-mobile"></div>
+                                    <div class="node-card admin" onclick="toggleNode(this)">
+                                        Owner Only<br>
+                                        <span class="toggle-icon">▼ Sozlamalar</span>
+                                    </div>
+                                    <ul>
+                                        <li><div class="connector-mobile"></div><div class="node-card admin">⚙️ To'lov</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card admin">ℹ️ Aloqa</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card admin">🎁 Marketing</div></li>
+                                        <li><div class="connector-mobile"></div><div class="node-card admin">👮 Adminlar</div></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- GROUP ADMIN -->
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card admin" onclick="toggleNode(this)">
+                                👥 Group Admin<br>
+                                <span class="toggle-icon">▼ Guruh</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card">#check (on/off)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">#bot (on/off)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">#t (translate)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">#p (pronunciation)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">Kunlik so'z</div></li>
+                            </ul>
+                        </li>
+
+                        <!-- CALLBACKS -->
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card callback" onclick="toggleNode(this)">
+                                🔧 Callbacks<br>
+                                <span class="toggle-icon">▼ Hidden</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_check</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_translate</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_quiz</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_iq</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_daily</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_lesson</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_pron</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_stats</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_level (A1-C2)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_level_auto</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card callback">do_webapp</div></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- WEB APP SECTION -->
+            <ul style="margin-top: 60px;">
+                <li>
+                    <div class="node-card root webapp" onclick="toggleNode(this)">
+                        🌐 Web App<br>
+                        <span class="toggle-icon">▼ Mini App</span>
+                    </div>
+                    <ul>
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card webapp" onclick="toggleNode(this)">
+                                Sidebar<br>
+                                <span class="toggle-icon">▼ Navigation</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Dashboard</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Focus</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Tracker</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Progress</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Settings</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card webapp" onclick="toggleNode(this)">
+                                Dashboard<br>
+                                <span class="toggle-icon">▼ Asosiy</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Tracker (top)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Start focus</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Daily goals</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Activity feed</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card webapp" onclick="toggleNode(this)">
+                                Focus<br>
+                                <span class="toggle-icon">▼ Pomodoro</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Start/Pause/Reset</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Focus (min)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Break (min)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Long break (Pro)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Session → Points</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">pomodoro_done queue</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card webapp" onclick="toggleNode(this)">
+                                Tracker<br>
+                                <span class="toggle-icon">▼ Progress</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Learned words</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Solved quiz</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Lessons done</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Topics covered</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Study note</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Saqlash (Local)</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Botga sync</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card webapp" onclick="toggleNode(this)">
+                                Progress<br>
+                                <span class="toggle-icon">▼ Chart</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Canvas chart</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Export JSON (Pro)</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card webapp" onclick="toggleNode(this)">
+                                Settings<br>
+                                <span class="toggle-icon">▼ Sozlamalar</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Theme</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Language</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Daily goals</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Haptic feedback</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Save → settings_sync</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Reset local data</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card webapp" onclick="toggleNode(this)">
+                                Bot Sync<br>
+                                <span class="toggle-icon">▼ Integration</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">sendData()</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">pagehide/visibility</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">Bulk sync</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">web_app_data_handler</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">pomodoro_done → DB</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">tracker_sync → snapshot</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card webapp">settings_sync → DB</div></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- SYSTEM CONNECTIONS -->
+            <ul style="margin-top: 60px;">
+                <li>
+                    <div class="node-card root" onclick="toggleNode(this)">
+                        🔗 Tizimlararo<br>
+                        <span class="toggle-icon">▼ Integration</span>
+                    </div>
+                    <ul>
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card" onclick="toggleNode(this)">
+                                To'lov Oqimi<br>
+                                <span class="toggle-icon">▼ Payment</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card">User → Tariflar</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Manual/Auto</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Pending</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Admin tasdiq</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Subscription update</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card" onclick="toggleNode(this)">
+                                Web App Sync<br>
+                                <span class="toggle-icon">▼ Data Flow</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card">User → Web App</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Local data</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Botga sync</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ DB update</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Darajam ko'rinadi</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card" onclick="toggleNode(this)">
+                                Quiz Rewards<br>
+                                <span class="toggle-icon">▼ Ball</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card">User → Quiz</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Correct answers</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Points</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Bonus wallet</div></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <div class="connector-mobile"></div>
+                            <div class="node-card" onclick="toggleNode(this)">
+                                Marketing<br>
+                                <span class="toggle-icon">▼ Admin→User</span>
+                            </div>
+                            <ul>
+                                <li><div class="connector-mobile"></div><div class="node-card">Admin → Marketing</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Referral/Quiz ball</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ Promo pack/code</div></li>
+                                <li><div class="connector-mobile"></div><div class="node-card">→ User Bonuslar</div></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="instructions" id="instructions">
+    <span class="close-instructions" onclick="this.parentElement.style.display='none'">×</span>
+    <h3>📱 Boshqaruv</h3>
+    <ul>
+        <li>Sichqoncha: Tortib ko'chirish</li>
+        <li>Wheel: Zoom in/out</li>
+        <li>Telefon: 2 barmoq zoom</li>
+        <li>Telefon: 1 barmoq drag</li>
+    </ul>
+</div>
+
+<script>
+    // Zoom and Pan Variables
+    let scale = 1;
+    let panning = false;
+    let pointX = 0;
+    let pointY = 0;
+    let startX = 0;
+    let startY = 0;
+    const viewport = document.getElementById('viewport');
+    const wrapper = document.getElementById('tree-wrapper');
+    const zoomLevelDisplay = document.getElementById('zoomLevel');
+
+    // Set initial position
+    function setTransform() {
+        wrapper.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+        zoomLevelDisplay.textContent = Math.round(scale * 100) + '%';
+    }
+
+    // Zoom functions
+    function zoomIn() {
+        scale = Math.min(scale * 1.2, 5);
+        setTransform();
+    }
+
+    function zoomOut() {
+        scale = Math.max(scale / 1.2, 0.1);
+        setTransform();
+    }
+
+    function resetView() {
+        scale = 1;
+        pointX = 0;
+        pointY = 0;
+        setTransform();
+    }
+
+    function fitToScreen() {
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const viewportRect = viewport.getBoundingClientRect();
+        
+        const scaleX = viewportRect.width / wrapperRect.width;
+        const scaleY = viewportRect.height / wrapperRect.height;
+        scale = Math.min(scaleX, scaleY) * 0.9;
+        
+        pointX = (viewportRect.width - wrapperRect.width * scale) / 2;
+        pointY = (viewportRect.height - wrapperRect.height * scale) / 2;
+        
+        setTransform();
+    }
+
+    // Mouse events for panning
+    viewport.addEventListener('mousedown', function(e) {
+        if (e.target.closest('.node-card')) return; // Don't pan if clicking on a card
+        e.preventDefault();
+        startX = e.clientX - pointX;
+        startY = e.clientY - pointY;
+        panning = true;
+        viewport.classList.add('dragging');
+    });
+
+    window.addEventListener('mousemove', function(e) {
+        if (!panning) return;
+        e.preventDefault();
+        pointX = e.clientX - startX;
+        pointY = e.clientY - startY;
+        setTransform();
+    });
+
+    window.addEventListener('mouseup', function() {
+        panning = false;
+        viewport.classList.remove('dragging');
+    });
+
+    // Mouse wheel zoom
+    viewport.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const xs = (e.clientX - pointX) / scale;
+        const ys = (e.clientY - pointY) / scale;
+        const delta = -Math.sign(e.deltaY);
+        
+        const oldScale = scale;
+        scale = Math.max(0.1, Math.min(5, scale * (delta > 0 ? 1.1 : 0.9)));
+        
+        pointX = e.clientX - xs * scale;
+        pointY = e.clientY - ys * scale;
+        
+        setTransform();
+    }, { passive: false });
+
+    // Touch events for mobile
+    let initialDistance = 0;
+    let initialScale = 1;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    viewport.addEventListener('touchstart', function(e) {
+        if (e.target.closest('.node-card')) return;
+        
+        if (e.touches.length === 2) {
+            // Pinch zoom
+            initialDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            initialScale = scale;
+        } else if (e.touches.length === 1) {
+            // Pan
+            touchStartX = e.touches[0].clientX - pointX;
+            touchStartY = e.touches[0].clientY - pointY;
+            panning = true;
+        }
+    }, { passive: true });
+
+    viewport.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2) {
+            // Pinch zoom
+            e.preventDefault();
+            const distance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            scale = Math.max(0.1, Math.min(5, initialScale * (distance / initialDistance)));
+            setTransform();
+        } else if (e.touches.length === 1 && panning) {
+            // Pan
+            pointX = e.touches[0].clientX - touchStartX;
+            pointY = e.touches[0].clientY - touchStartY;
+            setTransform();
+        }
+    }, { passive: false });
+
+    viewport.addEventListener('touchend', function() {
+        panning = false;
+    });
+
+    // Tree toggle functions
+    function toggleNode(element) {
+        const parentLi = element.parentElement;
+        const ul = parentLi.querySelector('ul');
+        const icon = element.querySelector('.toggle-icon');
+
+        if (ul) {
+            if (ul.classList.contains('hidden')) {
+                ul.classList.remove('hidden');
+                if(icon) icon.textContent = '▼ ' + (icon.textContent.split('▼ ')[1] || 'Yopish');
+            } else {
+                ul.classList.add('hidden');
+                if(icon) icon.textContent = '▶ ' + (icon.textContent.split('▼ ')[1] || 'Ochish');
+            }
+        }
+    }
+
+    function expandAll() {
+        document.querySelectorAll('.tree ul').forEach(ul => ul.classList.remove('hidden'));
+        document.querySelectorAll('.toggle-icon').forEach(icon => {
+            let text = icon.textContent.split('▼ ')[1] || icon.textContent.split('▶ ')[1];
+            icon.textContent = '▼ ' + text;
+        });
+        fitToScreen();
+    }
+
+    function collapseAll() {
+        document.querySelectorAll('.tree ul ul').forEach(ul => ul.classList.add('hidden'));
+        document.querySelectorAll('.toggle-icon').forEach(icon => {
+            let text = icon.textContent.split('▼ ')[1] || icon.textContent.split('▶ ')[1];
+            icon.textContent = '▶ ' + text;
+        });
+        resetView();
+    }
+
+    function expandGames() {
+        collapseAll();
+        document.querySelectorAll('.node-card.game').forEach(card => {
+            let ul = card.parentElement.querySelector('ul');
+            if (ul) {
+                ul.classList.remove('hidden');
+                let icon = card.querySelector('.toggle-icon');
+                if(icon) {
+                    let text = icon.textContent.split('▼ ')[1] || icon.textContent.split('▶ ')[1];
+                    icon.textContent = '▼ ' + text;
+                }
+            }
+            let parentUl = card.closest('ul');
+            while (parentUl) {
+                parentUl.classList.remove('hidden');
+                parentUl = parentUl.parentElement.closest('ul');
+            }
+        });
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        const term = e.target.value.toLowerCase();
+        const nodes = document.querySelectorAll('.node-card');
+        nodes.forEach(node => node.classList.remove('highlight'));
+
+        if (term === '') return;
+
+        nodes.forEach(node => {
+            if (node.textContent.toLowerCase().includes(term)) {
+                node.classList.add('highlight');
+                let parentUl = node.closest('ul');
+                while (parentUl) {
+                    parentUl.classList.remove('hidden');
+                    const parentLi = parentUl.parentElement;
+                    if(parentLi) {
+                        const parentCard = parentLi.querySelector(':scope > .node-card');
+                        if(parentCard) {
+                            const icon = parentCard.querySelector('.toggle-icon');
+                            if(icon) {
+                                let text = icon.textContent.split('▼ ')[1] || icon.textContent.split('▶ ')[1];
+                                icon.textContent = '▼ ' + text;
+                            }
+                        }
+                    }
+                    parentUl = parentUl.parentElement.closest('ul');
+                }
+            }
+        });
+    });
+
+    // Initialize
+    window.onload = function() {
+        collapseAll();
+        setTimeout(fitToScreen, 100);
+    };
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (scale > 1) fitToScreen();
+    });
+</script>
+
+</body>
+</html>

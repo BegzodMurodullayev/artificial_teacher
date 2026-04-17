@@ -5,12 +5,15 @@ import os
 import re
 import html as pyhtml
 import tempfile
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlencode
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes
 from html_maker import render_html_document, html_open_guide
+from handlers.games import games_center_text
+from utils.menu_data import ADMIN_MENU_ALIASES, ADMIN_MENU_ROWS, OWNER_ADMIN_EXTRA_ROWS, USER_BASE_MENU_ROWS
 from database.db import (
     get_user,
     set_role,
@@ -164,34 +167,7 @@ def is_admin(user):
 
 def normalize_admin_text(text: str) -> str:
     cleaned = re.sub(r"^[^A-Za-z0-9'`]+", "", (text or "").strip()).lower()
-    aliases = {
-        "admin": "admin panel",
-        "boshqaruv": "admin panel",
-        "orqaga": "admin panel",
-        "payments": "to'lovlar",
-        "users": "userlar",
-        "foydalanuvchilar": "userlar",
-        "analytics": "analitika",
-        "analitika": "analitika",
-        "stats": "statistika",
-        "global statistika": "statistika",
-        "export": "export",
-        "user eksport": "export users",
-        "foydalanuvchilar eksporti": "export users",
-        "foydalanuvchi eksporti": "export users",
-        "html hisobot": "html hisobotlar",
-        "html hisobotlar": "html hisobotlar",
-        "sotuv funnel": "funnel",
-        "konversiya": "funnel",
-        "plans": "rejalar",
-        "sponsors": "homiy kanallar",
-        "ads": "reklama",
-        "owner": "adminlar",
-        "contact": "aloqa sozlamalari",
-        "aloqa sozlamalari": "aloqa sozlamalari",
-        "back": "admin panel",
-    }
-    return aliases.get(cleaned, cleaned)
+    return ADMIN_MENU_ALIASES.get(cleaned, cleaned)
 
 def is_owner_only_callback(data: str) -> bool:
     owner_only_exact = {
@@ -213,15 +189,9 @@ def is_owner_only_callback(data: str) -> bool:
     return data in owner_only_exact or any(data.startswith(prefix) for prefix in owner_only_prefixes)
 
 def admin_reply_kb(user_id: int):
-    rows = [
-        ["📊 Dashboard", "💳 To'lovlar", "👥 Userlar"],
-        ["📊 Statistika", "📈 Funnel", "📄 HTML hisobotlar"],
-        ["🏆 Reyting", "📄 User eksport", "📢 Homiy kanallar"],
-        ["📦 Rejalar", "📣 Reklama"],
-    ]
+    rows = [list(row) for row in ADMIN_MENU_ROWS]
     if is_owner(user_id):
-        rows.append(["⚙️ To'lov sozlamalari", "ℹ️ Aloqa sozlamalari"])
-        rows.append(["🎁 Marketing", "👮 Adminlar"])
+        rows.extend([list(row) for row in OWNER_ADMIN_EXTRA_ROWS])
     rows.append(["👤 User panel"])
     return ReplyKeyboardMarkup(rows, resize_keyboard=True, input_field_placeholder="Admin bo'limini tanlang...")
 
@@ -252,12 +222,7 @@ def _build_web_app_url(user_id: int) -> str | None:
 
 
 def user_reply_kb(user_id: int):
-    rows = [
-        ["\u2705 Tekshiruv", "\U0001F501 Tarjima", "\U0001F50A Talaffuz"],
-        ["\U0001F3AF Quiz", "\U0001F9E0 IQ test", "\U0001F4DA Dars"],
-        ["\U0001F4D6 Grammatika", "\U0001F4C5 Kunlik so'z", "\U0001F4C8 Darajam / Reyting"],
-        ["\U0001F381 Bonuslar", "\U0001F4B3 Tariflar", "\u2139\ufe0f Aloqa"],
-    ]
+    rows = [list(row) for row in USER_BASE_MENU_ROWS]
     web_url = _build_web_app_url(user_id)
     if web_url:
         rows.append([KeyboardButton("\U0001F4F1 Web App", web_app=WebAppInfo(url=web_url))])
@@ -266,6 +231,60 @@ def user_reply_kb(user_id: int):
     if is_admin(get_user(user_id)):
         rows.append(["\U0001F6E1 Admin panel"])
     return ReplyKeyboardMarkup(rows, resize_keyboard=True, input_field_placeholder="Bo'limni tanlang...")
+
+
+def _extract_chat_ref(raw: str) -> str:
+    value = str(raw or "").strip()
+    if not value:
+        return ""
+    if value.startswith("@") or value.lstrip("-").isdigit():
+        return value
+    if "t.me/" in value:
+        slug = value.split("t.me/", 1)[1].strip().strip("/")
+        if slug and not slug.startswith("+"):
+            return f"@{slug}"
+    return value
+
+
+async def resolve_sponsor_channel(context, raw_chat_ref: str, title: str = "", join_url: str = "") -> dict:
+    chat_ref = _extract_chat_ref(raw_chat_ref)
+    if not chat_ref:
+        return {"ok": False, "reason": "empty"}
+    try:
+        chat = await context.bot.get_chat(chat_ref)
+    except Exception:
+        return {"ok": False, "reason": "chat_not_found"}
+    try:
+        bot_member = await context.bot.get_chat_member(chat.id, context.bot.id)
+        bot_is_admin = bot_member.status in ("administrator", "creator")
+    except Exception:
+        bot_is_admin = False
+    if not bot_is_admin:
+        return {"ok": False, "reason": "bot_not_admin", "chat_title": getattr(chat, "title", "")}
+
+    username = getattr(chat, "username", "") or ""
+    resolved_join_url = str(join_url or "").strip()
+    if not resolved_join_url and username:
+        resolved_join_url = f"https://t.me/{username}"
+    resolved_title = str(title or "").strip() or getattr(chat, "title", "") or username or chat_ref
+    if not resolved_join_url:
+        return {
+            "ok": False,
+            "reason": "join_url_required",
+            "chat_ref": str(chat.id),
+            "chat_id_text": str(chat.id),
+            "chat_title": resolved_title,
+        }
+    return {
+        "ok": True,
+        "chat_ref": str(chat.id),
+        "chat_id_text": str(chat.id),
+        "title": resolved_title,
+        "join_url": resolved_join_url,
+        "bot_is_admin": 1,
+        "member_check_ok": 1,
+        "last_checked_at": datetime.utcnow().isoformat(timespec="seconds"),
+    }
 
 
 def build_admin_summary_text():
@@ -654,13 +673,17 @@ def _sponsors_text():
         lines.append("Hozircha kanal qo'shilmagan.")
     else:
         for row in sponsors:
+            admin_flag = "ha" if int(row.get("bot_is_admin", 0) or 0) else "yo'q"
+            check_flag = "ha" if int(row.get("member_check_ok", 0) or 0) else "yo'q"
             lines.append(
                 f"`{row['id']}` | *{escape_md(row['title'] or row['chat_ref'])}*\n"
-                f"{escape_md(row['chat_ref'])}\n"
-                f"{escape_md(row['join_url'])}\n"
+                f"chat: `{escape_md(row.get('chat_ref') or '')}`\n"
+                f"join: {escape_md(row.get('join_url') or '-')}\n"
+                f"bot admin: *{admin_flag}* | member check: *{check_flag}*\n"
             )
     lines.append("Qo'shish formati:")
     lines.append("`@username | Kanal nomi | https://t.me/username`")
+    lines.append("Bot shu kanalda admin bo'lishi shart.")
     return "\n".join(lines), sponsors
 
 
@@ -999,7 +1022,11 @@ async def admin_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["adding_sponsor"] = True
         await safe_edit(
             query,
-            "\u2795 *Yangi homiy kanal*\n\nLink yoki @username yuboring.\n\nMisol:\n`https://t.me/kanal`\n`@kanal`\n\nXohlasangiz keyin `| Tugma nomi` ham qo'shishingiz mumkin.",
+            "\u2795 *Yangi homiy kanal*\n\n"
+            "Bot shu kanalga admin qilib qo'yilgan bo'lishi shart.\n"
+            "Yuborish formati:\n"
+            "`@username | Kanal nomi | https://t.me/username`\n\n"
+            "Agar kanal private bo'lsa, join linkni albatta kiriting.",
             reply_markup=_input_back_markup("adm_sponsors"),
             parse_mode="Markdown",
         )
@@ -1360,37 +1387,36 @@ async def admin_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         if not parts:
             await update.message.reply_text("Kanal linki yoki @username yuboring.", reply_markup=_input_back_markup("adm_sponsors"))
             return True
-        if len(parts) == 1:
-            raw = parts[0]
-            join_url = raw if raw.startswith("http") else f"https://t.me/{raw.lstrip('@')}"
-            if raw.startswith("@"):
-                chat_ref = raw
-                title = raw.lstrip("@")
-            elif "t.me/" in raw:
-                slug = raw.split("t.me/", 1)[1].strip("/")
-                if slug.startswith("+"):
-                    chat_ref = raw
-                    title = "Homiy kanal"
-                else:
-                    chat_ref = f"@{slug}"
-                    title = slug
-            else:
-                await update.message.reply_text("Kanal linki yoki @username yuboring.", reply_markup=_input_back_markup("adm_sponsors"))
-                return True
-        elif len(parts) == 2:
-            raw, title = parts
-            join_url = raw if raw.startswith("http") else f"https://t.me/{raw.lstrip('@')}"
-            if raw.startswith("@"):
-                chat_ref = raw
-            elif "t.me/" in raw:
-                slug = raw.split("t.me/", 1)[1].strip("/")
-                chat_ref = raw if slug.startswith("+") else f"@{slug}"
-            else:
-                chat_ref = raw
-        else:
-            chat_ref, title, join_url = parts[:3]
-        add_sponsor_channel(chat_ref, title, join_url)
-        await update.message.reply_text("\u2705 Homiy kanal qo'shildi.")
+        raw_chat_ref = parts[0]
+        title = parts[1] if len(parts) >= 2 else ""
+        join_url = parts[2] if len(parts) >= 3 else ""
+        resolved = await resolve_sponsor_channel(context, raw_chat_ref, title=title, join_url=join_url)
+        if not resolved.get("ok"):
+            reason = resolved.get("reason")
+            fail_text = {
+                "empty": "Kanal username yoki linki bo'sh.",
+                "chat_not_found": "Kanal topilmadi. Bot admin qilingan kanalning `@username` yoki public linkini yuboring.",
+                "bot_not_admin": "Bot bu kanalda admin emas. Avval botni admin qiling, keyin qayta urinib ko'ring.",
+                "join_url_required": "Private kanal uchun join link ham kerak. Format: `@username | Nom | https://t.me/+...`",
+            }.get(reason, "Kanalni tekshirib bo'lmadi.")
+            await update.message.reply_text(fail_text, reply_markup=_input_back_markup("adm_sponsors"), parse_mode="Markdown")
+            return True
+        add_sponsor_channel(
+            resolved["chat_ref"],
+            resolved["title"],
+            resolved["join_url"],
+            chat_id_text=resolved.get("chat_id_text", ""),
+            bot_is_admin=resolved.get("bot_is_admin", 0),
+            member_check_ok=resolved.get("member_check_ok", 0),
+            last_checked_at=resolved.get("last_checked_at", ""),
+        )
+        await update.message.reply_text(
+            f"\u2705 Homiy kanal qo'shildi.\n\n"
+            f"Nom: *{escape_md(resolved['title'])}*\n"
+            f"Chat ID: `{escape_md(resolved['chat_ref'])}`\n"
+            f"Join link: {escape_md(resolved['join_url'])}",
+            parse_mode="Markdown",
+        )
         return True
 
     if context.user_data.get("adding_promo_pack") and is_owner(user.id):
@@ -1473,7 +1499,7 @@ async def admin_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         menu_actions = {
             "user panel", "admin panel", "dashboard", "to'lovlar", "userlar", "to'lov sozlamalari", "aloqa sozlamalari",
             "statistika", "funnel", "analitika", "export", "export users", "html hisobotlar", "reklama", "homiy kanallar",
-            "rejalar", "adminlar", "marketing", "reyting",
+            "rejalar", "adminlar", "marketing", "reyting", "o'yinlar",
         }
         if menu_text in menu_actions:
             context.user_data.pop("broadcasting", None)
@@ -1507,6 +1533,14 @@ async def admin_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await update.message.reply_text(
             "?? User dashboardga qaytdingiz.",
             reply_markup=user_reply_kb(user.id),
+        )
+        return True
+
+    if menu_text == "o'yinlar":
+        await update.message.reply_text(
+            games_center_text(group_mode=False),
+            reply_markup=_input_back_markup("adm_back"),
+            parse_mode="Markdown",
         )
         return True
 
