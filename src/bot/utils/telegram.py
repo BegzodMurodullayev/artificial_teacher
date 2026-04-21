@@ -102,8 +102,15 @@ async def safe_answer_callback(callback: CallbackQuery, text: str = "", show_ale
 
 
 def escape_html(text: str) -> str:
-    """Escape text for HTML parse mode."""
-    return html.escape(str(text))
+    """Escape text for HTML parse mode, but preserve basic formatting and convert **bold**."""
+    escaped = html.escape(str(text))
+    # Convert markdown **bold** to HTML <b>bold</b>
+    escaped = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', escaped)
+    # Unescape allowed tags that AI might have generated directly
+    allowed_tags = ['b', 'i', 's', 'u', 'code', 'pre']
+    for tag in allowed_tags:
+        escaped = escaped.replace(f"&lt;{tag}&gt;", f"<{tag}>").replace(f"&lt;/{tag}&gt;", f"</{tag}>")
+    return escaped
 
 
 def escape_md(text: str) -> str:

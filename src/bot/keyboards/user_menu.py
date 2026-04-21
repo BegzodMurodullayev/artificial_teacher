@@ -44,16 +44,15 @@ def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboard
         input_field_placeholder="Ingliz tilida yozing yoki menyu tanlang...",
     )
 
-
 def admin_main_menu() -> ReplyKeyboardMarkup:
-    """Build admin reply keyboard."""
+    """Build the admin dashboard reply keyboard."""
     rows = [
-        [KeyboardButton(text="📊 Dashboard"), KeyboardButton(text="💳 Payments")],
-        [KeyboardButton(text="👥 Users"), KeyboardButton(text="📢 Broadcast")],
-        [KeyboardButton(text="📈 Analytics"), KeyboardButton(text="⚙️ Settings")],
-        [KeyboardButton(text="🔙 User Mode")],
+        [KeyboardButton(text="💳 To'lovlar"), KeyboardButton(text="👥 Foydalanuvchilar")],
+        [KeyboardButton(text="📢 Broadcast"), KeyboardButton(text="📈 Statistika")],
+        [KeyboardButton(text="⚙️ Rejalar"), KeyboardButton(text="🏆 Reyting")],
+        [KeyboardButton(text="🔙 Asosiy Menyu")],
     ]
-    return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+    return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True, input_field_placeholder="Admin menyusidan tanlang...")
 
 
 # ══════════════════════════════════════════════════════════

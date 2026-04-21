@@ -57,10 +57,52 @@ async def cmd_admin(message: Message, db_user: dict | None = None):
         ],
     ]
 
+    from src.bot.keyboards.user_menu import admin_main_menu
+    await safe_reply(message, text, reply_markup=admin_main_menu())
+    await safe_reply(message, "Tezkor amallar:", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+@router.message(F.text == "💳 To'lovlar")
+async def _btn_adm_payments(message: Message, db_user: dict | None = None):
+    # Simulate inline callback behavior or just call logic
+    payments = await payment_dao.get_pending_payments()
+    if not payments:
+        await safe_reply(message, "✅ <b>Kutilayotgan to'lovlar yo'q.</b>")
+        return
+    text = f"💳 <b>Kutilayotgan to'lovlar ({len(payments)})</b>\n\n"
+    buttons = []
+    for p in payments[:10]:
+        user = await user_dao.get_user(p["user_id"])
+        name = escape_html((user or {}).get("first_name", "?"))
+        text += f"#{p['id']} | {name} (ID: {p['user_id']})\n  📋 {p['plan_name'].title()} | {fmt_price(p['amount'])} | {p['duration_days']} kun\n\n"
+        buttons.append([
+            InlineKeyboardButton(text=f"✅ #{p['id']}", callback_data=f"admin_approve:{p['id']}"),
+            InlineKeyboardButton(text=f"❌ #{p['id']}", callback_data=f"admin_reject:{p['id']}"),
+        ])
     await safe_reply(message, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
 
+@router.message(F.text == "👥 Foydalanuvchilar")
+async def _btn_adm_users(message: Message, db_user: dict | None = None):
+    await safe_reply(message, "👥 <b>Foydalanuvchi qidirish</b>\n\nUser ID yoki @username yuboring.\nFormatlar:\n• <code>123456789</code>\n• <code>@username</code>")
 
-# ── Payment Management ──
+@router.message(F.text == "📢 Broadcast")
+async def _btn_adm_broadcast(message: Message, db_user: dict | None = None):
+    await safe_reply(message, "📢 <b>Broadcast</b>\n\nBarcha foydalanuvchilarga xabar yuborish uchun:\n\n<code>/broadcast Xabar matni</code>")
+
+@router.message(F.text == "📈 Statistika")
+async def _btn_adm_stats(message: Message, db_user: dict | None = None):
+    total_users = await user_dao.count_users()
+    paid = await subscription_dao.count_paid_users()
+    revenue = await payment_dao.get_total_revenue()
+    admins = await user_dao.count_users_by_role("admin")
+    text = f"📈 <b>Global Statistika</b>\n\n👥 Jami userlar: <b>{fmt_num(total_users)}</b>\n💎 Pulli obunalar: <b>{fmt_num(paid)}</b>\n💰 Jami tushum: <b>{fmt_price(revenue)}</b>\n🛡 Adminlar: <b>{admins}</b>\n"
+    await safe_reply(message, text)
+
+@router.message(F.text == "🔙 Asosiy Menyu")
+async def _btn_adm_back(message: Message, db_user: dict | None = None):
+    from src.bot.keyboards.user_menu import user_main_menu
+    plan_name = await subscription_dao.get_active_plan_name(db_user["user_id"]) if db_user else "free"
+    role = db_user.get("role", "user") if db_user else "user"
+    await safe_reply(message, "🔙 Asosiy menyuga qaytildi.", reply_markup=user_main_menu(plan_name, role))
 
 @router.callback_query(F.data == "adm:payments")
 async def callback_admin_payments(callback: CallbackQuery, db_user: dict | None = None):
