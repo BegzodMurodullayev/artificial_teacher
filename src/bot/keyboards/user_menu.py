@@ -58,9 +58,11 @@ def test_menu() -> ReplyKeyboardMarkup:
 
 def games_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="🕹️ Katta O'yinlar (WebApp)")],
+        [KeyboardButton(text="❌ X-O (Tic-Tac)"), KeyboardButton(text="🃏 Xotira")],
         [KeyboardButton(text="🔢 Raqam Topish"), KeyboardButton(text="⚡ Tez Hisob")],
         [KeyboardButton(text="🔤 So'z Topish"), KeyboardButton(text="🏃 Tarjima Poygasi")],
-        [KeyboardButton(text="🕵️ Mafiya"), KeyboardButton(text="🕹️ WebApp O'yinlar")],
+        [KeyboardButton(text="🧩 Sudoku"), KeyboardButton(text="🕵️ Mafiya")],
         [KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
@@ -107,12 +109,15 @@ USER_MENU_ALIASES = {
     "library":       ["📚 Kutubxona"],
     "evrika":        ["💡 Evrika"],
     "zakovat":       ["🧠 Zakovat"],
+    "game_xo":       ["❌ X-O (Tic-Tac)"],
+    "game_memory":   ["🃏 Xotira"],
+    "game_sudoku":   ["🧩 Sudoku"],
     "game_number":   ["🔢 Raqam Topish"],
     "game_math":     ["⚡ Tez Hisob"],
     "game_mafia":    ["🕵️ Mafiya", "🎮 Mafiya"],
     "game_word":     ["🔤 So'z Topish"],
     "game_translate": ["🏃 Tarjima Poygasi"],
-    "game_webapp":   ["🕹️ WebApp O'yinlar"],
+    "game_webapp":   ["🕹️ Katta O'yinlar (WebApp)", "🕹️ WebApp O'yinlar"],
     # ── Navigation ────
     "main_menu":     ["🔙 Asosiy Menyu"],
     "edu_menu":      ["🎓 Ta'lim"],

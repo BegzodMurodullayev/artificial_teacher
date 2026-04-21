@@ -93,7 +93,8 @@ def _is_admin(db_user: dict, user_id: int) -> bool:
     "🧠 Zakovat", "🔢 Raqam Topish",
     "⚡ Tez Hisob", "🕵️ Mafiya", "🎮 Mafiya",
     "🔤 So'z Topish", "🏃 Tarjima Poygasi",
-    "🕹️ WebApp O'yinlar",
+    "🕹️ WebApp O'yinlar", "🕹️ Katta O'yinlar (WebApp)",
+    "❌ X-O (Tic-Tac)", "🃏 Xotira", "🧩 Sudoku",
     # ── Admin Panel buttons (safety fallback) ────
     "💳 To'lovlar", "👥 Foydalanuvchilar",
     "📢 Broadcast", "📈 Statistika",
@@ -225,6 +226,31 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
     elif action == "game_mafia":
         await safe_reply(message, "🕵️ <b>Mafiya O'yini</b>\n\nBotni guruhga qo'shing va <code>/mafia</code> deb yozing!")
 
+    elif action == "game_xo":
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+        from src.config import settings
+        if settings.WEB_APP_URL:
+            kb = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="🕹️ X-O o'ynash", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/games/xo"))
+            ]])
+            await safe_reply(message, "❌ <b>X-O (Krestiki-Noliki)</b>\n\nAI yoki do'stingizga qarshi WebApp'da o'ynang!", reply_markup=kb)
+        else:
+            await safe_reply(message, "🎮 WebApp ulanmagan.")
+
+    elif action == "game_memory":
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+        from src.config import settings
+        if settings.WEB_APP_URL:
+            kb = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="🕹️ Xotira o'yini", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/games/memory"))
+            ]])
+            await safe_reply(message, "🃏 <b>Xotira O'yini</b>\n\nJuftliklarni toping va xotirangizni sinang!", reply_markup=kb)
+        else:
+            await safe_reply(message, "🎮 WebApp ulanmagan.")
+
+    elif action == "game_sudoku":
+        await safe_reply(message, "🧩 <b>Sudoku</b>\n\nTez kunda WebApp'ga qo'shiladi!")
+
     elif action == "game_number":
         await safe_reply(message, "🔢 <b>Raqam Topish</b>\n\nBoshlamoqmi? <code>/raqamtop</code> deb yozing!")
 
@@ -242,8 +268,8 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
         from src.config import settings
         if settings.WEB_APP_URL:
             kb = InlineKeyboardMarkup(inline_keyboard=[[
-                InlineKeyboardButton(text="🕹️ WebApp orqali o'ynash", web_app=WebAppInfo(url=settings.WEB_APP_URL))
+                InlineKeyboardButton(text="🕹️ WebApp orqali o'ynash", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/games"))
             ]])
-            await safe_reply(message, "🎮 <b>Katta O'yinlar (WebApp)</b>\n\nX-O, Xotira, Sudoku va boshqa o'yinlar!", reply_markup=kb)
+            await safe_reply(message, "🎮 <b>Katta O'yinlar (WebApp)</b>\n\nX-O, Xotira, Sudoku va boshqa o'yinlar markazi!", reply_markup=kb)
         else:
             await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")

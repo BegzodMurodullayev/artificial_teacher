@@ -88,11 +88,13 @@ class TelegramAuthMiddleware(BaseHTTPMiddleware):
             init_data = request.query_params.get("initData", "")
 
         if not init_data:
-            raise HTTPException(status_code=401, detail="Missing Telegram initData")
+            from fastapi.responses import JSONResponse
+            return JSONResponse(status_code=401, content={"detail": "Missing Telegram initData"})
 
         user = validate_init_data(init_data, settings.BOT_TOKEN)
         if not user:
-            raise HTTPException(status_code=403, detail="Invalid Telegram initData")
+            from fastapi.responses import JSONResponse
+            return JSONResponse(status_code=403, content={"detail": "Invalid Telegram initData"})
 
         # Inject user into request state
         request.state.tg_user = user
