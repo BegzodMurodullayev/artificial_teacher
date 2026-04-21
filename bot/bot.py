@@ -54,6 +54,7 @@ from handlers.games import (
     game_settings_command,
     game_stats_command,
     handle_group_game_message,
+    handle_mafia_callback,
     join_game_command,
     leave_game_command,
     mafia_check_command,
@@ -545,10 +546,12 @@ def build_web_app_markup(user_id: int, include_back: bool = True):
 def quick_menu_kb(role: str = "user", user_id: Optional[int] = None):
     rows = [list(row) for row in USER_BASE_MENU_ROWS]
     web_url = build_web_app_url(user_id)
-    if web_url:
-        rows.append([KeyboardButton("\U0001F4F1 Web App", web_app=WebAppInfo(url=web_url))])
-    else:
-        rows.append(["\U0001F4F1 Web App"])
+    for i, row in enumerate(rows):
+        for j, btn in enumerate(row):
+            if btn == "\U0001F4F1 Web App" or btn == "📱 Web App":
+                if web_url:
+                    rows[i][j] = KeyboardButton("\U0001F4F1 Web App", web_app=WebAppInfo(url=web_url))
+                break
     if role in ("admin", "owner"):
         rows.append(["\U0001F6E1 Admin panel"])
     return ReplyKeyboardMarkup(
@@ -561,28 +564,40 @@ def quick_menu_kb(role: str = "user", user_id: Optional[int] = None):
 def build_main_menu_markup(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
     rows = [
         [
-            InlineKeyboardButton("📚 O'rganish", callback_data="menu_section_learn"),
-            InlineKeyboardButton("🧪 Mashq", callback_data="menu_section_practice"),
+            InlineKeyboardButton("✅ Tekshiruv", callback_data="do_check"),
+            InlineKeyboardButton("🔁 Tarjima", callback_data="do_translate"),
         ],
         [
-            InlineKeyboardButton("📈 Progress", callback_data="menu_section_progress"),
+            InlineKeyboardButton("🔊 Talaffuz", callback_data="do_pron"),
+            InlineKeyboardButton("🎯 Quiz", callback_data="do_quiz"),
+        ],
+        [
+            InlineKeyboardButton("🧠 IQ Test", callback_data="do_iq"),
+            InlineKeyboardButton("📚 Dars", callback_data="do_lesson"),
+        ],
+        [
+            InlineKeyboardButton("📖 Grammatika", callback_data="do_rules"),
+            InlineKeyboardButton("📅 Kunlik so'z", callback_data="do_daily"),
+        ],
+        [
+            InlineKeyboardButton("📈 Darajam", callback_data="menu_progress_panel"),
+            InlineKeyboardButton("🎁 Bonuslar", callback_data="menu_bonus_center"),
+        ],
+        [
             InlineKeyboardButton("💳 Tariflar", callback_data="menu_subscribe"),
+            InlineKeyboardButton("ℹ️ Aloqa", callback_data="do_about"),
         ],
         [
             InlineKeyboardButton("🎮 O'yinlar", callback_data="menu_section_games"),
-            InlineKeyboardButton("ℹ️ Aloqa", callback_data="do_about"),
         ],
     ]
-    web_markup_row = None
     if user_id is not None:
         web_url = build_web_app_url(user_id)
         if web_url:
-            web_markup_row = [InlineKeyboardButton("📱 Web App", web_app=WebAppInfo(url=web_url))]
+            rows.insert(6, [InlineKeyboardButton("📱 Web App", web_app=WebAppInfo(url=web_url))])
         user_row = get_user(user_id) or {}
         if user_row.get("role") in ("admin", "owner"):
             rows.append([InlineKeyboardButton("🛡 Admin panel", callback_data="menu_admin_hint")])
-    if web_markup_row:
-        rows.append(web_markup_row)
     return InlineKeyboardMarkup(rows)
 
 
@@ -748,9 +763,9 @@ def build_games_info_text(kind: str) -> str:
 
 def build_main_menu_hint(user_id: Optional[int] = None) -> str:
     return (
-        "\U0001F3E0 *Asosiy bo'limlar markazi*\n\n"
-        "Userlar ko'p tugmadan cho'chimasligi uchun tizim 6 ta katta bo'limga ajratildi.\n"
-        "Pastdagi keyboarddan katta bo'limni tanlang yoki shu xabardagi submenu orqali ichkariga kiring."
+        "\U0001F3E0 *Asosiy bo'limlar*\n\n"
+        "Har bir funksiyani to'g'ridan-to'g'ri tanlang yoki pastdagi klaviaturadan foydalaning.\n"
+        "O'yinlar guruhda ishlaydi — \U0001F3AE O'yinlar bo'limida qoidalarni ko'ring."
     )
 
 
@@ -1519,7 +1534,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Salom, *{name_safe}*!\n\n"
         f"*{BOT_NAME}* - ingliz tilini o'zbekcha o'rgatadigan AI yordamchi.\n\n"
         f"Sizning rejangiz: *{plan_display_name(plan, with_icon=True)}*\n\n"
-        "Asosiy bo'limlar pastdagi klaviaturada. Ichki yo'nalishlar esa shu xabardagi submenu orqali ochiladi."
+        "✅ Tekshiruv, 🔁 Tarjima, 🔊 Talaffuz, 🎯 Quiz, 🧠 IQ Test, 📚 Dars, 📖 Grammatika, 📅 Kunlik so'z — barcha funksiyalar bir zumda!\n\n"
+        "Menyu orqali kerakli bo'limni tanlang."
     )
     cleanup_msg = await safe_reply(update.message, "\u2063", reply_markup=ReplyKeyboardRemove())
     await safe_delete(cleanup_msg)
@@ -2117,7 +2133,7 @@ async def private_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reset_user_session_state(context, keep_pron_accent=True)
         await safe_reply(message, build_practice_menu_text(), reply_markup=build_practice_menu_markup(), parse_mode="Markdown")
         return
-    if menu_text == "progress":
+    if menu_text in ("progress", "darajam"):
         reset_user_session_state(context, keep_pron_accent=True)
         await safe_reply(message, build_progress_menu_text(), reply_markup=build_progress_menu_markup(user.id), parse_mode="Markdown")
         return
@@ -3131,6 +3147,9 @@ async def main():
     # Admin callbacklar
     app.add_handler(CallbackQueryHandler(admin_callback,       pattern=r"^(adm_|pay_|paycfg_|plan_|grant_)"))
     app.add_handler(CallbackQueryHandler(group_admin_callback, pattern=r"^gadm_"))
+
+    # Mafia o'yini callbacklar (inline tugmalar)
+    app.add_handler(CallbackQueryHandler(handle_mafia_callback, pattern=r"^(mafia_|mk_|md_|mc_|mv_|vote_)"))
 
     # Asosiy menu callbacklar (hammasi)
     app.add_handler(CallbackQueryHandler(main_callback))

@@ -1,0 +1,286 @@
+"""
+Admin dashboard handler — /admin, stats, payment management, broadcast, user management.
+"""
+
+import logging
+
+from aiogram import Router, F
+from aiogram.filters import Command
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+
+from src.bot.filters.role import RoleFilter
+from src.bot.utils.telegram import safe_reply, safe_edit, safe_answer_callback, escape_html, fmt_num, fmt_price
+from src.database.dao import user_dao, payment_dao, subscription_dao, stats_dao
+
+logger = logging.getLogger(__name__)
+router = Router(name="admin")
+
+# Apply role filter to all handlers in this router
+router.message.filter(RoleFilter("admin", "owner"))
+router.callback_query.filter(RoleFilter("admin", "owner"))
+
+
+@router.message(Command("admin"))
+async def cmd_admin(message: Message, db_user: dict | None = None):
+    """Show admin dashboard."""
+    total_users = await user_dao.count_users()
+    paid_users = await subscription_dao.count_paid_users()
+    pending = await payment_dao.count_pending_payments()
+    revenue = await payment_dao.get_total_revenue()
+
+    conversion = f"{(paid_users / total_users * 100):.1f}%" if total_users > 0 else "0%"
+
+    text = (
+        "🛡 <b>Admin Dashboard</b>\n\n"
+        f"👥 Jami foydalanuvchilar: <b>{fmt_num(total_users)}</b>\n"
+        f"💎 Pulli obunalar: <b>{fmt_num(paid_users)}</b>\n"
+        f"📊 Konversiya: <b>{conversion}</b>\n"
+        f"💰 Umumiy tushum: <b>{fmt_price(revenue)}</b>\n"
+        f"⏳ Kutilayotgan to'lovlar: <b>{pending}</b>\n"
+    )
+
+    buttons = [
+        [
+            InlineKeyboardButton(text=f"💳 To'lovlar ({pending})", callback_data="adm:payments"),
+            InlineKeyboardButton(text="👥 Userlar", callback_data="adm:users"),
+        ],
+        [
+            InlineKeyboardButton(text="📢 Broadcast", callback_data="adm:broadcast"),
+            InlineKeyboardButton(text="📈 Statistika", callback_data="adm:stats"),
+        ],
+        [
+            InlineKeyboardButton(text="⚙️ Rejalar", callback_data="adm:plans"),
+            InlineKeyboardButton(text="📢 Homiylar", callback_data="adm:sponsors"),
+        ],
+        [
+            InlineKeyboardButton(text="🏆 Reyting", callback_data="adm:leaderboard"),
+        ],
+    ]
+
+    await safe_reply(message, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+
+# ── Payment Management ──
+
+@router.callback_query(F.data == "adm:payments")
+async def callback_admin_payments(callback: CallbackQuery, db_user: dict | None = None):
+    """Show pending payments."""
+    payments = await payment_dao.get_pending_payments()
+
+    if not payments:
+        await safe_edit(callback, "✅ <b>Kutilayotgan to'lovlar yo'q.</b>")
+        await safe_answer_callback(callback)
+        return
+
+    text = f"💳 <b>Kutilayotgan to'lovlar ({len(payments)})</b>\n\n"
+    buttons = []
+
+    for p in payments[:10]:
+        user = await user_dao.get_user(p["user_id"])
+        name = escape_html((user or {}).get("first_name", "?"))
+        text += (
+            f"#{p['id']} | {name} (ID: {p['user_id']})\n"
+            f"  📋 {p['plan_name'].title()} | {fmt_price(p['amount'])} | {p['duration_days']} kun\n\n"
+        )
+        buttons.append([
+            InlineKeyboardButton(text=f"✅ #{p['id']}", callback_data=f"admin_approve:{p['id']}"),
+            InlineKeyboardButton(text=f"❌ #{p['id']}", callback_data=f"admin_reject:{p['id']}"),
+        ])
+
+    buttons.append([InlineKeyboardButton(text="🔙 Dashboard", callback_data="adm:back")])
+    await safe_edit(callback, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+    await safe_answer_callback(callback)
+
+
+@router.callback_query(F.data.startswith("admin_approve:"))
+async def callback_approve_payment(callback: CallbackQuery, db_user: dict | None = None):
+    """Approve a payment."""
+    if not db_user:
+        return
+
+    payment_id = int(callback.data.split(":")[1])
+    payment = await payment_dao.get_payment(payment_id)
+
+    if not payment or payment["status"] != "pending":
+        await safe_answer_callback(callback, "❌ To'lov topilmadi yoki allaqachon ko'rib chiqilgan", show_alert=True)
+        return
+
+    admin_id = db_user["user_id"]
+
+    # Approve payment
+    await payment_dao.approve_payment(payment_id, admin_id)
+
+    # Activate subscription
+    await subscription_dao.activate_subscription(
+        user_id=payment["user_id"],
+        plan_name=payment["plan_name"],
+        days=payment.get("duration_days", 30),
+    )
+
+    # Notify user
+    from src.bot.loader import bot
+    plan_display = payment["plan_name"].title()
+    try:
+        await bot.send_message(
+            payment["user_id"],
+            f"🎉 <b>To'lov tasdiqlandi!</b>\n\n"
+            f"📋 Reja: <b>{plan_display}</b>\n"
+            f"📅 Davomiylik: <b>{payment.get('duration_days', 30)} kun</b>\n\n"
+            f"Botdan to'liq foydalanishingiz mumkin! 🚀",
+        )
+    except Exception as e:
+        logger.warning("Failed to notify user %s about approval: %s", payment["user_id"], e)
+
+    await safe_answer_callback(callback, f"✅ To'lov #{payment_id} tasdiqlandi!")
+    await safe_edit(
+        callback,
+        f"✅ <b>To'lov #{payment_id} tasdiqlandi!</b>\n"
+        f"User: {payment['user_id']} → {plan_display}\n"
+        f"Admin: {admin_id}",
+    )
+
+
+@router.callback_query(F.data.startswith("admin_reject:"))
+async def callback_reject_payment(callback: CallbackQuery, db_user: dict | None = None):
+    """Reject a payment."""
+    if not db_user:
+        return
+
+    payment_id = int(callback.data.split(":")[1])
+    payment = await payment_dao.get_payment(payment_id)
+
+    if not payment or payment["status"] != "pending":
+        await safe_answer_callback(callback, "❌ To'lov topilmadi", show_alert=True)
+        return
+
+    await payment_dao.reject_payment(payment_id, db_user["user_id"], "Admin rejected")
+
+    # Notify user
+    from src.bot.loader import bot
+    try:
+        await bot.send_message(
+            payment["user_id"],
+            f"❌ <b>To'lov rad etildi</b>\n\n"
+            f"To'lov #{payment_id} admin tomonidan rad etildi.\n"
+            f"Muammo bo'lsa, admin bilan bog'laning.",
+        )
+    except Exception:
+        pass
+
+    await safe_answer_callback(callback, f"❌ To'lov #{payment_id} rad etildi")
+    await safe_edit(callback, f"❌ <b>To'lov #{payment_id} rad etildi.</b>")
+
+
+# ── User Management ──
+
+@router.callback_query(F.data == "adm:users")
+async def callback_admin_users(callback: CallbackQuery, db_user: dict | None = None):
+    """Show user search prompt."""
+    await safe_edit(
+        callback,
+        "👥 <b>Foydalanuvchi qidirish</b>\n\n"
+        "User ID yoki @username yuboring.\n"
+        "Formatlar:\n"
+        "• <code>123456789</code> (ID)\n"
+        "• <code>@username</code>\n\n"
+        "Yoki /admin buyrug'i bilan qaytish.",
+    )
+    await safe_answer_callback(callback)
+
+
+# ── Broadcast ──
+
+@router.callback_query(F.data == "adm:broadcast")
+async def callback_admin_broadcast(callback: CallbackQuery, db_user: dict | None = None):
+    """Show broadcast instructions."""
+    await safe_edit(
+        callback,
+        "📢 <b>Broadcast</b>\n\n"
+        "Barcha foydalanuvchilarga xabar yuborish uchun:\n\n"
+        "<code>/broadcast Xabar matni</code>\n\n"
+        "⚠️ Bu barcha aktiv foydalanuvchilarga yuboriladi.",
+    )
+    await safe_answer_callback(callback)
+
+
+@router.message(Command("broadcast"))
+async def cmd_broadcast(message: Message, db_user: dict | None = None):
+    """Send broadcast message to all users."""
+    if not db_user:
+        return
+
+    text = message.text.replace("/broadcast", "", 1).strip()
+    if not text:
+        await safe_reply(message, "⚠️ Xabar matni kerak.\n<code>/broadcast Salom!</code>")
+        return
+
+    from src.bot.loader import bot
+    user_ids = await user_dao.get_all_user_ids()
+    total = len(user_ids)
+    sent = 0
+    failed = 0
+
+    status_msg = await safe_reply(message, f"📢 Broadcast boshlanmoqda... 0/{total}")
+
+    for i, uid in enumerate(user_ids):
+        try:
+            await bot.send_message(uid, text)
+            sent += 1
+        except Exception:
+            failed += 1
+
+        # Update progress every 50 users
+        if (i + 1) % 50 == 0 and status_msg:
+            try:
+                await status_msg.edit_text(
+                    f"📢 Broadcast: {sent + failed}/{total}\n"
+                    f"✅ Yuborildi: {sent}\n❌ Xato: {failed}"
+                )
+            except Exception:
+                pass
+
+    if status_msg:
+        try:
+            await status_msg.edit_text(
+                f"📢 <b>Broadcast yakunlandi!</b>\n\n"
+                f"📊 Jami: {total}\n"
+                f"✅ Yuborildi: {sent}\n"
+                f"❌ Xato: {failed}"
+            )
+        except Exception:
+            pass
+
+
+# ── Stats ──
+
+@router.callback_query(F.data == "adm:stats")
+async def callback_admin_stats(callback: CallbackQuery, db_user: dict | None = None):
+    """Show global statistics."""
+    total_users = await user_dao.count_users()
+    paid = await subscription_dao.count_paid_users()
+    revenue = await payment_dao.get_total_revenue()
+    admins = await user_dao.count_users_by_role("admin")
+
+    text = (
+        "📈 <b>Global Statistika</b>\n\n"
+        f"👥 Jami userlar: <b>{fmt_num(total_users)}</b>\n"
+        f"💎 Pulli obunalar: <b>{fmt_num(paid)}</b>\n"
+        f"💰 Jami tushum: <b>{fmt_price(revenue)}</b>\n"
+        f"🛡 Adminlar: <b>{admins}</b>\n"
+    )
+
+    buttons = [[InlineKeyboardButton(text="🔙 Dashboard", callback_data="adm:back")]]
+    await safe_edit(callback, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+    await safe_answer_callback(callback)
+
+
+@router.callback_query(F.data == "adm:back")
+async def callback_admin_back(callback: CallbackQuery, db_user: dict | None = None):
+    """Go back to admin dashboard."""
+    await safe_answer_callback(callback)
+    if callback.message:
+        await cmd_admin(callback.message, db_user)
+
+
+def get_admin_router() -> Router:
+    return router

@@ -1,0 +1,187 @@
+"""
+Keyboards — user menu, admin menu, and reusable inline keyboard builders.
+"""
+
+from aiogram.types import (
+    ReplyKeyboardMarkup, KeyboardButton,
+    InlineKeyboardMarkup, InlineKeyboardButton,
+    WebAppInfo,
+)
+from src.config import settings
+
+
+# ══════════════════════════════════════════════════════════
+# USER REPLY KEYBOARD
+# ══════════════════════════════════════════════════════════
+
+def user_main_menu(plan_name: str = "free") -> ReplyKeyboardMarkup:
+    """Build the main user reply keyboard based on plan."""
+    rows = [
+        [KeyboardButton(text="✅ Check"), KeyboardButton(text="🌐 Translate")],
+        [KeyboardButton(text="🔊 Pronunciation"), KeyboardButton(text="🧠 Quiz")],
+        [KeyboardButton(text="📚 Lessons"), KeyboardButton(text="📖 Grammar")],
+        [KeyboardButton(text="📊 My Stats"), KeyboardButton(text="⭐ Subscribe")],
+    ]
+
+    # Add WebApp button if URL is configured
+    if settings.WEB_APP_URL:
+        rows.append([
+            KeyboardButton(
+                text="📱 Open App",
+                web_app=WebAppInfo(url=settings.WEB_APP_URL),
+            )
+        ])
+
+    rows.append([KeyboardButton(text="⚙️ Settings"), KeyboardButton(text="ℹ️ Help")])
+
+    return ReplyKeyboardMarkup(
+        keyboard=rows,
+        resize_keyboard=True,
+        input_field_placeholder="Ingliz tilida yozing yoki menyu tanlang...",
+    )
+
+
+def admin_main_menu() -> ReplyKeyboardMarkup:
+    """Build admin reply keyboard."""
+    rows = [
+        [KeyboardButton(text="📊 Dashboard"), KeyboardButton(text="💳 Payments")],
+        [KeyboardButton(text="👥 Users"), KeyboardButton(text="📢 Broadcast")],
+        [KeyboardButton(text="📈 Analytics"), KeyboardButton(text="⚙️ Settings")],
+        [KeyboardButton(text="🔙 User Mode")],
+    ]
+    return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+
+
+# ══════════════════════════════════════════════════════════
+# MENU ALIASES (for text matching)
+# ══════════════════════════════════════════════════════════
+
+USER_MENU_ALIASES = {
+    "check":         ["✅ Check", "✅ Tekshirish", "check", "tekshirish"],
+    "translate":     ["🌐 Translate", "🌐 Tarjima", "translate", "tarjima"],
+    "pronunciation": ["🔊 Pronunciation", "🔊 Talaffuz", "pronunciation", "talaffuz"],
+    "quiz":          ["🧠 Quiz", "quiz"],
+    "lessons":       ["📚 Lessons", "📚 Darslar", "lessons", "darslar"],
+    "grammar":       ["📖 Grammar", "📖 Grammatika", "grammar", "grammatika"],
+    "stats":         ["📊 My Stats", "📊 Statistika", "stats", "statistika"],
+    "subscribe":     ["⭐ Subscribe", "⭐ Obuna", "subscribe", "obuna"],
+    "settings":      ["⚙️ Settings", "⚙️ Sozlamalar", "settings", "sozlamalar"],
+    "help":          ["ℹ️ Help", "ℹ️ Yordam", "help", "yordam"],
+}
+
+
+def resolve_menu_action(text: str) -> str | None:
+    """Resolve user text to a menu action key."""
+    clean = text.strip()
+    for action, aliases in USER_MENU_ALIASES.items():
+        if clean in aliases:
+            return action
+    return None
+
+
+# ══════════════════════════════════════════════════════════
+# INLINE KEYBOARDS
+# ══════════════════════════════════════════════════════════
+
+def level_picker_keyboard() -> InlineKeyboardMarkup:
+    """Keyboard for selecting English level."""
+    buttons = [
+        [
+            InlineKeyboardButton(text="A1 🟢", callback_data="set_level:A1"),
+            InlineKeyboardButton(text="A2 🟡", callback_data="set_level:A2"),
+        ],
+        [
+            InlineKeyboardButton(text="B1 🟠", callback_data="set_level:B1"),
+            InlineKeyboardButton(text="B2 🔵", callback_data="set_level:B2"),
+        ],
+        [
+            InlineKeyboardButton(text="C1 🟣", callback_data="set_level:C1"),
+            InlineKeyboardButton(text="C2 🔴", callback_data="set_level:C2"),
+        ],
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def mode_picker_keyboard(current_mode: str = "check") -> InlineKeyboardMarkup:
+    """Keyboard for selecting bot mode."""
+    modes = [
+        ("✅ Check", "mode:check"),
+        ("🌐 UZ→EN", "mode:uz_to_en"),
+        ("🌐 EN→UZ", "mode:en_to_uz"),
+        ("🔊 Pronunciation", "mode:pronunciation"),
+        ("🤖 AI Chat", "mode:bot"),
+    ]
+    buttons = []
+    for label, data in modes:
+        prefix = "▶️ " if data.split(":")[1] == current_mode else ""
+        buttons.append([InlineKeyboardButton(text=f"{prefix}{label}", callback_data=data)])
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def confirm_keyboard(action: str, label_yes: str = "✅ Ha", label_no: str = "❌ Yo'q") -> InlineKeyboardMarkup:
+    """Generic confirmation keyboard."""
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text=label_yes, callback_data=f"confirm:{action}:yes"),
+            InlineKeyboardButton(text=label_no, callback_data=f"confirm:{action}:no"),
+        ]
+    ])
+
+
+def back_button(callback_data: str = "back:main") -> InlineKeyboardMarkup:
+    """Simple back button."""
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔙 Ortga", callback_data=callback_data)]
+    ])
+
+
+def lesson_topics_keyboard() -> InlineKeyboardMarkup:
+    """Keyboard for selecting lesson topics."""
+    from src.services.content_service import get_available_lesson_topics
+    topics = get_available_lesson_topics()
+    buttons = []
+    icons = {"greetings": "🤝", "shopping": "🛍️", "travel": "✈️"}
+    for topic in topics:
+        icon = icons.get(topic, "📚")
+        buttons.append([InlineKeyboardButton(
+            text=f"{icon} {topic.title()}",
+            callback_data=f"lesson:{topic}",
+        )])
+    buttons.append([InlineKeyboardButton(text="✏️ Custom Topic", callback_data="lesson:custom")])
+    buttons.append([InlineKeyboardButton(text="🔙 Ortga", callback_data="back:main")])
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def grammar_rules_keyboard() -> InlineKeyboardMarkup:
+    """Keyboard for selecting grammar rules."""
+    from src.services.content_service import get_available_rules
+    rules = get_available_rules()
+    buttons = []
+    icons = {
+        "tenses": "⏰", "articles": "📝", "prepositions": "📍",
+        "questions": "❓", "conditionals": "🔀", "passive": "🔄",
+    }
+    for i in range(0, len(rules), 2):
+        row = []
+        for rule in rules[i:i+2]:
+            icon = icons.get(rule, "📖")
+            row.append(InlineKeyboardButton(
+                text=f"{icon} {rule.title()}",
+                callback_data=f"rule:{rule}",
+            ))
+        buttons.append(row)
+    buttons.append([InlineKeyboardButton(text="✏️ Custom Rule", callback_data="rule:custom")])
+    buttons.append([InlineKeyboardButton(text="🔙 Ortga", callback_data="back:main")])
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def subscription_plans_keyboard() -> InlineKeyboardMarkup:
+    """Keyboard for selecting subscription plans."""
+    buttons = [
+        [InlineKeyboardButton(text="⭐ Standard — 29,000 so'm/oy", callback_data="plan:standard")],
+        [InlineKeyboardButton(text="💎 Pro — 59,000 so'm/oy", callback_data="plan:pro")],
+        [InlineKeyboardButton(text="👑 Premium — 99,000 so'm/oy", callback_data="plan:premium")],
+        [InlineKeyboardButton(text="📋 Rejalarni solishtirish", callback_data="plan:compare")],
+        [InlineKeyboardButton(text="🔙 Ortga", callback_data="back:main")],
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)

@@ -6,7 +6,7 @@ import re
 import time
 from typing import Any
 
-from telegram import Update
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ContextTypes
 
 from database.db import (
@@ -165,11 +165,11 @@ def games_center_text(group_mode: bool = False) -> str:
         "- `/start_game error`\n"
         "- `/start_game translation`\n"
         "- `/start_game mafia`\n\n"
-        "*Mafia oqimi:*\n"
-        "- Ro'yxatdan o'tish: `/join`, `/leave`\n"
-        "- Tun buyruqlari: `/kill`, `/heal`, `/check`, `/skip`\n"
-        "- Kun buyruqlari: `/vote`, `/skip`\n"
-        "- Roli qayta ko'rish: `/my_role` (private)\n\n"
+        "🎮 *Mafia o'yini (Inline tugmalar bilan)*\n"
+        "- Ro'yxatdan o'tish: ✅ Qo'shilish tugmasi\n"
+        "- Tun harakatlari: Inline tugmalar orqali\n"
+        "- Kun ovoz berish: Inline tugmalar orqali\n"
+        "- Min: 4, Max: 12 o'yinchilar\n\n"
         "*Boshqaruv:*\n"
         "- `/stop_game`\n"
         "- `/game_stats`\n"
@@ -379,10 +379,6 @@ def _build_waiting_text(chat_id: int, payload: dict[str, Any], settings: dict[st
         f"Ishtirokchilar: *{len(players)}/{settings['mafia_max_players']}*",
         f"Boshlash uchun minimum: *{settings['mafia_min_players']}*",
         f"Avto start: *{MAFIA_WAITING_SECONDS} soniya*",
-        "",
-        "Qo'shilish: `/join`",
-        "Chiqish: `/leave`",
-        "Admin erta boshlashi mumkin: `/start_game mafia`",
     ]
     if players:
         lines.append("")
@@ -390,6 +386,77 @@ def _build_waiting_text(chat_id: int, payload: dict[str, Any], settings: dict[st
         for idx, player in enumerate(players, start=1):
             lines.append(f"{idx}. {_escape_md(_mafia_player_name(player))}")
     return "\n".join(lines)
+
+
+def _build_mafia_waiting_inline_kb(payload: dict[str, Any], settings: dict[str, Any], is_admin: bool = False) -> InlineKeyboardMarkup:
+    """Build inline keyboard for Mafia waiting phase."""
+    players = payload.get("players", [])
+    rows = [
+        [
+            InlineKeyboardButton("✅ Qo'shilish", callback_data="mafia_join"),
+            InlineKeyboardButton("❌ Chiqish", callback_data="mafia_leave"),
+        ],
+        [InlineKeyboardButton("📊 Ro'yxatni ko'rish", callback_data="mafia_list")],
+    ]
+
+    # Show start button if minimum players reached and user is admin
+    if is_admin and len(players) >= int(settings['mafia_min_players']):
+        rows.insert(0, [InlineKeyboardButton("🎮 O'yinni boshlash", callback_data="mafia_start")])
+
+    return InlineKeyboardMarkup(rows)
+
+
+def _build_mafia_night_inline_kb(payload: dict[str, Any], role: str, user_id: int) -> InlineKeyboardMarkup | None:
+    """Build inline keyboard for Mafia night actions."""
+    if role == "mafia":
+        targets = _eligible_targets(payload, "kill")
+        if not targets:
+            return None
+        buttons = []
+        for player in targets:
+            name = _mafia_player_name(player)
+            buttons.append(InlineKeyboardButton(f"🔪 {name}", callback_data=f"mk_{player['user_id']}"))
+        rows = [buttons[i:i+2] for i in range(0, len(buttons), 2)]
+        rows.append([InlineKeyboardButton("⏭️ O'tkazib yuborish", callback_data="mafia_skip")])
+        return InlineKeyboardMarkup(rows)
+
+    elif role == "doctor":
+        targets = _eligible_targets(payload, "heal", user_id)
+        if not targets:
+            return None
+        buttons = []
+        for player in targets:
+            name = _mafia_player_name(player)
+            buttons.append(InlineKeyboardButton(f"⚕️ {name}", callback_data=f"md_{player['user_id']}"))
+        rows = [buttons[i:i+2] for i in range(0, len(buttons), 2)]
+        rows.append([InlineKeyboardButton("⏭️ O'tkazib yuborish", callback_data="mafia_skip")])
+        return InlineKeyboardMarkup(rows)
+
+    elif role == "commissioner":
+        targets = _eligible_targets(payload, "check", user_id)
+        if not targets:
+            return None
+        buttons = []
+        for player in targets:
+            name = _mafia_player_name(player)
+            buttons.append(InlineKeyboardButton(f"🔍 {name}", callback_data=f"mc_{player['user_id']}"))
+        rows = [buttons[i:i+2] for i in range(0, len(buttons), 2)]
+        rows.append([InlineKeyboardButton("⏭️ O'tkazib yuborish", callback_data="mafia_skip")])
+        return InlineKeyboardMarkup(rows)
+
+    return None
+
+
+def _build_mafia_day_inline_kb(payload: dict[str, Any], user_id: int) -> InlineKeyboardMarkup:
+    """Build inline keyboard for Mafia day voting."""
+    targets = _eligible_targets(payload, "vote", user_id)
+    buttons = []
+    for player in targets:
+        name = _mafia_player_name(player)
+        buttons.append(InlineKeyboardButton(f"🗳️ {name}", callback_data=f"mv_{player['user_id']}"))
+    rows = [buttons[i:i+3] for i in range(0, len(buttons), 3)]
+    rows.append([InlineKeyboardButton("⏭️ Ovoz bermaslik", callback_data="mafia_skip")])
+    return InlineKeyboardMarkup(rows)
 
 
 def _build_role_message(player: dict[str, Any], payload: dict[str, Any]) -> str:
@@ -445,43 +512,51 @@ async def _send_role_messages(context: ContextTypes.DEFAULT_TYPE, chat_id: int, 
 
 async def _send_mafia_night_prompts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, payload: dict[str, Any], settings: dict[str, Any]) -> list[dict[str, Any]]:
     failed = []
-    mafia_targets = _eligible_targets(payload, "kill")
     alive_players = _alive_players(payload)
     for player in alive_players:
         role = player.get("role")
-        text = None
+        user_id = player["user_id"]
+
+        # Build inline keyboard for this player
+        kb = _build_mafia_night_inline_kb(payload, role, user_id)
+
         if role == "mafia":
             text = (
                 f"🌙 *Tun {payload.get('round', 1)}*\n\n"
-                "Kimni yo'qotmoqchisiz?\n"
-                f"{_format_target_lines(mafia_targets)}\n\n"
-                "Buyruq: `/kill <raqam>`\n"
-                "Agar kutmoqchi bo'lsangiz: `/skip`"
+                "🔪 *MAFIA HARAKATI*\n"
+                "Kimni o'ldirmoqchisiz? Tugmani bosing:"
             )
         elif role == "commissioner":
-            targets = _eligible_targets(payload, "check", player["user_id"])
             text = (
                 f"🌙 *Tun {payload.get('round', 1)}*\n\n"
-                "Kimni tekshirmoqchisiz?\n"
-                f"{_format_target_lines(targets)}\n\n"
-                "Buyruq: `/check <raqam>`\n"
-                "O'tkazib yuborish: `/skip`"
+                "🔍 *KOMISSAR TEKSHIRUVI*\n"
+                "Kimni tekshirmoqchisiz? Tugmani bosing:"
             )
         elif role == "doctor":
-            targets = _eligible_targets(payload, "heal", player["user_id"])
             text = (
                 f"🌙 *Tun {payload.get('round', 1)}*\n\n"
-                "Kimni saqlamoqchisiz?\n"
-                f"{_format_target_lines(targets)}\n\n"
-                "Buyruq: `/heal <raqam>`\n"
-                "O'tkazib yuborish: `/skip`"
+                "⚕️ *SHIFOKOR DAVOLASHI*\n"
+                "Kimni saqlamoqchisiz? Tugmani bosing:"
             )
-        if not text:
+        else:
+            # Civilian - no night action
+            text = (
+                f"🌙 *Tun {payload.get('round', 1)}*\n\n"
+                "😴 *Tinch aholi uxlayapti...*\n"
+                "Sizning vazifangiz: ertalab kun munozaralarida ishtirok etish."
+            )
+            try:
+                await context.bot.send_message(user_id, text, parse_mode="Markdown")
+            except Exception:
+                failed.append(player)
             continue
-        try:
-            await context.bot.send_message(player["user_id"], text, parse_mode="Markdown")
-        except Exception:
-            failed.append(player)
+
+        # Send inline keyboard for roles that have night actions
+        if kb:
+            try:
+                await context.bot.send_message(user_id, text, reply_markup=kb, parse_mode="Markdown")
+            except Exception:
+                failed.append(player)
     return failed
 
 
@@ -579,7 +654,7 @@ def _build_day_intro(payload: dict[str, Any], night_result: dict[str, Any], sett
         _alive_roster_text(payload),
         "",
         f"Ovoz berish vaqti: *{settings['mafia_day_time']} soniya*",
-        "Buyruq: `/vote <raqam>` yoki `/skip`",
+        "Kimni chiqarmoqchisiz? Tugmani bosing:",
     ]
     return "\n".join(lines)
 
@@ -739,7 +814,12 @@ async def _start_mafia_day(
     payload["phase_started_at"] = int(time.time())
     payload["phase_ends_at"] = int(time.time()) + int(settings["mafia_day_time"])
     save_group_game(chat_id, "mafia", "day", payload)
-    await context.bot.send_message(chat_id, _build_day_intro(payload, night_result, settings), parse_mode="Markdown")
+
+    # Send day intro with inline keyboard for voting
+    text = _build_day_intro(payload, night_result, settings)
+    # Build a generic keyboard (user_id=0 means show all targets)
+    kb = _build_mafia_day_inline_kb(payload, 0)
+    await context.bot.send_message(chat_id, text, reply_markup=kb, parse_mode="Markdown")
     await _schedule_timeout(context, chat_id, int(settings["mafia_day_time"]))
 
 
@@ -882,7 +962,11 @@ async def start_game_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         payload = _build_waiting_payload(update.effective_user.id)
         save_group_game(chat.id, "mafia", "waiting", payload)
         await _schedule_timeout(context, chat.id, MAFIA_WAITING_SECONDS)
-        await _reply(update.effective_message, _build_waiting_text(chat.id, payload, settings))
+
+        # Send inline keyboard for joining
+        text = _build_waiting_text(chat.id, payload, settings)
+        kb = _build_mafia_waiting_inline_kb(payload, settings, is_admin=True)
+        await update.effective_message.reply_text(text, reply_markup=kb, parse_mode="Markdown")
         return
 
     if current:
@@ -1514,3 +1598,231 @@ async def _game_timeout_job(context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id, text, parse_mode="Markdown")
     except Exception:
         pass
+
+
+# =============================================================================
+# MAFIA INLINE KEYBOARD CALLBACK HANDLER
+# =============================================================================
+
+async def handle_mafia_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
+    """Handle inline keyboard callbacks for Mafia game.
+    
+    Returns True if callback was handled, False otherwise.
+    """
+    query = update.callback_query
+    if not query:
+        return False
+
+    data = query.data or ""
+    user = query.from_user
+    chat = update.effective_chat
+
+    # Waiting phase callbacks
+    if data in ("mafia_join", "mafia_leave", "mafia_list", "mafia_start"):
+        if not chat or chat.type == "private":
+            await query.answer("Bu tugmalar faqat guruh ichida ishlaydi!", show_alert=True)
+            return True
+
+        session = get_group_game(chat.id)
+        if not session or session.get("game_type") != "mafia" or session.get("status") != "waiting":
+            await query.answer("Mafia ro'yxati hozir ochiq emas.", show_alert=True)
+            return True
+
+        payload = _load_payload(session)
+        settings = get_group_game_settings(chat.id)
+
+        if data == "mafia_join":
+            if _find_player(payload, user.id):
+                await query.answer("Siz allaqachon ro'yxatdasiz!", show_alert=True)
+                return True
+            players = payload.setdefault("players", [])
+            if len(players) >= int(settings["mafia_max_players"]):
+                await query.answer("Ro'yxat to'ldi!", show_alert=True)
+                return True
+            players.append(_new_mafia_player(user))
+            save_group_game(chat.id, "mafia", "waiting", payload)
+            await query.answer("✅ Qo'shildingiz!", show_alert=False)
+
+            # Update message with new player list and keyboard
+            text = _build_waiting_text(chat.id, payload, settings)
+            # Check if user is admin to show start button
+            try:
+                member = await context.bot.get_chat_member(chat.id, user.id)
+                is_admin = member.status in ("administrator", "creator")
+            except Exception:
+                is_admin = False
+            kb = _build_mafia_waiting_inline_kb(payload, settings, is_admin)
+            await query.edit_message_text(text, reply_markup=kb, parse_mode="Markdown")
+
+            # Auto-start if max players reached
+            if len(players) >= int(settings["mafia_max_players"]):
+                _remove_timeout_jobs(context, chat.id)
+                await _start_mafia_match(context, chat.id, payload, settings)
+                await context.bot.send_message(chat.id, "✅ Maksimal son to'ldi. Mafia darhol boshlandi.", parse_mode="Markdown")
+            return True
+
+        elif data == "mafia_leave":
+            players = payload.get("players", [])
+            before = len(players)
+            players = [p for p in players if int(p.get("user_id", 0)) != int(user.id)]
+            if len(players) == before:
+                await query.answer("Siz ro'yxatda emassiz.", show_alert=True)
+                return True
+            payload["players"] = players
+            save_group_game(chat.id, "mafia", "waiting", payload)
+            await query.answer("❌ Chiqdingiz.", show_alert=False)
+
+            # Update message
+            text = _build_waiting_text(chat.id, payload, settings)
+            try:
+                member = await context.bot.get_chat_member(chat.id, user.id)
+                is_admin = member.status in ("administrator", "creator")
+            except Exception:
+                is_admin = False
+            kb = _build_mafia_waiting_inline_kb(payload, settings, is_admin)
+            await query.edit_message_text(text, reply_markup=kb, parse_mode="Markdown")
+            return True
+
+        elif data == "mafia_list":
+            await query.answer(f"Ishtirokchilar: {len(payload.get('players', []))}", show_alert=False)
+            return True
+
+        elif data == "mafia_start":
+            # Check if user is admin
+            try:
+                member = await context.bot.get_chat_member(chat.id, user.id)
+                if member.status not in ("administrator", "creator"):
+                    await query.answer("Faqat adminlar boshlay oladi!", show_alert=True)
+                    return True
+            except Exception:
+                await query.answer("Admin huquqini tekshirib bo'lmadi.", show_alert=True)
+                return True
+
+            players = payload.get("players", [])
+            if len(players) < int(settings["mafia_min_players"]):
+                await query.answer(f"Kamida {settings['mafia_min_players']} kishi kerak!", show_alert=True)
+                return True
+
+            _remove_timeout_jobs(context, chat.id)
+            await _start_mafia_match(context, chat.id, payload, settings)
+            await query.answer("✅ O'yin boshlandi!", show_alert=False)
+            await query.edit_message_text("🎮 Mafia ro'yxati yopildi. Rollar tarqatildi!", parse_mode="Markdown")
+            return True
+
+    # Night phase callbacks
+    if data.startswith(("mk_", "md_", "mc_")) or data == "mafia_skip":
+        if chat and chat.type != "private":
+            await query.answer("Tun harakatlari faqat shaxsiy chatda!", show_alert=True)
+            return True
+
+        # Find user's mafia session
+        session, payload, group_chat_id = _find_user_mafia_session(
+            chat.id if chat and chat.type == "private" else None,
+            user.id
+        )
+
+        if not session or session.get("status") != "night":
+            await query.answer("Hozir tun bosqichi emas.", show_alert=True)
+            return True
+
+        player = _find_player(payload, user.id)
+        if not player or not player.get("is_alive", True):
+            await query.answer("Siz faol o'yinchi emassiz.", show_alert=True)
+            return True
+
+        role = player.get("role")
+
+        if data == "mafia_skip":
+            actions = payload.setdefault("night_actions", {})
+            if role == "mafia":
+                actions.setdefault("mafia_votes", {})[str(player["user_id"])] = 0
+            elif role == "doctor":
+                actions["doctor_heal"] = 0
+            elif role == "commissioner":
+                actions["commissioner_check"] = 0
+            else:
+                await query.answer("Bu bosqichda harakat yo'q.", show_alert=True)
+                return True
+            save_group_game(group_chat_id, "mafia", "night", payload)
+            await query.answer("⏭️ O'tkazib yuborildi.", show_alert=False)
+            await query.edit_message_text("✅ Tun harakatingiz o'tkazib yuborildi.")
+            await _maybe_finish_mafia_night(context, group_chat_id)
+            return True
+
+        # Handle kill/heal/check actions
+        target_id = int(data.split("_")[-1])
+        target = _find_player(payload, target_id)
+        if not target:
+            await query.answer("Nishon topilmadi!", show_alert=True)
+            return True
+
+        if data.startswith("mk_") and role == "mafia":
+            payload.setdefault("night_actions", {}).setdefault("mafia_votes", {})[str(player["user_id"])] = target_id
+            save_group_game(group_chat_id, "mafia", "night", payload)
+            await query.answer(f"🔪 {target['display_name']} tanlandi!", show_alert=False)
+            await query.edit_message_text(f"✅ Tungi ovozingiz qabul qilindi: *{_escape_md(_mafia_player_name(target))}*", parse_mode="Markdown")
+            await _maybe_finish_mafia_night(context, group_chat_id)
+            return True
+
+        elif data.startswith("md_") and role == "doctor":
+            payload.setdefault("night_actions", {})["doctor_heal"] = target_id
+            save_group_game(group_chat_id, "mafia", "night", payload)
+            await query.answer(f"⚕️ {target['display_name']} saqlanadi!", show_alert=False)
+            await query.edit_message_text(f"🛡 Saqlash harakatingiz qabul qilindi: *{_escape_md(_mafia_player_name(target))}*", parse_mode="Markdown")
+            await _maybe_finish_mafia_night(context, group_chat_id)
+            return True
+
+        elif data.startswith("mc_") and role == "commissioner":
+            payload.setdefault("night_actions", {})["commissioner_check"] = target_id
+            payload["last_check"] = {
+                "target_id": target_id,
+                "target_name": _mafia_player_name(target),
+                "result": "mafia" if target.get("role") == "mafia" else "not_mafia",
+            }
+            save_group_game(group_chat_id, "mafia", "night", payload)
+            result_text = "🟥 MAFIA" if target.get("role") == "mafia" else "🟩 Mafia emas"
+            await query.answer(f"Natija: {result_text}", show_alert=False)
+            await query.edit_message_text(f"🔍 Tekshiruv natijasi: *{_escape_md(_mafia_player_name(target))}* — {result_text}", parse_mode="Markdown")
+            await _maybe_finish_mafia_night(context, group_chat_id)
+            return True
+
+        await query.answer("Bu harakat sizning rolingiz uchun emas!", show_alert=True)
+        return True
+
+    # Day phase callbacks
+    if data.startswith("mv_") or data == "vote_skip":
+        if not chat or chat.type == "private":
+            await query.answer("Ovoz berish faqat guruh ichida!", show_alert=True)
+            return True
+
+        session = get_group_game(chat.id)
+        if not session or session.get("game_type") != "mafia" or session.get("status") != "day":
+            await query.answer("Hozir kun bosqichi emas.", show_alert=True)
+            return True
+
+        payload = _load_payload(session)
+        player = _find_player(payload, user.id)
+        if not player or not player.get("is_alive", True):
+            await query.answer("Siz faol o'yinchi emassiz.", show_alert=True)
+            return True
+
+        if data == "vote_skip":
+            payload.setdefault("day_votes", {})[str(player["user_id"])] = 0
+            save_group_game(chat.id, "mafia", "day", payload)
+            await query.answer("⏭️ Ovoz bermadingiz.", show_alert=False)
+            await _maybe_finish_mafia_day(context, chat.id)
+            return True
+
+        target_id = int(data.split("_")[-1])
+        target = _find_player(payload, target_id)
+        if not target:
+            await query.answer("Nishon topilmadi!", show_alert=True)
+            return True
+
+        payload.setdefault("day_votes", {})[str(player["user_id"])] = target_id
+        save_group_game(chat.id, "mafia", "day", payload)
+        await query.answer(f"🗳️ {target['display_name']} ga ovoz berdingiz!", show_alert=False)
+        await _maybe_finish_mafia_day(context, chat.id)
+        return True
+
+    return False

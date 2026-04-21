@@ -1,0 +1,153 @@
+"""
+Entry point — starts Bot (aiogram), API (FastAPI), and Scheduler (APScheduler).
+"""
+
+import asyncio
+import logging
+import sys
+
+import uvicorn
+
+from src.config import settings
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger("artificial_teacher")
+
+
+def register_all_handlers():
+    """Register all bot routers with the dispatcher."""
+    from src.bot.loader import dp
+    from src.bot.handlers import register_all_handlers as _register
+    _register(dp)
+    logger.info("All handlers registered")
+
+
+def register_middlewares():
+    """Register all middlewares with the dispatcher."""
+    from src.bot.loader import dp
+    from src.bot.middlewares.auth import AuthMiddleware
+    from src.bot.middlewares.throttle import ThrottleMiddleware
+    from src.bot.middlewares.sponsor import SponsorMiddleware
+
+    # Order matters: throttle → auth → sponsor
+    dp.message.middleware(ThrottleMiddleware(rate_limit=0.5))
+    dp.message.middleware(AuthMiddleware())
+    dp.message.middleware(SponsorMiddleware())
+
+    dp.callback_query.middleware(ThrottleMiddleware(rate_limit=0.3))
+    dp.callback_query.middleware(AuthMiddleware())
+    dp.callback_query.middleware(SponsorMiddleware())
+
+    dp.inline_query.middleware(AuthMiddleware())
+
+    logger.info("All middlewares registered")
+
+
+def create_api_app():
+    """Create FastAPI application with all routes."""
+    from fastapi import FastAPI
+    from fastapi.middleware.cors import CORSMiddleware
+    from src.api.middleware.telegram_auth import TelegramAuthMiddleware
+
+    app = FastAPI(
+        title="Artificial Teacher API",
+        description="Backend API for the Artificial Teacher WebApp",
+        version="2.0.0",
+    )
+
+    # CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Telegram initData auth
+    app.add_middleware(TelegramAuthMiddleware)
+
+    # Health check (no auth required)
+    @app.get("/")
+    async def health():
+        return {"status": "ok", "service": "Artificial Teacher v2.0"}
+
+    @app.get("/health")
+    async def health_check():
+        return {"status": "ok"}
+
+    # Register API routes
+    from src.api.routes.user import router as user_router
+    from src.api.routes.progress import router as progress_router
+    from src.api.routes.leaderboard import router as leaderboard_router
+
+    app.include_router(user_router)
+    app.include_router(progress_router)
+    app.include_router(leaderboard_router)
+
+    logger.info("FastAPI app created with %d routes", len(app.routes))
+    return app
+
+
+async def main():
+    """Main entry point — orchestrates all services."""
+    from src.database.connection import init_db, close_db
+    from src.bot.loader import bot, dp, scheduler
+
+    logger.info("=" * 60)
+    logger.info("🎓 Artificial Teacher v2.0 — Starting...")
+    logger.info("=" * 60)
+
+    # 1. Initialize database
+    await init_db()
+    logger.info("✅ Database initialized")
+
+    # 2. Register middlewares
+    register_middlewares()
+    logger.info("✅ Middlewares registered")
+
+    # 3. Register handlers
+    register_all_handlers()
+    logger.info("✅ Handlers registered")
+
+    # 4. Start scheduler
+    scheduler.start()
+    logger.info("✅ Scheduler started")
+
+    # 5. Start FastAPI in background
+    api_app = create_api_app()
+    config = uvicorn.Config(
+        api_app,
+        host=settings.API_HOST,
+        port=settings.API_PORT,
+        log_level="warning",
+    )
+    server = uvicorn.Server(config)
+    api_task = asyncio.create_task(server.serve())
+    logger.info("✅ API server started on %s:%s", settings.API_HOST, settings.API_PORT)
+
+    # 6. Start bot
+    try:
+        logger.info("🤖 Starting bot polling...")
+        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Bot stopped by user")
+    finally:
+        scheduler.shutdown()
+        await close_db()
+        api_task.cancel()
+        try:
+            await api_task
+        except asyncio.CancelledError:
+            pass
+        logger.info("🛑 Artificial Teacher stopped")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

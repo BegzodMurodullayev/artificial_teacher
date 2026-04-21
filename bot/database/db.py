@@ -262,7 +262,7 @@ def init_db():
         translation_time_limit         INTEGER DEFAULT 60,
         translation_points_perfect     INTEGER DEFAULT 20,
         translation_points_partial     INTEGER DEFAULT 5,
-        mafia_min_players              INTEGER DEFAULT 6,
+        mafia_min_players              INTEGER DEFAULT 4,
         mafia_max_players              INTEGER DEFAULT 12,
         mafia_night_time               INTEGER DEFAULT 60,
         mafia_day_time                 INTEGER DEFAULT 120
@@ -1654,7 +1654,7 @@ def get_group_game_settings(chat_id):
         "translation_time_limit": 60,
         "translation_points_perfect": 20,
         "translation_points_partial": 5,
-        "mafia_min_players": 6,
+        "mafia_min_players": 4,
         "mafia_max_players": 12,
         "mafia_night_time": 60,
         "mafia_day_time": 120,

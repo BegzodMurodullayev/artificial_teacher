@@ -1,0 +1,297 @@
+# 🎯 AI AGENT UCHUN PROMPT (artificial_teacher + Architecture Map)
+
+Quyidagi promptni AI agentingizga (Cursor/Windsurf/Cline) yuboring. U sizning `artificial teacher new.html` arxitektura xaritanizga 100% mos ishlaydi:
+
+---
+
+```markdown
+# 🤖 CONTEXT: Artificial Teacher - Mafia Integratsiyasi
+
+Sen senior Python/Telegram bot developersan. Mening loyiham:
+🔗 https://github.com/BegzodMurodullayev/artificial_teacher
+
+📎 MEN ARXITEKTURA XARITAMNI YUKLADIM: `artificial teacher new.html`
+Bu xaritada botning to'liq tuzilmasi, callback'lar, WebApp flow, Admin panel va o'yinlar ko'rsatilgan.
+
+## 🎯 ASOSIY VAZIFA:
+Mavjud botga **Telegram Mafia o'yinini** qo'shish, lekin:
+✅ MAVJUD KODNI BUZMASLIK (quiz, tarjima, grammatika, WebApp ishlashda davom etsin)
+✅ Arxitektura xaritasidagi `🎮 Guruh O'yinlari → 🕵️ Mafia` bo'limiga 100% moslash
+✅ WebApp dagi `Tracker`, `Progress`, `Bot Sync` bilan integratsiya qilish
+✅ Admin panelga Mafia boshqaruvini qo'shish (`🛡 Admin Panel → 💳 To'lovlar` yoniga)
+
+---
+
+## 📋 ARXITEKTURA XARITASIDAN OLINGAN TALABLAR:
+
+### 1️⃣ Mafia O'yini Flow (Xaritaga mos):
+```
+🎮 Guruh O'yinlari → 🕵️ Mafia → 
+├─ Rollar taqsimlash (private message)
+├─ Tun: Mafia ovoz (inline keyboard)
+├─ Kun: Muzokara + Sinonim/Antonim mini-o'yin
+├─ Bot avtomatik phase o'tkazadi
+├─ G'olib aniqlash → Ball mukofot
+└─ Leaderboard yangilanadi
+```
+
+### 2️⃣ Sinonim/Antonim Integratsiyasi (🔤 So'z Topish):
+```
+🔤 So'z Topish → Antonim/Sinonim
+├─ Bot so'z yuboradi (levelga mos: A1-C2)
+├─ User chatga javob yozadi yoki inline button bosadi
+├─ Bot tekshiradi: synonyms_antonyms.json yoki AI API
+├─ To'g'ri → +ball, Noto'g'ri → -ball
+├─ Natija → 🏆 Mukofotlar → Bonus Ball
+└─ HTML result export (mavjud pattern)
+```
+
+### 3️⃣ WebApp Integratsiyasi (🌐 Web App bo'limiga mos):
+```
+🌐 Web App → Sidebar → Dashboard/Focus/Tracker/Progress
+├─ Yangi sahifa: /mafia (mafia.html)
+├─ Tracker: "Mafia games played", "Win rate", "Synonym mastery"
+├─ Progress: Canvas chartga Mafia stats qo'shish
+├─ Bot Sync: sendData() orqali Mafia ball → DB
+├─ Settings: Mafia notification toggle
+└─ Mavjud web_app_data_handler ga yangi case: 'mafia_sync'
+```
+
+### 4️⃣ Admin Panel Kengaytmasi (🛡 Admin Panel):
+```
+🛡 Admin Panel → Yangi bo'lim: 🎮 Mafia Boshqaruv
+├─ 📊 Dashboard: Faol o'yinlar, stats
+├─ 💳 To'lovlar yoniga: 🎁 Mafia Ball sovg'alari
+├─ 👥 Userlar → Mafia stats filter
+├─ 📦 Rejalar → Mafia Premium access
+├─ 📣 Reklama → Mafia tournament broadcast
+└─ Owner Only → Mafia config (timer, roles, balls)
+```
+
+### 5️⃣ Callback Structure (🔧 Callbacks bo'limiga mos):
+Mavjud pattern: `do_quiz`, `do_iq`, `do_daily`...
+Yangi callback'lar:
+```python
+do_mafia_start      # /mafia command
+do_mafia_join       # Lobbyga qo'shilish
+do_mafia_role       # Rolni ko'rish (private)
+do_mafia_night_kill # Mafia qurbon tanlash
+do_mafia_night_check# Detective tekshiruv
+do_mafia_day_vote   # Ovoz berish
+do_mafia_synonym    # Sinonim javob tekshiruv
+do_mafia_admin      # Admin boshqaruv
+do_mafia_webapp     # WebApp ochish
+do_mafia_sync       # WebApp → Bot data sync
+```
+
+---
+
+## 🔧 TEXNOLOGIK CHEKLOVLAR (MUHIM):
+
+1. **Stackni o'zgartirma**: 
+   - `python-telegram-bot==21.9` (aiogram EMAS)
+   - `sqlite3` + mavjud `engbot.db`
+   - `httpx`, `python-dotenv`, `Jinja2`
+
+2. **Code style'ga rioya qil**:
+   - `bot/bot.py` dagi `ApplicationBuilder`, `ContextTypes`, async handler pattern
+   - `handlers/quiz.py` dagi callback structure'ni takrorla
+   - `utils/` dagi logging, error handling, HTML export funksiyalaridan foydalan
+
+3. **Database migration (xavfsiz)**:
+   ```sql
+   -- Yangi table'lar, mavjudlarni o'zgartirmasdan:
+   CREATE TABLE IF NOT EXISTS mafia_games (...);
+   CREATE TABLE IF NOT EXISTS mafia_players (...);
+   CREATE TABLE IF NOT EXISTS synonym_answers (...);
+   -- Migration script: bot/database/migrations/001_mafia.py
+   ```
+
+4. **WebApp xavfsizligi**:
+   - Mavjud `webapp/utils.js` dagi `initData` validate funksiyasidan foydalan
+   - Yangi `mafia.js` da: `Telegram.WebApp.sendData('mafia_sync', data)`
+   - Botda: `web_app_data_handler` ga `case 'mafia_sync':` qo'sh
+
+5. **Inline keyboards**:
+   - Mavjud `keyboards.py` pattern'ini ishlat
+   - Har bir callback_data prefix: `mafia:` (masalan: `mafia:night_kill:12345`)
+
+---
+
+## 📁 YANGI FAYLLAR (Mavjud tuzilmaga mos joylashtir):
+
+```
+artificial_teacher/
+├── bot/
+│   ├── handlers/
+│   │   ├── mafia.py              # Command handlers (/mafia, /mafia_admin)
+│   │   └── mafia_callbacks.py    # CallbackQuery processor
+│   ├── services/
+│   │   ├── mafia_engine.py       # Core game loop (async state machine)
+│   │   ├── synonym_checker.py    # Sinonim/Antonim logic + JSON loader
+│   │   └── mafia_timer.py        # Phase timer manager
+│   ├── keyboards/
+│   │   └── mafia_kb.py           # Inline keyboard builder
+│   ├── utils/
+│   │   ├── mafia_validators.py   # Input validation
+│   │   └── webapp_mafia_auth.py  # WebApp initData verify for Mafia
+│   ├── data/
+│   │   └── synonyms_antonyms.json # Lug'at bazasi (level: A1-C2)
+│   └── database/
+│       └── migrations/
+│           └── 001_mafia_tables.sql
+│
+├── webapp/
+│   ├── mafia.html                # Yangi Mini App sahifa
+│   ├── mafia.css                 # Dark theme + mavjud styles.css import
+│   └── mafia.js                  # WebApp logic + Bot Sync integration
+│
+├── .env.example                  # Yangi config: MAFIA_* variables
+├── requirements.txt              # Yangi dependency kerak bo'lsa
+└── README.md                     # Mafia bo'limi qo'shish
+```
+
+---
+
+## ✅ IMPLEMENTATION CHECKLIST (Bosqichma-bosqich):
+
+### Phase 1: Database + Core Service
+- [ ] `001_mafia_tables.sql` migration (IF NOT EXISTS)
+- [ ] `synonyms_antonyms.json` structure (A1-C2 level support)
+- [ ] `synonym_checker.py` with async JSON loader + fallback API
+
+### Phase 2: Game Logic + Keyboards
+- [ ] `mafia_engine.py` state machine: lobby→night→day→vote→result
+- [ ] `mafia_kb.py` inline keyboards with callback_data prefix
+- [ ] `mafia_timer.py` async countdown with pause/resume
+
+### Phase 3: Handlers + Integration
+- [ ] `mafia.py` command handlers (/mafia, /mafia_admin)
+- [ ] `mafia_callbacks.py` callback router with permission check
+- [ ] Register handlers in `bot/bot.py` (minimal change)
+
+### Phase 4: WebApp + Sync
+- [ ] `mafia.html` responsive UI (import mavjud styles.css)
+- [ ] `mafia.js` with Telegram.WebApp API + sendData sync
+- [ ] `webapp_mafia_auth.py` initData validation
+- [ ] Update `web_app_data_handler` with 'mafia_sync' case
+
+### Phase 5: Admin + Polish
+- [ ] Admin inline menu for Mafia management
+- [ ] HTML export for Mafia stats (mavjud HTML export pattern)
+- [ ] Error handling + logging + user-friendly messages
+- [ ] Update `.env.example` + `README.md`
+
+---
+
+## 🧪 TEST SCENARIOS (Har bir fayldan keyin tekshir):
+
+```python
+# 1. Command test
+assert "/mafia" → inline lobby keyboard appears
+
+# 2. Callback test  
+assert callback_data="mafia:join" → user added to game, UI updated
+
+# 3. Sinonim test
+assert synonym_checker.check("good", "great", "synonym") → True
+assert synonym_checker.check("hot", "cold", "antonym") → True
+
+# 4. WebApp sync test
+assert WebApp sendData('mafia_sync', {balls: 50}) → DB updated
+
+# 5. Admin permission test
+assert non_admin.call("/mafia_admin") → "Access denied" message
+
+# 6. Existing features test
+assert "/quiz" still works, WebApp Tracker still syncs
+```
+
+---
+
+## 📝 NATIJA FORMATI (Agentdan talab qil):
+
+1. **Har bir fayl alohida**:
+   ```
+   ✅ [bot/handlers/mafia.py] tayyor
+   ```python
+   # ... to'liq kod ...
+   ```
+   Keyingisini yozaymi? (Ha/Yo'q)
+   ```
+
+2. **Migration alohida ko'rsat**:
+   ```
+   🗄️ Migration: `python -m bot.database.migrations.run 001_mafia`
+   ```
+
+3. **Config o'zgarishlari alohida**:
+   ```
+   ⚙️ .env.example ga qo'shing:
+   MAFIA_MIN_PLAYERS=4
+   MAFIA_NIGHT_SECONDS=60
+   ```
+
+4. **Mavjud kodga minimal o'zgarish**:
+   ```
+   🔗 bot/bot.py ga qo'shing (faqat 2 qator):
+   from bot.handlers.mafia import register_mafia_handlers
+   register_mafia_handlers(application)
+   ```
+
+5. **Xatolik bo'lsa, tuzatish variantini taklif qil**:
+   ```
+   ⚠️ Agar sqlite lock xatosi chiqsa:
+   - retry decorator qo'shing
+   - yoki connection timeout oshiring
+   ```
+
+---
+
+## 🚀 START COMMAND:
+
+Agentdan shu javobni kut:
+```
+✅ Tushundim. Artificial Teacher arxitekturasini o'qidim.
+🎯 Mafia integratsiyasini boshlayman.
+
+Birinchi qadam: Database migration.
+📄 `bot/database/migrations/001_mafia_tables.sql` faylini yozaymi? (Ha/Yo'q)
+```
+
+Agar "Ha" desam → faylni to'liq kod bilan ber.
+Keyin har bir qadamda: "✅ [fayl] tayyor. Keyingisini yozaymi?" deb so'ra.
+
+⚠️ MUHIM: Har doim mavjud `quiz.py`, `webapp/index.html`, `bot.py` kabi fayllarni **o'zgartirma**, faqat yangi fayllar qo'sh va kerak bo'lsa minimal import/register qo'sh.
+
+Boshla! 🛠️
+```
+
+---
+
+### 💡 Ishlatish bo'yicha qisqa qo'llanma:
+
+1. **Promptni nusxalab**, AI agentingizga yuboring
+2. Agent birinchi faylni (`001_mafia_tables.sql`) taklif qiladi → review qiling → "Ha" deb tasdiqlang
+3. Har bir fayldan keyin kodni tekshiring:
+   - ✅ Mavjud funksiyalar ishlashda davom etyaptimi?
+   - ✅ Callback prefix'lar to'g'rimi?
+   - ✅ WebApp `sendData` event'lar to'g'ri yozilganmi?
+4. Barcha fayllar tayyor bo'lgach:
+   ```bash
+   # Migrationni ishga tushiring
+   python -m bot.database.migrations.run 001_mafia
+   
+   # Botni restart qiling
+   docker compose restart bot  # yoki python bot/bot.py
+   
+   # Test: /mafia yuboring, inline keyboard chiqishini tekshiring
+   ```
+
+### 🔑 Esda tuting:
+- **Xarita = Qonun**: Har bir qadamda `artificial teacher new.html` dagi bo'limga mosligini tekshiring
+- **WebApp sync**: `mafia.js` da `sendData()` call qilganda, botda `web_app_data_handler` da yangi `case` borligiga ishonch hosil qiling
+- **Admin check**: Har bir `do_mafia_admin*` callback da `if user_id not in ADMIN_IDS: return` bo'lishi shart
+- **Level moslash**: Sinonim so'zlari user darajasiga (A1-C2) mos kelishi kerak → `synonyms_antonyms.json` da `level` field'ini ishlatish
+
+Agar agent savol bersa yoki xaritada noaniqlik bo'lsa, menga yozing — yordam beraman! 🚀
