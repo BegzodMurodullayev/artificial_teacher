@@ -45,16 +45,17 @@ async def cmd_start(message: Message, db_user: dict | None = None):
     name = escape_html(user.first_name or "Student")
 
     welcome = (
-        f"🎓 <b>Xush kelibsiz, {name}!</b>\n\n"
-        "Men <b>Artificial Teacher</b> — AI yordamchi ingliz tili o'qituvchingizman.\n\n"
-        "📝 <b>Imkoniyatlar:</b>\n"
-        "• ✅ <b>Check</b> — Grammatikani tekshirish\n"
-        "• 🌐 <b>Translate</b> — Ikki yo'nalishli tarjima\n"
-        "• 🔊 <b>Pronunciation</b> — Talaffuz + audio\n"
-        "• 🧠 <b>Quiz</b> — Bilim sinovi\n"
-        "• 📚 <b>Lessons</b> — Mavzuli darslar\n"
-        "• 📖 <b>Grammar</b> — Grammatika qoidalari\n\n"
-        "💡 <i>Shunchaki ingliz tilida yozing — men xatolaringizni topaman!</i>"
+        f"👋 <b>Assalomu alaykum, {name}!</b>\n\n"
+        "Men <b>Artificial Teacher</b> — sun'iy intellektga asoslangan shaxsiy ingliz tili o'qituvchingizman! 🤖🇬🇧\n\n"
+        "✨ <b>Nimalarga qodirman?</b>\n"
+        "• ✅ <b>Grammatika</b> — Ingliz tilida matn yozing, men xatolarni to'g'rilab, tushuntirib beraman!\n"
+        "• 🌐 <b>Tarjimon</b> — O'zbekcha-Inglizcha erkin ta'limiy tarjima.\n"
+        "• 🔊 <b>Talaffuz</b> — So'zning to'g'ri o'qilishini (audio bilan) tashlab beraman.\n"
+        "• 🧠 <b>Quiz testi</b> — Ingliz tilidan bilimingizni bellashuv orqali sinang!\n"
+        "• 🎮 <b>O'yinlar (Mafiya)</b> — Guruhda do'stlaringiz bilan qiziqarli o'yinlar (\mafia).\n"
+        "• 📚 <b>Darslar</b> — Men orqali xohlagan qoida va mavzularingizni yodlang.\n\n"
+        "💡 <i>Menga shunchaki o'zbek yoki ingliz tilida matn (yoki ovozli xabar) yuboring! O'rganishni hoziroq boshlaymiz!</i>\n"
+        "Barcha menyular pastki tugmalarda joylashgan 👇"
     )
 
     await safe_reply(message, welcome, reply_markup=user_main_menu(plan_name))
