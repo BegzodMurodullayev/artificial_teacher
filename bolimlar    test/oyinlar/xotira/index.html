@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BilimBox — Xotira</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1280px; height: 720px; overflow: hidden;
+    font-family: 'Segoe UI', sans-serif; background: #0a0a1a; user-select: none;
+    transform-origin: top left;
+    position: relative;
+  }
+  .bg {
+    position: fixed; inset: 0;
+    background-image: url('../../../ui/assets/bg_kirish.jpg');
+    background-size: cover; background-position: center;
+    filter: brightness(0.4); z-index: 0;
+  }
+  .overlay {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(251,191,36,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 30%, rgba(168,85,247,0.15) 0%, transparent 55%);
+    z-index: 1;
+  }
+  .titlebar {
+    position: fixed; top: 0; left: 0; right: 0; height: 40px;
+    -webkit-app-region: drag; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+  }
+  .titlebar-left { display: flex; align-items: center; gap: 12px; -webkit-app-region: no-drag; }
+  .back-btn {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(180,200,255,0.8); padding: 4px 12px; border-radius: 8px;
+    cursor: pointer; font-size: 12px; transition: all 0.2s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .app-name {
+    font-size: 15px; font-weight: 700;
+    background: linear-gradient(135deg, #fbbf24, #a855f7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .titlebar-right { display: flex; align-items: center; gap: 8px; -webkit-app-region: no-drag; }
+  .titlebar button { width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer; transition: opacity 0.2s, transform 0.2s; }
+  .titlebar button:hover { opacity: 0.85; transform: scale(1.15); }
+  .btn-close { background: #ff5f57; } .btn-min { background: #febc2e; } .btn-max { background: #78c3ff; }
+  .btn-max   { background: #78c3ff; }
+  .header-line {
+    position: fixed; top: 40px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(251,191,36,0.3), transparent); z-index: 99;
+  }
+  .particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+  .dot {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.6);
+    animation: twinkle var(--d,3s) ease-in-out infinite; animation-delay: var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:0.1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.3)} }
+
+  .screen {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 10;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .screen.hidden { opacity: 0; pointer-events: none; transform: scale(0.97); }
+
+  .card {
+    background: rgba(10,15,40,0.65); backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px; padding: 36px 48px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    text-align: center; min-width: 620px;
+  }
+  .sarlavha { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+  .sub { font-size: 13px; color: rgba(180,200,255,0.6); margin-bottom: 28px; }
+  .label { font-size: 11px; color: rgba(180,200,255,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; text-align: left; }
+  .bolim { margin-bottom: 22px; }
+
+  /* Toggle tugmalar */
+  .toggle-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+  .toggle-btn {
+    padding: 10px 18px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: rgba(200,220,255,0.7); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .toggle-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .toggle-btn.tanlandi {
+    background: rgba(251,191,36,0.2); border-color: #fbbf24;
+    color: #fbbf24; box-shadow: 0 0 12px rgba(251,191,36,0.2);
+  }
+
+  /* Daraja va hajm */
+  .tanlash-grid { display: flex; gap: 12px; }
+  .tanlash-btn {
+    flex: 1; padding: 12px 10px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  .tanlash-btn::before {
+    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--e,#fff), transparent); opacity: 0.8;
+  }
+  .tanlash-btn.tanlandi {
+    background: rgba(255,255,255,0.12); border-color: var(--e,#fff);
+    box-shadow: 0 0 16px var(--g,rgba(255,255,255,0.2));
+  }
+  .tanlash-btn:hover { transform: translateY(-4px); background: rgba(255,255,255,0.1); }
+  .t-icon { font-size: 22px; }
+  .t-nom { font-size: 13px; font-weight: 700; color: #fff; }
+  .t-tavsif { font-size: 11px; color: rgba(200,220,255,0.5); }
+
+  .boshlash-btn {
+    width: 100%; padding: 15px; border-radius: 16px; border: none;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1a0a00; font-size: 16px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(251,191,36,0.4);
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s; margin-top: 8px;
+  }
+  .boshlash-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(251,191,36,0.5); }
+  .boshlash-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ══ O'YIN EKRANI ══ */
+  .oyun-layout {
+    display: flex; gap: 32px; align-items: flex-start; justify-content: center;
+  }
+
+  .yon-panel {
+    display: flex; flex-direction: column; gap: 12px; min-width: 160px; padding-top: 8px;
+  }
+
+  .info-chip {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 10px 16px; font-size: 13px;
+    color: rgba(200,220,255,0.8); text-align: center;
+  }
+  .info-chip strong { color: #fff; font-size: 18px; display: block; margin-top: 2px; }
+
+  .yangi-btn {
+    padding: 11px 16px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1a0a00; font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .yangi-btn:hover { transform: translateY(-2px); }
+  .chiqish-btn {
+    padding: 11px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.07); color: rgba(200,220,255,0.8);
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .chiqish-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+  /* Taxta */
+  .taxta-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .status-box {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 8px 24px; font-size: 14px;
+    color: rgba(200,220,255,0.9); min-width: 300px; text-align: center;
+  }
+
+  .taxta { display: grid; gap: 10px; }
+
+  /* Karta */
+  .karta-wrap {
+    perspective: 600px;
+  }
+  .karta {
+    width: 100%; height: 100%;
+    position: relative; transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer;
+  }
+  .karta.ochiq { transform: rotateY(180deg); }
+  .karta.topilgan { transform: rotateY(180deg); cursor: default; }
+
+  .karta-old, .karta-orqa {
+    position: absolute; inset: 0; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  }
+
+  .karta-old {
+    background: rgba(12,18,50,0.7);
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 28px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition: box-shadow 0.3s;
+  }
+  .karta-wrap:hover .karta:not(.ochiq):not(.topilgan) .karta-old {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 16px rgba(251,191,36,0.2);
+    border-color: rgba(251,191,36,0.3);
+  }
+
+  .karta-orqa {
+    background: rgba(15,22,55,0.85);
+    border: 1px solid rgba(255,255,255,0.15);
+    transform: rotateY(180deg);
+    font-size: 32px;
+  }
+  .karta-orqa.topilgan-style {
+    background: rgba(74,222,128,0.15);
+    border-color: #4ade80;
+    box-shadow: 0 0 20px rgba(74,222,128,0.3);
+  }
+
+  /* Natija overlay */
+  .natija-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .natija-overlay.show { opacity: 1; pointer-events: all; }
+  .natija-card {
+    background: rgba(10,15,40,0.95); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 28px; padding: 44px 56px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1); min-width: 460px;
+  }
+  @keyframes bounceIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+  .n-emoji { font-size: 60px; margin-bottom: 14px; }
+  .n-h { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .n-sub { font-size: 14px; color: rgba(180,210,255,0.7); margin-bottom: 24px; }
+  .n-stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; }
+  .n-stat { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px 20px; }
+  .n-stat .val { font-size: 26px; font-weight: 800; color: #fff; }
+  .n-stat .nom { font-size: 11px; color: rgba(180,200,255,0.6); margin-top: 2px; }
+  .n-btn { padding: 12px 32px; border-radius: 14px; border: none; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a0a00; font-size: 14px; font-weight: 800; cursor: pointer; margin: 0 6px; transition: transform 0.2s; }
+  .n-btn:hover { transform: translateY(-2px); }
+  .n-btn.grey { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(200,220,255,0.8); }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="overlay"></div>
+<div class="particles" id="particles"></div>
+
+<div class="titlebar">
+  <div class="titlebar-left">
+    <button class="back-btn" onclick="orqaga()">← Orqaga</button>
+    <span class="app-name">✦ BilimBox — Xotira</span>
+  </div>
+  <div class="titlebar-right">
+    <button class="btn-min" onclick="ipcRenderer.invoke('minimize-app')"></button>
+    <button class="btn-max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button>
+    <button class="btn-close" onclick="ipcRenderer.invoke('close-app')"></button>
+  </div>
+</div>
+<div class="header-line"></div>
+
+<!-- ══ EKRAN 1: SOZLASH ══ -->
+<div class="screen" id="screen-sozlash">
+  <div class="card">
+    <div class="sarlavha">🃏 Xotira O'yini</div>
+    <div class="sub">Sozlamalarni tanlang</div>
+
+    <!-- Karta turi -->
+    <div class="bolim">
+      <div class="label">Karta turi (bir yoki bir nechta)</div>
+      <div class="toggle-grid">
+        <button class="toggle-btn" id="tur-emoji" onclick="turToggle('emoji')">
+          <span>😊</span> Stikerlar
+        </button>
+        <button class="toggle-btn" id="tur-raqam" onclick="turToggle('raqam')">
+          <span>🔢</span> Raqamlar
+        </button>
+        <button class="toggle-btn" id="tur-harf" onclick="turToggle('harf')">
+          <span>🔤</span> Harflar
+        </button>
+        <button class="toggle-btn" id="tur-shakl" onclick="turToggle('shakl')">
+          <span>🔷</span> Shakllar
+        </button>
+        <button class="toggle-btn" id="tur-hayvon" onclick="turToggle('hayvon')">
+          <span>🐶</span> Hayvonlar
+        </button>
+        <button class="toggle-btn" id="tur-meva" onclick="turToggle('meva')">
+          <span>🍎</span> Mevalar
+        </button>
+      </div>
+    </div>
+
+    <!-- Daraja -->
+    <div class="bolim">
+      <div class="label">Daraja</div>
+      <div class="tanlash-grid">
+        <button class="tanlash-btn" id="daraja-oson" style="--e:#22c55e;--g:rgba(34,197,94,0.3)" onclick="darajaTanla('oson')">
+          <span class="t-icon">🟢</span><span class="t-nom">Oson</span><span class="t-tavsif">4×4 (8 juft)</span>
+        </button>
+        <button class="tanlash-btn" id="daraja-orta" style="--e:#fbbf24;--g:rgba(251,191,36,0.3)" onclick="darajaTanla('orta')">
+          <span class="t-icon">🟡</span><span class="t-nom">O'rta</span><span class="t-tavsif">5×4 (10 juft)</span>
+        </button>
+        <button class="tanlash-btn" id="daraja-qiyin" style="--e:#ef4444;--g:rgba(239,68,68,0.3)" onclick="darajaTanla('qiyin')">
+          <span class="t-icon">🔴</span><span class="t-nom">Qiyin</span><span class="t-tavsif">6×5 (15 juft)</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="boshlash-btn" id="boshlash-btn" disabled onclick="oyinBoshlash()">
+      🃏 Boshlash
+    </button>
+  </div>
+</div>
+
+<!-- ══ EKRAN 2: O'YIN ══ -->
+<div class="screen hidden" id="screen-oyun">
+  <div class="oyun-layout">
+
+    <!-- Chap panel -->
+    <div class="yon-panel">
+      <div class="info-chip">⏱ Vaqt<strong id="vaqt-info">0:00</strong></div>
+      <div class="info-chip">🔄 Urinish<strong id="urinish-info">0</strong></div>
+      <div class="info-chip">✅ Topildi<strong id="topildi-info">0</strong></div>
+      <div class="info-chip">🎯 Qoldi<strong id="qoldi-info">0</strong></div>
+    </div>
+
+    <!-- Taxta -->
+    <div class="taxta-wrap">
+      <div class="status-box" id="status">Kartalarni toping!</div>
+      <div class="taxta" id="taxta"></div>
+    </div>
+
+    <!-- O'ng panel -->
+    <div class="yon-panel">
+      <div class="info-chip">⭐ Ball<strong id="ball-info">0</strong></div>
+      <div class="info-chip" id="daraja-chip">Daraja<strong>—</strong></div>
+      <button class="yangi-btn" onclick="yangiOyin()">🔄 Qayta</button>
+      <button class="chiqish-btn" onclick="orqaga()">← Chiqish</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Natija -->
+<div class="natija-overlay" id="natija-overlay">
+  <div class="natija-card">
+    <div class="n-emoji" id="n-emoji">🏆</div>
+    <div class="n-h" id="n-h">Barakalla!</div>
+    <div class="n-sub" id="n-sub">Barcha juftlar topildi!</div>
+    <div class="n-stats">
+      <div class="n-stat"><div class="val" id="n-vaqt">0:00</div><div class="nom">Vaqt</div></div>
+      <div class="n-stat"><div class="val" id="n-urinish">0</div><div class="nom">Urinish</div></div>
+      <div class="n-stat"><div class="val" id="n-ball">0</div><div class="nom">Ball</div></div>
+    </div>
+    <button class="n-btn" onclick="yangiOyin()">🔄 Qayta</button>
+    <button class="n-btn grey" onclick="orqaga()">← Menyuga</button>
+  </div>
+</div>
+
+<script>
+const { ipcRenderer } = require('electron');
+
+// ── MA'LUMOTLAR ────────────────────────────────────
+const TURLAR = {
+  emoji:  ['😀','😂','🥰','😎','🤩','😜','🥳','😇','🤠','🥸','😍','🤣','😴','🤯','🥶'],
+  raqam:  ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15'],
+  harf:   ['A','B','D','E','F','G','H','I','J','K','L','M','N','O','P'],
+  shakl:  ['🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔶','🔷','🔸','🔹','🔺','🔻'],
+  hayvon: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐙'],
+  meva:   ['🍎','🍊','🍋','🍇','🍓','🍑','🍒','🥭','🍍','🥥','🍌','🍉','🍈','🫐','🥝'],
+};
+
+const DARAJALAR = {
+  oson:  { cols: 4, rows: 4, juft: 8 },
+  orta:  { cols: 5, rows: 4, juft: 10 },
+  qiyin: { cols: 6, rows: 5, juft: 15 },
+};
+
+// ── HOLAT ──────────────────────────────────────────
+let tanlangTurlar = new Set();
+let tanlangDaraja = null;
+let kartalar = [];
+let ochiqlar = [];
+let topilganlar = 0;
+let urinish = 0;
+let ball = 0;
+let bloklangan = false;
+let timerInterval = null;
+let sekundlar = 0;
+
+// ── EKRANLAR ──────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ── TUR TOGGLE ────────────────────────────────────
+function turToggle(tur) {
+  if (tanlangTurlar.has(tur)) {
+    tanlangTurlar.delete(tur);
+    document.getElementById('tur-' + tur).classList.remove('tanlandi');
+  } else {
+    tanlangTurlar.add(tur);
+    document.getElementById('tur-' + tur).classList.add('tanlandi');
+  }
+  tekshirBoshlash();
+}
+
+function darajaTanla(d) {
+  tanlangDaraja = d;
+  document.querySelectorAll('.tanlash-btn').forEach(b => b.classList.remove('tanlandi'));
+  document.getElementById('daraja-' + d).classList.add('tanlandi');
+  tekshirBoshlash();
+}
+
+function tekshirBoshlash() {
+  const ok = tanlangTurlar.size > 0 && tanlangDaraja;
+  document.getElementById('boshlash-btn').disabled = !ok;
+}
+
+// ── BELGILAR GENERATSIYA ──────────────────────────
+function belgilarYig(juft) {
+  let pool = [];
+  tanlangTurlar.forEach(tur => pool.push(...TURLAR[tur]));
+  // Dublikatlar olib tashlash
+  pool = [...new Set(pool)];
+  // Aralashtir
+  pool = pool.sort(() => Math.random() - 0.5);
+  return pool.slice(0, juft);
+}
+
+// ── O'YIN BOSHLASH ────────────────────────────────
+function oyinBoshlash() {
+  const { cols, rows, juft } = DARAJALAR[tanlangDaraja];
+  const belgilar = belgilarYig(juft);
+
+  // Juftlarni yaratish va aralashtirish
+  let juftlar = [...belgilar, ...belgilar];
+  juftlar = juftlar.sort(() => Math.random() - 0.5);
+
+  kartalar = juftlar.map((b, i) => ({ id: i, belgi: b, ochiq: false, topilgan: false }));
+  ochiqlar = [];
+  topilganlar = 0;
+  urinish = 0;
+  ball = 0;
+  bloklangan = false;
+  sekundlar = 0;
+
+  // Info
+  const dNom = { oson: 'Oson 🟢', orta: "O'rta 🟡", qiyin: 'Qiyin 🔴' };
+  document.getElementById('daraja-chip').innerHTML = `Daraja<strong>${dNom[tanlangDaraja]}</strong>`;
+  document.getElementById('urinish-info').textContent = 0;
+  document.getElementById('topildi-info').textContent = 0;
+  document.getElementById('qoldi-info').textContent = juft;
+  document.getElementById('ball-info').textContent = 0;
+  document.getElementById('vaqt-info').textContent = '0:00';
+
+  taxtaYasat(cols, juft * 2);
+  timerBoshlash();
+  showScreen('screen-oyun');
+}
+
+// ── TAXTA YASASH ──────────────────────────────────
+function taxtaYasat(cols, jami) {
+  const el = document.getElementById('taxta');
+  const { cols: c, rows: r } = DARAJALAR[tanlangDaraja];
+  const kataKo = tanlangDaraja === 'oson' ? 95 : tanlangDaraja === 'orta' ? 85 : 75;
+
+  el.style.gridTemplateColumns = `repeat(${c}, ${kataKo}px)`;
+  el.innerHTML = '';
+
+  kartalar.forEach((karta, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'karta-wrap';
+    wrap.style.width = kataKo + 'px';
+    wrap.style.height = kataKo + 'px';
+
+    wrap.innerHTML = `
+      <div class="karta" id="karta-${i}" onclick="kartaBos(${i})">
+        <div class="karta-old">🎴</div>
+        <div class="karta-orqa" id="orqa-${i}">${karta.belgi}</div>
+      </div>
+    `;
+    el.appendChild(wrap);
+  });
+}
+
+// ── KARTA BOSISH ──────────────────────────────────
+function kartaBos(i) {
+  if (bloklangan) return;
+  const karta = kartalar[i];
+  if (karta.ochiq || karta.topilgan) return;
+  if (ochiqlar.length >= 2) return;
+
+  karta.ochiq = true;
+  document.getElementById('karta-' + i).classList.add('ochiq');
+
+  ochiqlar.push(i);
+
+  if (ochiqlar.length === 2) {
+    urinish++;
+    document.getElementById('urinish-info').textContent = urinish;
+    tekshirJuft();
+  }
+}
+
+// ── JUFT TEKSHIRISH ───────────────────────────────
+function tekshirJuft() {
+  bloklangan = true;
+  const [a, b] = ochiqlar;
+
+  if (kartalar[a].belgi === kartalar[b].belgi) {
+    // Topildi!
+    setTimeout(() => {
+      kartalar[a].topilgan = kartalar[b].topilgan = true;
+      document.getElementById('orqa-' + a).classList.add('topilgan-style');
+      document.getElementById('orqa-' + b).classList.add('topilgan-style');
+      document.getElementById('karta-' + a).classList.remove('ochiq');
+      document.getElementById('karta-' + a).classList.add('topilgan');
+      document.getElementById('karta-' + b).classList.remove('ochiq');
+      document.getElementById('karta-' + b).classList.add('topilgan');
+
+      topilganlar++;
+      const ballQo = tanlangDaraja === 'oson' ? 100 : tanlangDaraja === 'orta' ? 150 : 200;
+      ball += ballQo;
+      document.getElementById('topildi-info').textContent = topilganlar;
+      document.getElementById('qoldi-info').textContent = DARAJALAR[tanlangDaraja].juft - topilganlar;
+      document.getElementById('ball-info').textContent = ball;
+      document.getElementById('status').textContent = `✅ Juft topildi! +${ballQo} ball`;
+
+      ochiqlar = [];
+      bloklangan = false;
+
+      if (topilganlar === DARAJALAR[tanlangDaraja].juft) {
+        setTimeout(() => natijaKo(), 400);
+      }
+    }, 400);
+  } else {
+    // Juft emas
+    document.getElementById('status').textContent = '❌ Juft emas, qayta urining!';
+    setTimeout(() => {
+      kartalar[a].ochiq = kartalar[b].ochiq = false;
+      document.getElementById('karta-' + a).classList.remove('ochiq');
+      document.getElementById('karta-' + b).classList.remove('ochiq');
+      ochiqlar = [];
+      bloklangan = false;
+      document.getElementById('status').textContent = 'Kartalarni toping!';
+    }, 900);
+  }
+}
+
+// ── TIMER ─────────────────────────────────────────
+function timerBoshlash() {
+  stopTimer();
+  sekundlar = 0;
+  timerInterval = setInterval(() => {
+    sekundlar++;
+    const m = Math.floor(sekundlar / 60);
+    const s = sekundlar % 60;
+    const matn = `${m}:${s.toString().padStart(2,'0')}`;
+    document.getElementById('vaqt-info').textContent = matn;
+  }, 1000);
+}
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+// ── NATIJA ────────────────────────────────────────
+function natijaKo() {
+  stopTimer();
+  const m = Math.floor(sekundlar / 60);
+  const s = sekundlar % 60;
+  const vaqtMatn = `${m}:${s.toString().padStart(2,'0')}`;
+
+  // Ball bonusi — tez tugatgan bo'lsa
+  const bonusBall = Math.max(0, 1000 - sekundlar * 5 - urinish * 10);
+  ball += bonusBall;
+
+  document.getElementById('n-vaqt').textContent = vaqtMatn;
+  document.getElementById('n-urinish').textContent = urinish;
+  document.getElementById('n-ball').textContent = ball;
+
+  const juft = DARAJALAR[tanlangDaraja].juft;
+  const samaradorlik = Math.round((juft / urinish) * 100);
+
+  let emoji, h, sub;
+  if (samaradorlik >= 80) { emoji = '🏆'; h = 'Ajoyib xotira!'; sub = `${vaqtMatn} da barcha juftlarni topdingiz!`; }
+  else if (samaradorlik >= 60) { emoji = '🎉'; h = 'Zo\'r!'; sub = `Yaxshi natija! ${urinish} ta urinishda tugatdingiz.`; }
+  else { emoji = '👍'; h = 'Yaxshi!'; sub = `Mashq qilsangiz yaxshilanasiz!`; }
+
+  document.getElementById('n-emoji').textContent = emoji;
+  document.getElementById('n-h').textContent = h;
+  document.getElementById('n-sub').textContent = sub;
+  document.getElementById('natija-overlay').classList.add('show');
+}
+
+function yangiOyin() {
+  document.getElementById('natija-overlay').classList.remove('show');
+  stopTimer();
+  showScreen('screen-sozlash');
+}
+
+function orqaga() {
+  stopTimer();
+  ipcRenderer.invoke('goto', 'oyinlar');
+}
+
+// Yulduzlar
+const container = document.getElementById('particles');
+for (let i = 0; i < 50; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  const size = Math.random() * 2.5 + 0.5;
+  dot.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;opacity:${Math.random()*0.5};`;
+  container.appendChild(dot);
+}
+
+function fitWindow() {
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  document.body.style.transform = `scale(${scale})`;
+  document.body.style.marginLeft = `${Math.max(0, (window.innerWidth - 1280 * scale) / 2)}px`;
+  document.body.style.marginTop = `${Math.max(0, (window.innerHeight - 720 * scale) / 2)}px`;
+}
+window.addEventListener('resize', fitWindow);
+fitWindow();
+
+</script>
+</body>
+</html>

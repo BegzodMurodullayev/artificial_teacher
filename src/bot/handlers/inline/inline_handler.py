@@ -164,7 +164,7 @@ async def _inline_translate(text: str, user_id: int) -> list:
     is_latin = bool(re.search(r'[a-zA-Z]', text))
     is_cyrillic = bool(re.search(r'[а-яА-Я]', text))
     direction = "en_to_uz" if is_latin and not is_cyrillic else "uz_to_en"
-    mode = f"translate_{direction.replace('en_to_uz', 'en_uz').replace('uz_to_en', 'uz_en')}"
+    mode = f"translate_{direction}"  # → translate_uz_to_en or translate_en_to_uz
 
     result = await ai_service.ask_json(text, mode=mode, user_id=user_id)
     if not result:

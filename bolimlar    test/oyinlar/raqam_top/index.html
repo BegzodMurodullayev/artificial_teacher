@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BilimBox — Raqam Top</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1280px; height: 720px;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0a0a1a;
+    user-select: none;
+    transform-origin: top left;
+    position: relative;
+  }
+
+  .bg {
+    position: fixed; inset: 0;
+    background-image: url('../../../ui/assets/bg_kirish.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.4);
+    z-index: 0;
+  }
+
+  .overlay {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.2) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 20%, rgba(168,85,247,0.15) 0%, transparent 55%);
+    z-index: 1;
+  }
+
+  /* Titlebar */
+  .titlebar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 40px;
+    -webkit-app-region: drag;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+  .titlebar-left {
+    display: flex; align-items: center; gap: 12px;
+    -webkit-app-region: no-drag;
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(180,200,255,0.8);
+    padding: 4px 12px; border-radius: 8px;
+    cursor: pointer; font-size: 12px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .app-name {
+    font-size: 15px; font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .titlebar-right {
+    display: flex; align-items: center; gap: 8px;
+    -webkit-app-region: no-drag;
+  }
+  .titlebar button {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: none; cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .titlebar button:hover { opacity: 0.85; transform: scale(1.15); }
+  .btn-close { background: #ff5f57; }
+  .btn-min   { background: #febc2e; } .btn-max { background: #78c3ff; }
+  .btn-max   { background: #78c3ff; }
+  .btn-max   { background: #78c3ff; }
+  .header-line {
+    position: fixed; top: 40px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(100,150,255,0.3), transparent);
+    z-index: 99;
+  }
+
+  /* Yulduzlar */
+  .particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+  .dot {
+    position: absolute; border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    animation: twinkle var(--d,3s) ease-in-out infinite;
+    animation-delay: var(--delay,0s);
+  }
+  @keyframes twinkle {
+    0%,100% { opacity:0.1; transform:scale(1); }
+    50%      { opacity:0.7; transform:scale(1.3); }
+  }
+
+  /* ═══ EKRANLAR ═══ */
+  .screen {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 10;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .screen.hidden {
+    opacity: 0; pointer-events: none;
+    transform: scale(0.97);
+  }
+
+  /* Karta */
+  .card {
+    background: rgba(10,15,40,0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px;
+    padding: 40px 44px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+    text-align: center;
+    min-width: 520px;
+  }
+
+  .salom-text {
+    font-size: 22px;
+    color: rgba(180,210,255,0.9);
+    margin-bottom: 6px;
+  }
+  .salom-text span {
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+
+  .sub-text {
+    font-size: 14px;
+    color: rgba(150,180,220,0.6);
+    margin-bottom: 32px;
+    letter-spacing: 0.5px;
+  }
+
+  .label {
+    font-size: 13px;
+    color: rgba(180,200,255,0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  /* Daraja tugmalari */
+  .daraja-grid {
+    display: flex; gap: 16px;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  .daraja-btn {
+    width: 140px; height: 90px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+                box-shadow 0.3s, border-color 0.3s, background 0.3s;
+    position: relative; overflow: hidden;
+  }
+
+  .daraja-btn.oson   { --g: rgba(34,197,94,0.5);  --e: #22c55e; }
+  .daraja-btn.orta   { --g: rgba(251,191,36,0.5); --e: #fbbf24; }
+  .daraja-btn.qiyin  { --g: rgba(239,68,68,0.5);  --e: #ef4444; }
+
+  .daraja-btn::before {
+    content: '';
+    position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--e), transparent);
+    opacity: 0.8;
+  }
+
+  .daraja-btn:hover {
+    transform: translateY(-6px) scale(1.05);
+    border-color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 20px var(--g);
+  }
+
+  .daraja-btn:active { transform: translateY(-2px) scale(1.02); }
+
+  .daraja-icon { font-size: 24px; }
+  .daraja-nom  { font-size: 13px; font-weight: 700; color: #fff; }
+  .daraja-diapazon { font-size: 11px; color: rgba(200,220,255,0.5); }
+
+  /* O'yin turi tugmalari */
+  .tur-grid {
+    display: flex; gap: 14px;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  .tur-btn {
+    width: 148px; height: 95px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 5px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+                box-shadow 0.3s, border-color 0.3s;
+    position: relative; overflow: hidden;
+  }
+
+  .tur-btn.vaqt       { --g: rgba(59,130,246,0.5);  --e: #3b82f6; }
+  .tur-btn.imkoniyat  { --g: rgba(168,85,247,0.5);  --e: #a855f7; }
+  .tur-btn.cheksiz    { --g: rgba(34,197,94,0.5);   --e: #22c55e; }
+
+  .tur-btn::before {
+    content: '';
+    position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--e), transparent);
+    opacity: 0.8;
+  }
+
+  .tur-btn:hover {
+    transform: translateY(-6px) scale(1.05);
+    border-color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 20px var(--g);
+  }
+
+  .tur-icon { font-size: 22px; }
+  .tur-nom  { font-size: 12px; font-weight: 700; color: #fff; }
+  .tur-tavsif { font-size: 10px; color: rgba(200,220,255,0.5); }
+
+  /* ═══ O'YIN EKRANI ═══ */
+  .oyun-info {
+    display: flex; gap: 20px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .info-chip {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: rgba(200,220,255,0.8);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .info-chip span { font-weight: 700; color: #fff; }
+
+  /* Savol */
+  .savol-box {
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 16px;
+    padding: 18px 30px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: rgba(180,220,255,0.9);
+    line-height: 1.5;
+  }
+
+  /* Natija xabari */
+  .xabar {
+    height: 28px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    transition: all 0.3s;
+  }
+  .xabar.katta { color: #f87171; }
+  .xabar.kichik { color: #60a5fa; }
+  .xabar.topdi { color: #4ade80; }
+
+  /* Input */
+  .input-wrap {
+    display: flex; gap: 12px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  input[type="number"] {
+    width: 180px; padding: 13px 18px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff; font-size: 18px; font-weight: 600;
+    outline: none; text-align: center;
+    transition: all 0.3s;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  input[type="number"]:focus {
+    border-color: rgba(96,165,250,0.6);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+  }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .submit-btn {
+    padding: 13px 28px;
+    border-radius: 14px; border: none;
+    background: linear-gradient(135deg, #3b82f6, #7c3aed);
+    color: #fff; font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(59,130,246,0.5);
+  }
+  .submit-btn:active { transform: translateY(0); }
+
+  /* Taxminlar tarixi */
+  .tarix {
+    display: flex; flex-wrap: wrap;
+    gap: 8px; justify-content: center;
+    max-width: 420px; max-height: 60px;
+    overflow-y: auto;
+  }
+
+  .tarix-chip {
+    padding: 4px 12px; border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    animation: popIn 0.2s ease;
+  }
+  .tarix-chip.katta { background: rgba(248,113,113,0.2); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+  .tarix-chip.kichik { background: rgba(96,165,250,0.2); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+
+  @keyframes popIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  /* Tabriklash overlay */
+  .tabrik-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .tabrik-overlay.show { opacity: 1; pointer-events: all; }
+
+  .tabrik-card {
+    background: rgba(10,15,40,0.9);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 28px;
+    padding: 48px 56px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes bounceIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .tabrik-emoji { font-size: 64px; margin-bottom: 16px; }
+  .tabrik-h { font-size: 28px; font-weight: 800; color: #4ade80; margin-bottom: 8px; }
+  .tabrik-sub { font-size: 15px; color: rgba(180,210,255,0.7); margin-bottom: 28px; }
+
+  .tabrik-btn {
+    padding: 13px 36px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin: 0 8px;
+    box-shadow: 0 4px 20px rgba(34,197,94,0.4);
+    transition: transform 0.2s;
+  }
+  .tabrik-btn:hover { transform: translateY(-2px); }
+  .tabrik-btn.grey {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: none;
+  }
+
+  /* Timer progressbar */
+  .timer-bar-wrap {
+    width: 100%; height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .timer-bar {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, #3b82f6, #a855f7);
+    transition: width 1s linear;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="overlay"></div>
+<div class="particles" id="particles"></div>
+
+<!-- Titlebar -->
+<div class="titlebar">
+  <div class="titlebar-left">
+    <button class="back-btn" onclick="orqaga()">← Orqaga</button>
+    <span class="app-name">✦ BilimBox — Raqam Top</span>
+  </div>
+  <div class="titlebar-right">
+    <button class="btn-min" onclick="ipcRenderer.invoke('minimize-app')"></button>
+    <button class="btn-max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button>
+    <button class="btn-max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button>
+    <button class="btn-close" onclick="ipcRenderer.invoke('close-app')"></button>
+  </div>
+</div>
+<div class="header-line"></div>
+
+<!-- ══════════════════════════════════════════════
+     EKRAN 1: SALOMLASH + DARAJA TANLASH
+══════════════════════════════════════════════ -->
+<div class="screen" id="screen-daraja">
+  <div class="card">
+    <div class="salom-text">Salom, <span id="ism-text">O'yinchi</span>! 👋</div>
+    <div class="sub-text">Raqam topish o'yiniga xush kelibsiz</div>
+
+    <div class="label">Darajani tanlang</div>
+    <div class="daraja-grid">
+      <button class="daraja-btn oson" onclick="darajaTanla('oson')">
+        <span class="daraja-icon">🟢</span>
+        <span class="daraja-nom">Oson</span>
+        <span class="daraja-diapazon">0 — 10</span>
+      </button>
+      <button class="daraja-btn orta" onclick="darajaTanla('orta')">
+        <span class="daraja-icon">🟡</span>
+        <span class="daraja-nom">O'rta</span>
+        <span class="daraja-diapazon">0 — 100</span>
+      </button>
+      <button class="daraja-btn qiyin" onclick="darajaTanla('qiyin')">
+        <span class="daraja-icon">🔴</span>
+        <span class="daraja-nom">Qiyin</span>
+        <span class="daraja-diapazon">0 — 1000</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     EKRAN 2: O'YIN TURI TANLASH
+══════════════════════════════════════════════ -->
+<div class="screen hidden" id="screen-tur">
+  <div class="card">
+    <div class="salom-text">Daraja: <span id="daraja-ko'rsatish">—</span></div>
+    <div class="sub-text">O'yin turini tanlang</div>
+
+    <div class="label">Qanday o'ynaysiz?</div>
+    <div class="tur-grid">
+      <button class="tur-btn vaqt" onclick="turTanla('vaqt')">
+        <span class="tur-icon">⏱️</span>
+        <span class="tur-nom">Vaqt bilan</span>
+        <span class="tur-tavsif">30 soniya ichida</span>
+      </button>
+      <button class="tur-btn imkoniyat" onclick="turTanla('imkoniyat')">
+        <span class="tur-icon">🎯</span>
+        <span class="tur-nom">Urinishlar</span>
+        <span class="tur-tavsif">5 ta imkoniyat</span>
+      </button>
+      <button class="tur-btn cheksiz" onclick="turTanla('cheksiz')">
+        <span class="tur-icon">♾️</span>
+        <span class="tur-nom">Cheklanmagan</span>
+        <span class="tur-tavsif">Topguncha o'yna</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     EKRAN 3: O'YIN
+══════════════════════════════════════════════ -->
+<div class="screen hidden" id="screen-oyun">
+  <div class="card" style="min-width:500px;">
+
+    <!-- Info chiplar -->
+    <div class="oyun-info">
+      <div class="info-chip">🎮 Daraja: <span id="info-daraja">—</span></div>
+      <div class="info-chip" id="info-tur-chip">♾️ <span id="info-tur">Cheklanmagan</span></div>
+    </div>
+
+    <!-- Timer bar (vaqt rejimida) -->
+    <div class="timer-bar-wrap" id="timer-wrap" style="display:none;">
+      <div class="timer-bar" id="timer-bar" style="width:100%"></div>
+    </div>
+
+    <!-- Savol -->
+    <div class="savol-box" id="savol-box">
+      Men <strong id="diapazon-text">0 dan 100 gacha</strong> orasida bir son o'yladim. Uni toping!
+    </div>
+
+    <!-- Xabar -->
+    <div class="xabar" id="xabar"></div>
+
+    <!-- Input -->
+    <div class="input-wrap">
+      <input type="number" id="son-input" placeholder="Son..." min="0" />
+      <button class="submit-btn" onclick="tekshir()">Tekshir →</button>
+    </div>
+
+    <!-- Tarix -->
+    <div class="tarix" id="tarix"></div>
+
+  </div>
+</div>
+
+<!-- Tabriklash -->
+<div class="tabrik-overlay" id="tabrik">
+  <div class="tabrik-card">
+    <div class="tabrik-emoji">🎉</div>
+    <div class="tabrik-h">Tabriklaymiz!</div>
+    <div class="tabrik-sub" id="tabrik-sub">Siz raqamni topdingiz!</div>
+    <div style="margin-top:8px;">
+      <button class="tabrik-btn" onclick="qaytaOyna()">🔄 Qayta o'yna</button>
+      <button class="tabrik-btn grey" onclick="orqaga()">← Menyuga</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const { ipcRenderer } = require('electron');
+
+  // ── O'YIN HOLATI ──────────────────────────────
+  let maxSon = 100;
+  let sirSon = 0;
+  let urinishlar = 0;
+  let maxUrinish = 5;
+  let daraja = 'orta';
+  let tur = 'cheksiz';
+  let timerInterval = null;
+  let qolganVaqt = 30;
+  let ismNomi = '';
+
+  // Ismni yuklash
+    ipcRenderer.invoke('get-ism').then(ism => {
+        ismNomi = ism || 'Siz';
+        document.getElementById('ism-text').textContent = ismNomi;
+    });
+  // ── EKRAN O'TISH ──────────────────────────────
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+  }
+
+  // ── DARAJA TANLASH ────────────────────────────
+  function darajaTanla(d) {
+    daraja = d;
+    const nomlar = { oson: '🟢 Oson (0–10)', orta: '🟡 O\'rta (0–100)', qiyin: '🔴 Qiyin (0–1000)' };
+    document.getElementById('daraja-ko\'rsatish').textContent = nomlar[d];
+    showScreen('screen-tur');
+  }
+
+  // ── TUR TANLASH ───────────────────────────────
+  function turTanla(t) {
+    tur = t;
+    boshlash();
+  }
+
+  // ── O'YINNI BOSHLASH ──────────────────────────
+  function boshlash() {
+    const diapazonlar = { oson: 10, orta: 100, qiyin: 1000 };
+    maxSon = diapazonlar[daraja];
+    sirSon = Math.floor(Math.random() * (maxSon + 1));
+    urinishlar = 0;
+
+    // Info
+    const darajaNom = { oson: 'Oson', orta: "O'rta", qiyin: 'Qiyin' };
+    document.getElementById('info-daraja').textContent = darajaNom[daraja];
+    document.getElementById('diapazon-text').textContent = `0 dan ${maxSon} gacha`;
+
+    // Xabar va tarix tozalash
+    document.getElementById('xabar').textContent = '';
+    document.getElementById('xabar').className = 'xabar';
+    document.getElementById('tarix').innerHTML = '';
+    document.getElementById('son-input').value = '';
+
+    // Tur sozlash
+    const turChip = document.getElementById('info-tur-chip');
+    const timerWrap = document.getElementById('timer-wrap');
+
+    if (tur === 'vaqt') {
+      document.getElementById('info-tur').textContent = '30 soniya';
+      turChip.innerHTML = `⏱️ <span id="info-tur">Vaqt: <strong id="vaqt-korsatish">30</strong>s</span>`;
+      timerWrap.style.display = 'block';
+      startTimer();
+    } else if (tur === 'imkoniyat') {
+      document.getElementById('info-tur').textContent = `5 imkoniyat`;
+      turChip.innerHTML = `🎯 <span id="info-tur">Qoldi: <strong id="imkon-korsatish">5</strong></span>`;
+      timerWrap.style.display = 'none';
+      stopTimer();
+    } else {
+      turChip.innerHTML = `♾️ <span id="info-tur">Cheklanmagan</span>`;
+      timerWrap.style.display = 'none';
+      stopTimer();
+    }
+
+    showScreen('screen-oyun');
+    setTimeout(() => document.getElementById('son-input').focus(), 300);
+  }
+
+  // ── TIMER ─────────────────────────────────────
+  function startTimer() {
+    stopTimer();
+    qolganVaqt = 30;
+    const bar = document.getElementById('timer-bar');
+    bar.style.width = '100%';
+    bar.style.background = 'linear-gradient(90deg, #3b82f6, #a855f7)';
+
+    timerInterval = setInterval(() => {
+      qolganVaqt--;
+      const foiz = (qolganVaqt / 30) * 100;
+      bar.style.width = foiz + '%';
+
+      const el = document.getElementById('vaqt-korsatish');
+      if (el) el.textContent = qolganVaqt;
+
+      if (qolganVaqt <= 10) {
+        bar.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+      }
+
+      if (qolganVaqt <= 0) {
+        stopTimer();
+        utkazib('Vaqt tugadi! Raqam: ' + sirSon);
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  // ── TEKSHIRISH ────────────────────────────────
+  function tekshir() {
+    const input = document.getElementById('son-input');
+    const val = parseInt(input.value);
+    const xabar = document.getElementById('xabar');
+    const tarix = document.getElementById('tarix');
+
+    if (isNaN(val) || val < 0 || val > maxSon) {
+      xabar.textContent = `⚠ 0 dan ${maxSon} gacha son kiriting!`;
+      xabar.className = 'xabar katta';
+      return;
+    }
+
+    urinishlar++;
+
+    // Tarixga qo'shish
+    const chip = document.createElement('div');
+    chip.className = 'tarix-chip ' + (val > sirSon ? 'katta' : val < sirSon ? 'kichik' : 'topdi');
+    chip.textContent = val;
+    tarix.appendChild(chip);
+
+    if (val === sirSon) {
+      stopTimer();
+      topdi();
+    } else if (val > sirSon) {
+      xabar.textContent = `📈 ${val} — katta! Kichikroq tering.`;
+      xabar.className = 'xabar katta';
+    } else {
+      xabar.textContent = `📉 ${val} — kichik! Kattaroq tering.`;
+      xabar.className = 'xabar kichik';
+    }
+
+    // Imkoniyat tekshiruvi
+    if (tur === 'imkoniyat') {
+      const qoldi = maxUrinish - urinishlar;
+      const el = document.getElementById('imkon-korsatish');
+      if (el) el.textContent = qoldi;
+      if (qoldi <= 0 && val !== sirSon) {
+        stopTimer();
+        utkazib('Imkoniyatlar tugadi! Raqam: ' + sirSon);
+        return;
+      }
+    }
+
+    input.value = '';
+    input.focus();
+  }
+
+  // ── TOPDI ─────────────────────────────────────
+  function topdi() {
+    const overlay = document.getElementById('tabrik');
+    const sub = document.getElementById('tabrik-sub');
+
+    let matn = `Raqam ${sirSon} edi! ${urinishlar} ta urinishda topdingiz 🏆`;
+    if (tur === 'vaqt') matn += ` (${30 - qolganVaqt}s sarfladingiz)`;
+
+    sub.textContent = matn;
+    overlay.classList.add('show');
+  }
+
+  // ── UTKAZIB YUBORDI ───────────────────────────
+  function utkazib(xabar) {
+    const overlay = document.getElementById('tabrik');
+    const sub = document.getElementById('tabrik-sub');
+    const h = overlay.querySelector('.tabrik-h');
+    const emoji = overlay.querySelector('.tabrik-emoji');
+
+    h.textContent = 'Keyinroq uring!';
+    h.style.color = '#f87171';
+    emoji.textContent = '😔';
+    sub.textContent = xabar;
+    overlay.classList.add('show');
+  }
+
+  // ── QAYTA O'YNA ───────────────────────────────
+  function qaytaOyna() {
+    document.getElementById('tabrik').classList.remove('show');
+    const h = document.querySelector('.tabrik-h');
+    const emoji = document.querySelector('.tabrik-emoji');
+    h.textContent = 'Tabriklaymiz!';
+    h.style.color = '#4ade80';
+    emoji.textContent = '🎉';
+    showScreen('screen-daraja');
+  }
+
+  // ── ORQAGA ────────────────────────────────────
+  function orqaga() {
+    stopTimer();
+    ipcRenderer.invoke('goto', 'oyinlar');
+  }
+
+  // Enter bilan tekshirish
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const screen = document.querySelector('.screen:not(.hidden)');
+      if (screen && screen.id === 'screen-oyun') tekshir();
+    }
+  });
+
+  // ── YULDUZLAR ─────────────────────────────────
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 50; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const size = Math.random() * 2.5 + 0.5;
+    dot.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s; --delay:${Math.random()*4}s;
+      opacity:${Math.random()*0.5};
+    `;
+    container.appendChild(dot);
+  }
+
+  function fitWindow() {
+    const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    document.body.style.transform = `scale(${scale})`;
+    document.body.style.marginLeft = `${Math.max(0, (window.innerWidth - 1280 * scale) / 2)}px`;
+    document.body.style.marginTop = `${Math.max(0, (window.innerHeight - 720 * scale) / 2)}px`;
+  }
+
+  window.addEventListener('resize', fitWindow);
+  fitWindow();
+</script>
+</body>
+</html>

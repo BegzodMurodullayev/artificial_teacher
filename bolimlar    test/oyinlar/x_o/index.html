@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BilimBox — X va O</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1280px; height: 720px;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0a0a1a;
+    user-select: none;
+    transform-origin: top left;
+    position: relative;
+  }
+
+  .bg {
+    position: fixed; inset: 0;
+    background-image: url('../../../ui/assets/bg_kirish.jpg');
+    background-size: cover; background-position: center;
+    filter: brightness(0.4); z-index: 0;
+  }
+
+  .overlay {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(239,68,68,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 30%, rgba(96,165,250,0.15) 0%, transparent 55%);
+    z-index: 1;
+  }
+
+  /* Titlebar */
+  .titlebar {
+    position: fixed; top: 0; left: 0; right: 0; height: 40px;
+    -webkit-app-region: drag; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+  }
+  .titlebar-left { display: flex; align-items: center; gap: 12px; -webkit-app-region: no-drag; }
+  .back-btn {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(180,200,255,0.8); padding: 4px 12px; border-radius: 8px;
+    cursor: pointer; font-size: 12px; transition: all 0.2s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .app-name {
+    font-size: 15px; font-weight: 700;
+    background: linear-gradient(135deg, #f87171, #60a5fa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .titlebar-right { display: flex; align-items: center; gap: 8px; -webkit-app-region: no-drag; }
+  .titlebar button { width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer; transition: opacity 0.2s, transform 0.2s; }
+  .titlebar button:hover { opacity: 0.85; transform: scale(1.15); }
+  .btn-close { background: #ff5f57; } .btn-min { background: #febc2e; } .btn-max { background: #78c3ff; }
+  .btn-max   { background: #78c3ff; }
+  .header-line {
+    position: fixed; top: 40px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,150,150,0.3), transparent); z-index: 99;
+  }
+
+  /* Yulduzlar */
+  .particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+  .dot {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.6);
+    animation: twinkle var(--d,3s) ease-in-out infinite; animation-delay: var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:0.1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.3)} }
+
+  /* Ekranlar */
+  .screen {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 10;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .screen.hidden { opacity: 0; pointer-events: none; transform: scale(0.97); }
+
+  /* Karta */
+  .card {
+    background: rgba(10,15,40,0.65); backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px; padding: 36px 44px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    text-align: center;
+  }
+
+  .sarlavha { font-size: 24px; font-weight: 800; margin-bottom: 6px; color: #fff; }
+  .sub { font-size: 13px; color: rgba(180,200,255,0.6); margin-bottom: 28px; letter-spacing: 0.5px; }
+  .label { font-size: 12px; color: rgba(180,200,255,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+
+  /* Tanlov tugmalari */
+  .tanlov-grid { display: flex; gap: 14px; justify-content: center; margin-bottom: 0; }
+
+  .tanlov-btn {
+    width: 150px; height: 100px; border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 6px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s, background 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .tanlov-btn::before {
+    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--e), transparent); opacity: 0.8;
+  }
+  .tanlov-btn:hover {
+    transform: translateY(-6px) scale(1.05); background: rgba(255,255,255,0.1);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 20px var(--g);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .tanlov-btn:active { transform: translateY(-2px) scale(1.02); }
+  .t-icon { font-size: 26px; }
+  .t-nom { font-size: 13px; font-weight: 700; color: #fff; }
+  .t-tavsif { font-size: 10px; color: rgba(200,220,255,0.5); }
+
+  /* ══ O'YIN EKRANI ══ */
+  .oyun-wrap {
+    display: flex; gap: 40px; align-items: flex-start; justify-content: center;
+  }
+
+  /* Chap panel */
+  .chap-panel { display: flex; flex-direction: column; gap: 12px; min-width: 180px; }
+
+  .oyunchi-karta {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 14px 18px; text-align: center;
+    transition: all 0.3s;
+  }
+  .oyunchi-karta.aktiv {
+    border-color: var(--renk);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 20px var(--soya);
+  }
+  .oyunchi-karta .belgi { font-size: 28px; margin-bottom: 4px; }
+  .oyunchi-karta .oyunchi-nom { font-size: 12px; color: rgba(200,220,255,0.7); }
+  .oyunchi-karta .ball-text { font-size: 20px; font-weight: 800; color: #fff; }
+
+  /* Status */
+  .status-box {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 10px 16px; text-align: center;
+    font-size: 13px; color: rgba(200,220,255,0.8); min-height: 44px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Kataklar o'lchamini tanlash */
+  .hajm-chip {
+    display: flex; gap: 8px; justify-content: center;
+  }
+  .hajm-btn {
+    padding: 6px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05); color: rgba(200,220,255,0.7);
+    font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+  }
+  .hajm-btn.aktiv, .hajm-btn:hover {
+    background: rgba(96,165,250,0.2); border-color: #60a5fa; color: #fff;
+  }
+
+  /* O'yin taxtasi */
+  .taxta-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+  .taxta {
+    display: grid;
+    gap: 8px;
+  }
+
+  .katak {
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; font-weight: 900;
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
+                background 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .katak:hover:not(.band) {
+    background: rgba(255,255,255,0.12);
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .katak.x-belgi { color: #f87171; text-shadow: 0 0 20px rgba(248,113,113,0.6); }
+  .katak.o-belgi { color: #60a5fa; text-shadow: 0 0 20px rgba(96,165,250,0.6); }
+  .katak.band { cursor: default; }
+  .katak.yutdi {
+    background: rgba(74,222,128,0.15) !important;
+    border-color: #4ade80 !important;
+    box-shadow: 0 0 20px rgba(74,222,128,0.3) !important;
+    animation: pulse 0.5s ease;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+
+  .katak-pop { animation: kPop 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes kPop { from{transform:scale(0.5)} to{transform:scale(1)} }
+
+  /* O'ng panel */
+  .ong-panel { display: flex; flex-direction: column; gap: 12px; min-width: 160px; }
+
+  .yangi-btn {
+    padding: 11px 20px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, #3b82f6, #7c3aed);
+    color: #fff; font-size: 13px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .yangi-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,0.5); }
+
+  .info-chip {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 8px 12px; font-size: 12px;
+    color: rgba(200,220,255,0.7); text-align: center;
+  }
+  .info-chip strong { color: #fff; }
+
+  /* Overlay */
+  .natija-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .natija-overlay.show { opacity: 1; pointer-events: all; }
+  .natija-card {
+    background: rgba(10,15,40,0.95); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 28px; padding: 44px 52px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes bounceIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+  .natija-emoji { font-size: 56px; margin-bottom: 12px; }
+  .natija-h { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+  .natija-sub { font-size: 14px; color: rgba(180,210,255,0.7); margin-bottom: 24px; }
+  .natija-btn {
+    padding: 12px 32px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, #3b82f6, #7c3aed);
+    color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; margin: 0 6px;
+    transition: transform 0.2s;
+  }
+  .natija-btn:hover { transform: translateY(-2px); }
+  .natija-btn.grey {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: none;
+  }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="overlay"></div>
+<div class="particles" id="particles"></div>
+
+<div class="titlebar">
+  <div class="titlebar-left">
+    <button class="back-btn" onclick="orqaga()">← Orqaga</button>
+    <span class="app-name">✦ BilimBox — X va O</span>
+  </div>
+  <div class="titlebar-right">
+    <button class="btn-min" onclick="ipcRenderer.invoke('minimize-app')"></button>
+    <button class="btn-max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button>
+    <button class="btn-close" onclick="ipcRenderer.invoke('close-app')"></button>
+  </div>
+</div>
+<div class="header-line"></div>
+
+<!-- ══ EKRAN 1: KIM BILAN ══ -->
+<div class="screen" id="screen-kim">
+  <div class="card" style="min-width:480px;">
+    <div class="sarlavha">❌ X va O ⭕</div>
+    <div class="sub">Kim bilan o'ynaysiz?</div>
+    <div class="tanlov-grid" style="margin-bottom:28px;">
+      <button class="tanlov-btn" style="--e:#60a5fa;--g:rgba(96,165,250,0.4)" onclick="kimTanla('2oyunchi')">
+        <span class="t-icon">👥</span>
+        <span class="t-nom">2 O'yinchi</span>
+        <span class="t-tavsif">Bir kompyuterda</span>
+      </button>
+      <button class="tanlov-btn" style="--e:#a855f7;--g:rgba(168,85,247,0.4)" onclick="kimTanla('ai')">
+        <span class="t-icon">🤖</span>
+        <span class="t-nom">Kompyuter (AI)</span>
+        <span class="t-tavsif">Offline AI</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EKRAN 2: AI DARAJASI ══ -->
+<div class="screen hidden" id="screen-daraja">
+  <div class="card" style="min-width:480px;">
+    <div class="sarlavha">🤖 AI Darajasi</div>
+    <div class="sub">Qanchalik qiyin bo'lsin?</div>
+    <div class="tanlov-grid" style="margin-bottom:28px;">
+      <button class="tanlov-btn" style="--e:#22c55e;--g:rgba(34,197,94,0.4)" onclick="darajaTanla('oson')">
+        <span class="t-icon">😊</span>
+        <span class="t-nom">Oson</span>
+        <span class="t-tavsif">Tasodifiy harakat</span>
+      </button>
+      <button class="tanlov-btn" style="--e:#fbbf24;--g:rgba(251,191,36,0.4)" onclick="darajaTanla('orta')">
+        <span class="t-icon">🧠</span>
+        <span class="t-nom">O'rta</span>
+        <span class="t-tavsif">Aqlli harakat</span>
+      </button>
+      <button class="tanlov-btn" style="--e:#ef4444;--g:rgba(239,68,68,0.4)" onclick="darajaTanla('qiyin')">
+        <span class="t-icon">🤖</span>
+        <span class="t-nom">Qiyin</span>
+        <span class="t-tavsif">Minimax AI</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EKRAN 3: HAJM ══ -->
+<div class="screen hidden" id="screen-hajm">
+  <div class="card" style="min-width:420px;">
+    <div class="sarlavha">📐 Taxta hajmi</div>
+    <div class="sub">Nechta katakda o'ynaysiz?</div>
+    <div class="tanlov-grid" style="margin-bottom:28px;">
+      <button class="tanlov-btn" style="--e:#60a5fa;--g:rgba(96,165,250,0.4)" onclick="hajmTanla(3)">
+        <span class="t-icon">🟦</span>
+        <span class="t-nom">3 × 3</span>
+        <span class="t-tavsif">Klassik</span>
+      </button>
+      <button class="tanlov-btn" style="--e:#a855f7;--g:rgba(168,85,247,0.4)" onclick="hajmTanla(4)">
+        <span class="t-icon">🟪</span>
+        <span class="t-nom">4 × 4</span>
+        <span class="t-tavsif">Qiziqroq</span>
+      </button>
+      <button class="tanlov-btn" style="--e:#f97316;--g:rgba(249,115,22,0.4)" onclick="hajmTanla(5)">
+        <span class="t-icon">🟧</span>
+        <span class="t-nom">5 × 5</span>
+        <span class="t-tavsif">Murakkab</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EKRAN 4: O'YIN ══ -->
+<div class="screen hidden" id="screen-oyun">
+  <div class="oyun-wrap">
+
+    <!-- Chap panel -->
+    <div class="chap-panel">
+      <div class="oyunchi-karta aktiv" id="karta-x" style="--renk:#f87171;--soya:rgba(248,113,113,0.3)">
+        <div class="belgi">❌</div>
+        <div class="oyunchi-nom" id="nom-x">1-O'yinchi</div>
+        <div class="ball-text" id="ball-x">0</div>
+      </div>
+      <div class="oyunchi-karta" id="karta-o" style="--renk:#60a5fa;--soya:rgba(96,165,250,0.3)">
+        <div class="belgi">⭕</div>
+        <div class="oyunchi-nom" id="nom-o">2-O'yinchi</div>
+        <div class="ball-text" id="ball-o">0</div>
+      </div>
+      <div class="info-chip">Durrang: <strong id="durrang">0</strong></div>
+      <button class="yangi-btn" onclick="yangiOyin()">🔄 Yangi o'yin</button>
+      <button class="yangi-btn" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);box-shadow:none;" onclick="orqaga()">← Chiqish</button>
+    </div>
+
+    <!-- Taxta -->
+    <div class="taxta-wrap">
+      <div class="status-box" id="status">O'yin boshlandi!</div>
+      <div class="taxta" id="taxta"></div>
+    </div>
+
+    <!-- O'ng panel -->
+    <div class="ong-panel">
+      <div class="info-chip">Tur: <strong id="info-tur">—</strong></div>
+      <div class="info-chip">Daraja: <strong id="info-daraja">—</strong></div>
+      <div class="info-chip">Hajm: <strong id="info-hajm">—</strong></div>
+      <div class="info-chip">Hamla: <strong id="info-hamla">1</strong></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Natija overlay -->
+<div class="natija-overlay" id="natija-overlay">
+  <div class="natija-card">
+    <div class="natija-emoji" id="natija-emoji">🏆</div>
+    <div class="natija-h" id="natija-h">G'alaba!</div>
+    <div class="natija-sub" id="natija-sub">Tabriklaymiz!</div>
+    <div style="margin-top:8px;">
+      <button class="natija-btn" onclick="yangiOyin()">🔄 Qayta</button>
+      <button class="natija-btn grey" onclick="orqaga()">← Menyuga</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const { ipcRenderer } = require('electron');
+
+// ── HOLAT ──────────────────────────────────────────
+let N = 3;
+let taxta = [];
+let joriyBelgi = 'X';
+let oyin = 'ai'; // '2oyunchi' | 'ai'
+let aiDaraja = 'orta';
+let ballX = 0, ballO = 0, durrangSon = 0;
+let oyinTugadi = false;
+let oyinchiIsm = '';
+let hamla = 0;
+
+ipcRenderer.invoke('get-ism').then(ism => {
+  oyinchiIsm = ism || 'O\'yinchi';
+});
+
+// ── EKRANLAR ──────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function kimTanla(k) {
+  oyin = k;
+  if (k === 'ai') showScreen('screen-daraja');
+  else { aiDaraja = null; showScreen('screen-hajm'); }
+}
+
+function darajaTanla(d) {
+  aiDaraja = d;
+  showScreen('screen-hajm');
+}
+
+function hajmTanla(n) {
+  N = n;
+  oyinBoshlash();
+}
+
+// ── O'YIN BOSHLASH ────────────────────────────────
+function oyinBoshlash() {
+  taxta = Array(N * N).fill('');
+  joriyBelgi = 'X';
+  oyinTugadi = false;
+  hamla = 0;
+
+  // Nomlar
+  document.getElementById('nom-x').textContent = oyinchiIsm + ' ❌';
+  document.getElementById('nom-o').textContent = oyin === 'ai' ? '🤖 AI' : '2-O\'yinchi';
+  document.getElementById('info-tur').textContent = oyin === 'ai' ? 'AI' : '2 O\'yinchi';
+  document.getElementById('info-daraja').textContent = aiDaraja || '—';
+  document.getElementById('info-hajm').textContent = `${N}×${N}`;
+  document.getElementById('info-hamla').textContent = 1;
+
+  aktivKarta();
+  taxtaYasa();
+  statusYangi(`${oyinchiIsm} ❌ ning navbati`);
+  showScreen('screen-oyun');
+}
+
+// ── TAXTA YASASH ──────────────────────────────────
+function taxtaYasa() {
+  const el = document.getElementById('taxta');
+  const kataKo = N === 3 ? 90 : N === 4 ? 76 : 62;
+  el.style.gridTemplateColumns = `repeat(${N}, ${kataKo}px)`;
+  el.innerHTML = '';
+
+  for (let i = 0; i < N * N; i++) {
+    const k = document.createElement('div');
+    k.className = 'katak';
+    k.style.width = kataKo + 'px';
+    k.style.height = kataKo + 'px';
+    k.style.fontSize = N === 3 ? '36px' : N === 4 ? '28px' : '22px';
+    k.dataset.i = i;
+    k.onclick = () => kataKBos(i);
+    el.appendChild(k);
+  }
+}
+
+function kataKBos(i) {
+  if (oyinTugadi || taxta[i]) return;
+  if (oyin === 'ai' && joriyBelgi === 'O') return;
+
+  qoyish(i, joriyBelgi);
+
+  if (oyinTugadi) return;
+
+  if (oyin === 'ai') {
+    setTimeout(() => aiHamla(), 400);
+  }
+}
+
+function qoyish(i, belgi) {
+  taxta[i] = belgi;
+  hamla++;
+
+  const el = document.getElementById('taxta').children[i];
+  el.textContent = belgi === 'X' ? '✕' : '◯';
+  el.classList.add(belgi === 'X' ? 'x-belgi' : 'o-belgi', 'band', 'katak-pop');
+  document.getElementById('info-hamla').textContent = hamla + 1;
+
+  const yut = yutganniTopish(taxta, belgi);
+  if (yut) {
+    yutdiOyin(belgi, yut);
+    return;
+  }
+  if (taxta.every(t => t)) {
+    durrangOyin();
+    return;
+  }
+
+  joriyBelgi = belgi === 'X' ? 'O' : 'X';
+  aktivKarta();
+
+  if (oyin === '2oyunchi') {
+    statusYangi(joriyBelgi === 'X' ? `${oyinchiIsm} ❌ ning navbati` : `2-O'yinchi ⭕ navbati`);
+  } else {
+    statusYangi(joriyBelgi === 'X' ? `${oyinchiIsm} ❌ ning navbati` : '🤖 AI o\'ylayapti...');
+  }
+}
+
+// ── AI HAMLASI ────────────────────────────────────
+function aiHamla() {
+  if (oyinTugadi) return;
+  let joy;
+
+  if (aiDaraja === 'oson') {
+    joy = tasodifiyHamla();
+  } else if (aiDaraja === 'orta') {
+    joy = Math.random() < 0.5 ? minimaxHamla() : tasodifiyHamla();
+  } else {
+    joy = minimaxHamla();
+  }
+
+  if (joy !== null) qoyish(joy, 'O');
+}
+
+function tasodifiyHamla() {
+  const bosh = taxta.map((v,i) => v ? null : i).filter(v => v !== null);
+  return bosh[Math.floor(Math.random() * bosh.length)] ?? null;
+}
+
+function minimaxHamla() {
+  // 3x3 uchun to'liq minimax, kattaroq uchun cheklangan
+  if (N === 3) {
+    let eng = -Infinity, joy = null;
+    for (let i = 0; i < N*N; i++) {
+      if (!taxta[i]) {
+        taxta[i] = 'O';
+        const ball = minimax(taxta, 0, false, -Infinity, Infinity);
+        taxta[i] = '';
+        if (ball > eng) { eng = ball; joy = i; }
+      }
+    }
+    return joy;
+  } else {
+    // Katta taxtalarda: g'alaba/blok/markaz/tasodifiy
+    return aqliHamla();
+  }
+}
+
+function minimax(t, chuqurlik, maksimizator, alfa, beta) {
+  const yut = yutganniTopish(t, 'O');
+  if (yut) return 10 - chuqurlik;
+  if (yutganniTopish(t, 'X')) return chuqurlik - 10;
+  if (t.every(v => v)) return 0;
+
+  if (maksimizator) {
+    let eng = -Infinity;
+    for (let i = 0; i < t.length; i++) {
+      if (!t[i]) {
+        t[i] = 'O';
+        eng = Math.max(eng, minimax(t, chuqurlik+1, false, alfa, beta));
+        t[i] = '';
+        alfa = Math.max(alfa, eng);
+        if (beta <= alfa) break;
+      }
+    }
+    return eng;
+  } else {
+    let eng = Infinity;
+    for (let i = 0; i < t.length; i++) {
+      if (!t[i]) {
+        t[i] = 'X';
+        eng = Math.min(eng, minimax(t, chuqurlik+1, true, alfa, beta));
+        t[i] = '';
+        beta = Math.min(beta, eng);
+        if (beta <= alfa) break;
+      }
+    }
+    return eng;
+  }
+}
+
+function aqliHamla() {
+  // G'alaba qiluvchi hamla
+  for (let i = 0; i < N*N; i++) {
+    if (!taxta[i]) {
+      taxta[i] = 'O';
+      if (yutganniTopish(taxta, 'O')) { taxta[i] = ''; return i; }
+      taxta[i] = '';
+    }
+  }
+  // Bloklash
+  for (let i = 0; i < N*N; i++) {
+    if (!taxta[i]) {
+      taxta[i] = 'X';
+      if (yutganniTopish(taxta, 'X')) { taxta[i] = ''; return i; }
+      taxta[i] = '';
+    }
+  }
+  // Markaz
+  const m = Math.floor(N/2) * N + Math.floor(N/2);
+  if (!taxta[m]) return m;
+  // Tasodifiy
+  return tasodifiyHamla();
+}
+
+// ── YUTISHNI TOPISH ───────────────────────────────
+function yutganniTopish(t, belgi) {
+  // Qatorlar
+  for (let r = 0; r < N; r++) {
+    const qator = [];
+    for (let c = 0; c < N; c++) qator.push(r*N+c);
+    if (qator.every(i => t[i] === belgi)) return qator;
+  }
+  // Ustunlar
+  for (let c = 0; c < N; c++) {
+    const ustu = [];
+    for (let r = 0; r < N; r++) ustu.push(r*N+c);
+    if (ustu.every(i => t[i] === belgi)) return ustu;
+  }
+  // Diagonal
+  const d1 = [], d2 = [];
+  for (let i = 0; i < N; i++) { d1.push(i*N+i); d2.push(i*N+(N-1-i)); }
+  if (d1.every(i => t[i] === belgi)) return d1;
+  if (d2.every(i => t[i] === belgi)) return d2;
+  return null;
+}
+
+// ── YUTDI ─────────────────────────────────────────
+function yutdiOyin(belgi, indekslar) {
+  oyinTugadi = true;
+
+  // Yutgan kataklarni yashil qilish
+  indekslar.forEach(i => {
+    document.getElementById('taxta').children[i].classList.add('yutdi');
+  });
+
+  if (belgi === 'X') { ballX++; document.getElementById('ball-x').textContent = ballX; }
+  else { ballO++; document.getElementById('ball-o').textContent = ballO; }
+
+  const nom = belgi === 'X' ? oyinchiIsm : (oyin === 'ai' ? 'AI' : "2-O'yinchi");
+  const emoji = belgi === 'X' ? '🏆' : (oyin === 'ai' ? '🤖' : '🏆');
+
+  setTimeout(() => {
+    korsatNatija(emoji, `${nom} g'alaba qozondi!`, `${belgi} belgisi yutdi! Ball: ❌${ballX} — ⭕${ballO}`);
+  }, 600);
+}
+
+// ── DURRANG ───────────────────────────────────────
+function durrangOyin() {
+  oyinTugadi = true;
+  durrangSon++;
+  document.getElementById('durrang').textContent = durrangSon;
+  setTimeout(() => {
+    korsatNatija('🤝', 'Durrang!', `Hech kim yutmadi! Ball: ❌${ballX} — ⭕${ballO}`);
+  }, 400);
+}
+
+function korsatNatija(emoji, h, sub) {
+  document.getElementById('natija-emoji').textContent = emoji;
+  document.getElementById('natija-h').textContent = h;
+  document.getElementById('natija-sub').textContent = sub;
+  document.getElementById('natija-overlay').classList.add('show');
+}
+
+// ── YANGI O'YIN ───────────────────────────────────
+function yangiOyin() {
+  document.getElementById('natija-overlay').classList.remove('show');
+  taxta = Array(N * N).fill('');
+  joriyBelgi = 'X';
+  oyinTugadi = false;
+  hamla = 0;
+  document.getElementById('info-hamla').textContent = 1;
+  aktivKarta();
+  taxtaYasa();
+  statusYangi(`${oyinchiIsm} ❌ ning navbati`);
+}
+
+// ── YORDAMCHI ─────────────────────────────────────
+function aktivKarta() {
+  document.getElementById('karta-x').classList.toggle('aktiv', joriyBelgi === 'X');
+  document.getElementById('karta-o').classList.toggle('aktiv', joriyBelgi === 'O');
+}
+
+function statusYangi(matn) {
+  document.getElementById('status').textContent = matn;
+}
+
+function orqaga() {
+  ipcRenderer.invoke('goto', 'oyinlar');
+}
+
+// Yulduzlar
+const container = document.getElementById('particles');
+for (let i = 0; i < 50; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  const size = Math.random() * 2.5 + 0.5;
+  dot.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;opacity:${Math.random()*0.5};`;
+  container.appendChild(dot);
+}
+
+function fitWindow() {
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  document.body.style.transform = `scale(${scale})`;
+  document.body.style.marginLeft = `${Math.max(0, (window.innerWidth - 1280 * scale) / 2)}px`;
+  document.body.style.marginTop = `${Math.max(0, (window.innerHeight - 720 * scale) / 2)}px`;
+}
+window.addEventListener('resize', fitWindow);
+fitWindow();
+
+</script>
+</body>
+</html>

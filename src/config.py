@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     # ── Telegram ───────────────────────────────────────────
     BOT_TOKEN: str = ""
     OWNER_ID: int = 0
+    ADMIN_IDS: str = ""
     BOT_USERNAME: str = "@Artificial_teacher_bot"
 
     # ── Database ───────────────────────────────────────────

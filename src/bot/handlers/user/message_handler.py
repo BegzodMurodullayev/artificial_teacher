@@ -112,11 +112,22 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
     selected_mode = current_mode
 
     if not selected_mode:
-        # Quick heuristics to save API calls
+        # Rule-based Intent Routing
+        text_lower = text.lower()
+        is_latin = bool(re.search(r'[a-zA-Z]', text))
+        is_cyrillic = bool(re.search(r'[а-яА-Я]', text))
+        
+        # Support/Bot questions
+        bot_keywords = ["bot", "nima", "qanday", "yordam", "ishla", "kim", "qil", "salom", "qanaqa"]
+        
         if len(text.split()) > 100 or "def " in text or "```" in text:
             selected_mode = "TECHNICAL"
+        elif any(kw in text_lower for kw in bot_keywords) and len(text.split()) < 10:
+            selected_mode = "SUPPORT"
+        elif is_latin and not is_cyrillic and len(text.split()) >= 1:
+            selected_mode = "CORRECTION"
         else:
-            selected_mode = await ai_teacher_service.get_intent(text, user_id=user_id)
+            selected_mode = "UNCLEAR"
 
     logger.info("Routing user=%s mode=%s text=%.60s", user_id, selected_mode, text)
 
@@ -138,10 +149,23 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
         from src.bot.handlers.user.pronunciation import process_pronunciation
         await process_pronunciation(message, text, user_id)
 
-    elif selected_mode == "TECHNICAL":
+    elif selected_mode in ("TECHNICAL", "SUPPORT"):
         response = await ai_service.ask_ai(text, mode="bot", user_id=user_id, level=level)
         await safe_reply(message, response)
         
-    else:
-        # Default: CORRECTION
+    elif selected_mode == "CORRECTION":
         await process_grammar_check(message, text, user_id, level)
+        
+    else:
+        # UNCLEAR
+        from src.bot.keyboards.user_menu import edu_menu
+        await safe_reply(
+            message, 
+            "🤔 Tushunmadim, sizga qanday yordam bera olaman?\n\n"
+            "Iltimos, kerakli rejimni tanlang:\n"
+            "• Tarjima (Matn yuboring va /translate)\n"
+            "• Xatolarni tekshirish (Inglizcha yuboring)\n"
+            "• Suhbat (/teacher)\n\n"
+            "Yoki menyudan tanlang:",
+            reply_markup=edu_menu()
+        )

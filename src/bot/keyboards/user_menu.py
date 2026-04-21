@@ -46,18 +46,21 @@ def edu_menu() -> ReplyKeyboardMarkup:
         [KeyboardButton(text="✅ Tekshirish"), KeyboardButton(text="🌐 Tarjima")],
         [KeyboardButton(text="🔊 Talaffuz"), KeyboardButton(text="📚 Darslar")],
         [KeyboardButton(text="📖 Grammatika"), KeyboardButton(text="📅 Kunlik so'z")],
+        [KeyboardButton(text="📚 Kutubxona"), KeyboardButton(text="💡 Evrika")],
         [KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
 def test_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
         [KeyboardButton(text="🧠 Quiz"), KeyboardButton(text="🧠 IQ Test")],
-        [KeyboardButton(text="🔙 Asosiy Menyu")]
+        [KeyboardButton(text="🧠 Zakovat"), KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
 def games_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton(text="🕵️ Mafiya")],
+        [KeyboardButton(text="🔢 Raqam Topish"), KeyboardButton(text="⚡ Tez Hisob")],
+        [KeyboardButton(text="🔤 So'z Topish"), KeyboardButton(text="🏃 Tarjima Poygasi")],
+        [KeyboardButton(text="🕵️ Mafiya"), KeyboardButton(text="🕹️ WebApp O'yinlar")],
         [KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
@@ -95,11 +98,37 @@ USER_MENU_ALIASES = {
     "quiz":          ["🧠 Quiz", "quiz"],
     "lessons":       ["📚 Darslar", "📚 Lessons", "lessons", "darslar"],
     "grammar":       ["📖 Grammatika", "📖 Grammar", "grammar", "grammatika"],
+    "daily_word":    ["📅 Kunlik so'z"],
     "stats":         ["📊 Statistika", "📈 Darajam", "stats", "statistika", "darajam"],
     "subscribe":     ["⭐ Obuna", "⭐ Subscribe", "subscribe", "obuna"],
     "settings":      ["⚙️ Sozlamalar", "⚙️ Settings", "settings", "sozlamalar"],
     "help":          ["ℹ️ Yordam", "ℹ️ Aloqa", "help", "yordam", "aloqa"],
+    "iq_test":       ["🧠 IQ Test", "iq test"],
+    "library":       ["📚 Kutubxona"],
+    "evrika":        ["💡 Evrika"],
+    "zakovat":       ["🧠 Zakovat"],
+    "game_number":   ["🔢 Raqam Topish"],
+    "game_math":     ["⚡ Tez Hisob"],
+    "game_mafia":    ["🕵️ Mafiya", "🎮 Mafiya"],
+    "game_word":     ["🔤 So'z Topish"],
+    "game_translate": ["🏃 Tarjima Poygasi"],
+    "game_webapp":   ["🕹️ WebApp O'yinlar"],
+    # ── Navigation ────
+    "main_menu":     ["🔙 Asosiy Menyu"],
+    "edu_menu":      ["🎓 Ta'lim"],
+    "test_menu":     ["🎯 Sinovlar"],
+    "games_menu":    ["🎮 Guruh O'yinlari"],
+    "cabinet_menu":  ["👤 Kabinetim"],
+    "extra_menu":    ["⚙️ Qo'shimcha"],
     "admin":         ["🛡 Admin Panel", "admin panel"],
+    # ── Admin Panel buttons (must always be skipped by message_handler) ────
+    "adm_payments":  ["💳 To'lovlar"],
+    "adm_users":     ["👥 Foydalanuvchilar"],
+    "adm_broadcast": ["📢 Broadcast"],
+    "adm_stats":     ["📈 Statistika"],
+    "adm_plans":     ["⚙️ Rejalar"],
+    "adm_leaderboard": ["🏆 Reyting"],
+    "bonuses":       ["🎁 Bonuslar"],
 }
 
 

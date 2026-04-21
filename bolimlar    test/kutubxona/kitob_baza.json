@@ -1,0 +1,93 @@
+[
+  {
+    "id": 748291,
+    "nom": "Atom Odatlar",
+    "yozuvchi": "Jeyms Klir",
+    "janr": "Rivojlanish",
+    "tavsif": "Kichik odatlar orqali katta o'zgarishlarga erishish haqida amaliy qo'llanma."
+  },
+  {
+    "id": 615392,
+    "nom": "Molxona",
+    "yozuvchi": "Jorj Oruell",
+    "janr": "Antiutopiya",
+    "tavsif": "Totalitar jamiyat va hokimiyat suiiste'moli haqida allegorik roman."
+  },
+  {
+    "id": 293618,
+    "nom": "1984",
+    "yozuvchi": "Jorj Oruell",
+    "janr": "Antiutopiya",
+    "tavsif": "Kelajakdagi totalitar davlatda yashayotgan odamning qo'rqinchli hayoti haqida."
+  },
+  {
+    "id": 482193,
+    "nom": "Boy ota, kambag'al ota",
+    "yozuvchi": "Robert Kiyosaki",
+    "janr": "Moliyaviy",
+    "tavsif": "Pul ishlash va moliyaviy fikrlashni o'zgartirish haqida mashhur kitob."
+  },
+  {
+    "id": 739201,
+    "nom": "O'ylab ko'r va boy bo'l",
+    "yozuvchi": "Napoleon Hill",
+    "janr": "Motivatsiya",
+    "tavsif": "Muvaffaqiyatga erishish uchun fikrlash kuchi va maqsad haqida."
+  },
+  {
+    "id": 564738,
+    "nom": "Alkimyogar",
+    "yozuvchi": "Paulo Koelho",
+    "janr": "Falsafa",
+    "tavsif": "Orzular ortidan borish va hayot ma'nosini topish haqida hikoya."
+  },
+  {
+    "id": 384920,
+    "nom": "Ufq ortida",
+    "yozuvchi": "Chingiz Aytmatov",
+    "janr": "Badiiy",
+    "tavsif": "Insoniy qadriyatlar va hayot sinovlari haqida ta'sirli asar."
+  },
+  {
+    "id": 726451,
+    "nom": "Mehrobdan chayon",
+    "yozuvchi": "Abdulla Qodiriy",
+    "janr": "Klassika",
+    "tavsif": "Muhabbat va jamiyatdagi muammolarni aks ettiruvchi roman."
+  },
+  {
+    "id": 159357,
+    "nom": "O'tkan kunlar",
+    "yozuvchi": "Abdulla Qodiriy",
+    "janr": "Klassika",
+    "tavsif": "O'zbek adabiyotining eng mashhur tarixiy romani."
+  },
+  {
+    "id": 852741,
+    "nom": "Dunyoning ishlari",
+    "yozuvchi": "O'tkir Hoshimov",
+    "janr": "Hayotiy",
+    "tavsif": "Oddiy insonlar hayoti va tuyg'ulari haqida samimiy hikoyalar."
+  },
+  {
+    "id": 963852,
+    "nom": "Ikki eshik orasi",
+    "yozuvchi": "O'tkir Hoshimov",
+    "janr": "Badiiy",
+    "tavsif": "Urush va inson taqdiri haqida chuqur ma'noli roman."
+  },
+  {
+    "id": 445566,
+    "nom": "Uch mushketyor",
+    "yozuvchi": "Aleksandr Dyuma",
+    "janr": "Sarguzasht",
+    "tavsif": "Do'stlik, jasorat va sarguzashtlarga boy mashhur roman."
+  },
+  {
+    "id": 741852,
+    "nom": "Hokimiyatning 48 qoidasi",
+    "yozuvchi": "Robert Grin",
+    "janr": "Psixologiya",
+    "tavsif": "Hokimiyat, strategiya va odamlar ustidan ta'sir o'tkazishning nozik usullari haqida mashhur kitob."
+  }
+]

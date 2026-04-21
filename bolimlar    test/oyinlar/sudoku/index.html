@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BilimBox — Sudoku</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1280px; height: 720px; overflow: hidden;
+    font-family: 'Segoe UI', sans-serif; background: #0a0a1a; user-select: none;
+    transform-origin: top left;
+    position: relative;
+  }
+  .bg {
+    position: fixed; inset: 0;
+    background-image: url('../../../ui/assets/bg_kirish.jpg');
+    background-size: cover; background-position: center;
+    filter: brightness(0.4); z-index: 0;
+  }
+  .overlay {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(168,85,247,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 30%, rgba(96,165,250,0.15) 0%, transparent 55%);
+    z-index: 1;
+  }
+  .titlebar {
+    position: fixed; top: 0; left: 0; right: 0; height: 40px;
+    -webkit-app-region: drag; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+  }
+  .titlebar-left { display: flex; align-items: center; gap: 12px; -webkit-app-region: no-drag; }
+  .back-btn {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(180,200,255,0.8); padding: 4px 12px; border-radius: 8px;
+    cursor: pointer; font-size: 12px; transition: all 0.2s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .app-name {
+    font-size: 15px; font-weight: 700;
+    background: linear-gradient(135deg, #a855f7, #60a5fa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .titlebar-right { display: flex; align-items: center; gap: 8px; -webkit-app-region: no-drag; }
+  .titlebar button { width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer; transition: opacity 0.2s, transform 0.2s; }
+  .titlebar button:hover { opacity: 0.85; transform: scale(1.15); }
+  .btn-close { background: #ff5f57; } .btn-min { background: #febc2e; } .btn-max { background: #78c3ff; }
+  .btn-max   { background: #78c3ff; }
+  .header-line {
+    position: fixed; top: 40px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(168,85,247,0.3), transparent); z-index: 99;
+  }
+  .particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+  .dot {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.6);
+    animation: twinkle var(--d,3s) ease-in-out infinite; animation-delay: var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:0.1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.3)} }
+
+  .screen {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 10;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .screen.hidden { opacity: 0; pointer-events: none; transform: scale(0.97); }
+
+  .card {
+    background: rgba(10,15,40,0.65); backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px; padding: 36px 48px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    text-align: center; min-width: 600px;
+  }
+  .sarlavha { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+  .sub { font-size: 13px; color: rgba(180,200,255,0.6); margin-bottom: 28px; }
+  .label { font-size: 11px; color: rgba(180,200,255,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; text-align: left; }
+  .bolim { margin-bottom: 22px; }
+
+  .tanlash-grid { display: flex; gap: 12px; }
+  .tanlash-btn {
+    flex: 1; padding: 14px 10px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; gap: 5px;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  .tanlash-btn::before {
+    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--e,#fff), transparent); opacity: 0.8;
+  }
+  .tanlash-btn.tanlandi {
+    background: rgba(255,255,255,0.12); border-color: var(--e,#fff);
+    box-shadow: 0 0 16px var(--g,rgba(255,255,255,0.2));
+  }
+  .tanlash-btn:hover { transform: translateY(-4px); background: rgba(255,255,255,0.1); }
+  .t-icon { font-size: 24px; }
+  .t-nom { font-size: 13px; font-weight: 700; color: #fff; }
+  .t-tavsif { font-size: 11px; color: rgba(200,220,255,0.5); }
+
+  /* Toggle (vaqt, xato) */
+  .toggle-grid { display: flex; gap: 10px; }
+  .toggle-btn {
+    flex: 1; padding: 10px 14px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: rgba(200,220,255,0.7); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .toggle-btn.tanlandi {
+    background: rgba(168,85,247,0.2); border-color: #a855f7; color: #a855f7;
+  }
+  .toggle-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+  .boshlash-btn {
+    width: 100%; padding: 15px; border-radius: 16px; border: none;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(168,85,247,0.4);
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s; margin-top: 8px;
+  }
+  .boshlash-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(168,85,247,0.5); }
+  .boshlash-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ══ O'YIN EKRANI ══ */
+  .oyun-layout {
+    display: flex; gap: 28px; align-items: flex-start; justify-content: center;
+  }
+
+  .yon-panel { display: flex; flex-direction: column; gap: 10px; min-width: 150px; padding-top: 4px; }
+
+  .info-chip {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 9px 14px; font-size: 12px;
+    color: rgba(200,220,255,0.8); text-align: center;
+  }
+  .info-chip strong { color: #fff; font-size: 17px; display: block; margin-top: 2px; }
+
+  .amal-btn {
+    padding: 10px 14px; border-radius: 12px; border: none;
+    font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, opacity 0.2s;
+    text-align: center;
+  }
+  .amal-btn:hover { transform: translateY(-2px); }
+  .amal-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-hint { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a0a00; }
+  .btn-tekshir { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+  .btn-yangi { background: linear-gradient(135deg, #a855f7, #7c3aed); color: #fff; }
+  .btn-chiqish { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(200,220,255,0.8); }
+
+  /* Sudoku taxta */
+  .taxta-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .status-box {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 7px 20px; font-size: 13px;
+    color: rgba(200,220,255,0.9); text-align: center; min-width: 280px;
+  }
+
+  .sudoku-grid {
+    display: grid;
+    background: rgba(168,85,247,0.3);
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 30px rgba(168,85,247,0.15);
+  }
+
+  .s-katak {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    background: rgba(10,15,45,0.85);
+    border: 1px solid rgba(168,85,247,0.2);
+    color: rgba(200,220,255,0.9);
+    position: relative;
+  }
+  .s-katak.berilgan { color: #a78bfa; cursor: default; font-weight: 800; }
+  .s-katak.tanlangan { background: rgba(168,85,247,0.25) !important; }
+  .s-katak.bir-qator { background: rgba(168,85,247,0.08); }
+  .s-katak.xato { color: #f87171 !important; animation: shake 0.3s; }
+  .s-katak.togri { color: #4ade80 !important; }
+  .s-katak:hover:not(.berilgan) { background: rgba(168,85,247,0.15); }
+
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+  /* Raqam kiritish paneli */
+  .raqam-panel {
+    display: grid; gap: 6px; margin-top: 8px;
+  }
+  .r-btn {
+    width: 40px; height: 40px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: rgba(200,220,255,0.9); font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .r-btn:hover { background: rgba(168,85,247,0.25); border-color: #a855f7; color: #fff; }
+  .r-btn.ochirish { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+  /* Timer progressbar */
+  .timer-bar-wrap {
+    width: 100%; height: 4px; background: rgba(255,255,255,0.08);
+    border-radius: 2px; overflow: hidden; margin-bottom: 4px;
+  }
+  .timer-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #a855f7, #60a5fa); transition: width 1s linear; }
+
+  /* Natija */
+  .natija-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .natija-overlay.show { opacity: 1; pointer-events: all; }
+  .natija-card {
+    background: rgba(10,15,40,0.95); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 28px; padding: 44px 56px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1); min-width: 460px;
+  }
+  @keyframes bounceIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+  .n-emoji { font-size: 60px; margin-bottom: 14px; }
+  .n-h { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .n-sub { font-size: 14px; color: rgba(180,210,255,0.7); margin-bottom: 24px; }
+  .n-stats { display: flex; gap: 14px; justify-content: center; margin-bottom: 24px; }
+  .n-stat { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px 18px; }
+  .n-stat .val { font-size: 24px; font-weight: 800; color: #fff; }
+  .n-stat .nom { font-size: 11px; color: rgba(180,200,255,0.6); margin-top: 2px; }
+  .n-btn { padding: 12px 28px; border-radius: 14px; border: none; background: linear-gradient(135deg, #a855f7, #7c3aed); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; margin: 0 6px; transition: transform 0.2s; }
+  .n-btn:hover { transform: translateY(-2px); }
+  .n-btn.grey { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(200,220,255,0.8); }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="overlay"></div>
+<div class="particles" id="particles"></div>
+
+<div class="titlebar">
+  <div class="titlebar-left">
+    <button class="back-btn" onclick="orqaga()">← Orqaga</button>
+    <span class="app-name">✦ BilimBox — Sudoku</span>
+  </div>
+  <div class="titlebar-right">
+    <button class="btn-min" onclick="ipcRenderer.invoke('minimize-app')"></button>
+    <button class="btn-max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button>
+    <button class="btn-close" onclick="ipcRenderer.invoke('close-app')"></button>
+  </div>
+</div>
+<div class="header-line"></div>
+
+<!-- ══ EKRAN 1: SOZLASH ══ -->
+<div class="screen" id="screen-sozlash">
+  <div class="card">
+    <div class="sarlavha">🧩 Sudoku</div>
+    <div class="sub">Sozlamalarni tanlang</div>
+
+    <!-- Hajm -->
+    <div class="bolim">
+      <div class="label">Taxta hajmi</div>
+      <div class="tanlash-grid">
+        <button class="tanlash-btn" id="hajm-4" style="--e:#22c55e;--g:rgba(34,197,94,0.3)" onclick="hajmTanla(4)">
+          <span class="t-icon">🟦</span><span class="t-nom">4 × 4</span><span class="t-tavsif">Boshlang'ich</span>
+        </button>
+        <button class="tanlash-btn" id="hajm-6" style="--e:#fbbf24;--g:rgba(251,191,36,0.3)" onclick="hajmTanla(6)">
+          <span class="t-icon">🟧</span><span class="t-nom">6 × 6</span><span class="t-tavsif">O'rta</span>
+        </button>
+        <button class="tanlash-btn" id="hajm-9" style="--e:#a855f7;--g:rgba(168,85,247,0.3)" onclick="hajmTanla(9)">
+          <span class="t-icon">🟪</span><span class="t-nom">9 × 9</span><span class="t-tavsif">Klassik</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Daraja -->
+    <div class="bolim">
+      <div class="label">Qiyinlik darajasi</div>
+      <div class="tanlash-grid">
+        <button class="tanlash-btn" id="daraja-oson" style="--e:#22c55e;--g:rgba(34,197,94,0.3)" onclick="darajaTanla('oson')">
+          <span class="t-icon">🟢</span><span class="t-nom">Oson</span><span class="t-tavsif">Ko'p raqam berilgan</span>
+        </button>
+        <button class="tanlash-btn" id="daraja-orta" style="--e:#fbbf24;--g:rgba(251,191,36,0.3)" onclick="darajaTanla('orta')">
+          <span class="t-icon">🟡</span><span class="t-nom">O'rta</span><span class="t-tavsif">O'rta miqdor</span>
+        </button>
+        <button class="tanlash-btn" id="daraja-qiyin" style="--e:#ef4444;--g:rgba(239,68,68,0.3)" onclick="darajaTanla('qiyin')">
+          <span class="t-icon">🔴</span><span class="t-nom">Qiyin</span><span class="t-tavsif">Kam raqam berilgan</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Qo'shimcha -->
+    <div class="bolim">
+      <div class="label">Qo'shimcha sozlamalar</div>
+      <div class="toggle-grid">
+        <button class="toggle-btn tanlandi" id="tog-vaqt" onclick="togToggle('vaqt')">⏱ Vaqt ko'rsatsin</button>
+        <button class="toggle-btn tanlandi" id="tog-xato" onclick="togToggle('xato')">❌ Xatoni bildirsin</button>
+        <button class="toggle-btn tanlandi" id="tog-hint" onclick="togToggle('hint')">💡 Hint (3 ta)</button>
+      </div>
+    </div>
+
+    <button class="boshlash-btn" id="boshlash-btn" disabled onclick="oyinBoshlash()">🧩 Boshlash</button>
+  </div>
+</div>
+
+<!-- ══ EKRAN 2: O'YIN ══ -->
+<div class="screen hidden" id="screen-oyun">
+  <div class="oyun-layout">
+
+    <!-- Chap panel -->
+    <div class="yon-panel">
+      <div class="info-chip">⏱ Vaqt<strong id="vaqt-info">0:00</strong></div>
+      <div class="info-chip">❌ Xato<strong id="xato-info">0</strong></div>
+      <div class="info-chip">💡 Hint<strong id="hint-info">3</strong></div>
+      <div class="info-chip" id="daraja-chip">Daraja<strong>—</strong></div>
+    </div>
+
+    <!-- Taxta -->
+    <div class="taxta-wrap">
+      <div class="timer-bar-wrap" id="timer-bar-wrap" style="display:none;">
+        <div class="timer-bar" id="timer-bar" style="width:100%"></div>
+      </div>
+      <div class="status-box" id="status">Raqam tanlang va katakni bosing</div>
+      <div class="sudoku-grid" id="sudoku-grid"></div>
+      <!-- Raqam paneli -->
+      <div class="raqam-panel" id="raqam-panel"></div>
+    </div>
+
+    <!-- O'ng panel -->
+    <div class="yon-panel">
+      <button class="amal-btn btn-hint" id="btn-hint" onclick="hintBer()">💡 Hint</button>
+      <button class="amal-btn btn-tekshir" onclick="hammaTekshir()">✓ Tekshir</button>
+      <button class="amal-btn btn-yangi" onclick="yangiOyin()">🔄 Yangi</button>
+      <button class="amal-btn btn-chiqish" onclick="orqaga()">← Chiqish</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Natija -->
+<div class="natija-overlay" id="natija-overlay">
+  <div class="natija-card">
+    <div class="n-emoji" id="n-emoji">🏆</div>
+    <div class="n-h" id="n-h">Barakalla!</div>
+    <div class="n-sub" id="n-sub">Sudoku yechildi!</div>
+    <div class="n-stats">
+      <div class="n-stat"><div class="val" id="n-vaqt">0:00</div><div class="nom">Vaqt</div></div>
+      <div class="n-stat"><div class="val" id="n-xato">0</div><div class="nom">Xato</div></div>
+      <div class="n-stat"><div class="val" id="n-hint">0</div><div class="nom">Hint ishlatildi</div></div>
+    </div>
+    <button class="n-btn" onclick="yangiOyin()">🔄 Qayta</button>
+    <button class="n-btn grey" onclick="orqaga()">← Menyuga</button>
+  </div>
+</div>
+
+<script>
+const { ipcRenderer } = require('electron');
+
+// ── HOLAT ──────────────────────────────────────────
+let N = 9;
+let tanlangDaraja = null;
+let tanlangHajm = null;
+let vaqtKo = true, xatoKo = true, hintKo = true;
+let hal = [], taxta = [], berilgan = [];
+let tanlangan = null;
+let xatoSon = 0, hintIshlatildi = 0, hintQoldi = 3;
+let sekundlar = 0, timerInterval = null;
+let timerMax = 0;
+
+// ── EKRANLAR ──────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ── SOZLASH ───────────────────────────────────────
+function hajmTanla(n) {
+  N = n; tanlangHajm = n;
+  document.querySelectorAll('[id^="hajm-"]').forEach(b => b.classList.remove('tanlandi'));
+  document.getElementById('hajm-' + n).classList.add('tanlandi');
+  tekshirBoshlash();
+}
+
+function darajaTanla(d) {
+  tanlangDaraja = d;
+  document.querySelectorAll('[id^="daraja-"]').forEach(b => b.classList.remove('tanlandi'));
+  document.getElementById('daraja-' + d).classList.add('tanlandi');
+  tekshirBoshlash();
+}
+
+function togToggle(id) {
+  const btn = document.getElementById('tog-' + id);
+  btn.classList.toggle('tanlandi');
+  if (id === 'vaqt') vaqtKo = btn.classList.contains('tanlandi');
+  if (id === 'xato') xatoKo = btn.classList.contains('tanlandi');
+  if (id === 'hint') hintKo = btn.classList.contains('tanlandi');
+}
+
+function tekshirBoshlash() {
+  document.getElementById('boshlash-btn').disabled = !(tanlangHajm && tanlangDaraja);
+}
+
+// ── SUDOKU GENERATSIYA ────────────────────────────
+function sudokuYasat(n) {
+  const grid = Array.from({length: n}, () => Array(n).fill(0));
+  sudokuToldir(grid, n);
+  return grid;
+}
+
+function sudokuToldir(grid, n) {
+  const box = n === 9 ? 3 : n === 6 ? 2 : 2;
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (grid[r][c] === 0) {
+        const raqamlar = Array.from({length: n}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+        for (const num of raqamlar) {
+          if (xavfsizmi(grid, r, c, num, n, box)) {
+            grid[r][c] = num;
+            if (sudokuToldir(grid, n)) return true;
+            grid[r][c] = 0;
+          }
+        }
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function xavfsizmi(grid, r, c, num, n, box) {
+  for (let i = 0; i < n; i++) {
+    if (grid[r][i] === num || grid[i][c] === num) return false;
+  }
+  const br = Math.floor(r / box) * box;
+  const bc = Math.floor(c / box) * box;
+  const bh = n === 6 ? (box === 2 ? 2 : 3) : box;
+  for (let i = br; i < br + (n === 6 ? 2 : box); i++) {
+    for (let j = bc; j < bc + (n === 6 ? 3 : box); j++) {
+      if (grid[i][j] === num) return false;
+    }
+  }
+  return true;
+}
+
+function kamaytir(grid, n) {
+  const ochirishSon = tanlangDaraja === 'oson'
+    ? Math.floor(n * n * 0.35)
+    : tanlangDaraja === 'orta'
+    ? Math.floor(n * n * 0.52)
+    : Math.floor(n * n * 0.65);
+
+  const ochilgan = Array.from({length: n*n}, (_, i) => i).sort(() => Math.random() - 0.5);
+  const kopya = grid.map(r => [...r]);
+  for (let i = 0; i < ochirishSon; i++) {
+    const idx = ochilgan[i];
+    kopya[Math.floor(idx/n)][idx%n] = 0;
+  }
+  return kopya;
+}
+
+// ── O'YIN BOSHLASH ────────────────────────────────
+function oyinBoshlash() {
+  hal = sudokuYasat(N);
+  taxta = kamaytir(hal, N).map(r => [...r]);
+  berilgan = taxta.map(r => r.map(v => v !== 0));
+
+  xatoSon = 0; hintIshlatildi = 0; hintQoldi = 3; tanlangan = null; sekundlar = 0;
+
+  const dNom = { oson: '🟢 Oson', orta: '🟡 O\'rta', qiyin: '🔴 Qiyin' };
+  document.getElementById('daraja-chip').innerHTML = `Daraja<strong>${dNom[tanlangDaraja]}</strong>`;
+  document.getElementById('xato-info').textContent = 0;
+  document.getElementById('hint-info').textContent = hintKo ? 3 : '—';
+  document.getElementById('btn-hint').disabled = !hintKo;
+
+  // Timer
+  timerMax = N === 4 ? 300 : N === 6 ? 600 : 1800;
+  const tw = document.getElementById('timer-bar-wrap');
+  if (vaqtKo) { tw.style.display = 'block'; }
+  else { tw.style.display = 'none'; }
+
+  taxtaYasat();
+  raqamPanelYasat();
+  timerBoshlash();
+  showScreen('screen-oyun');
+}
+
+// ── TAXTA YASASH ──────────────────────────────────
+function taxtaYasat() {
+  const el = document.getElementById('sudoku-grid');
+  const kataKo = N === 4 ? 72 : N === 6 ? 62 : 52;
+  el.style.gridTemplateColumns = `repeat(${N}, ${kataKo}px)`;
+  el.style.gap = '1px';
+  el.innerHTML = '';
+
+  const box = N === 9 ? 3 : 2;
+  const bh = N === 6 ? 2 : box;
+  const bw = N === 6 ? 3 : box;
+
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
+      const k = document.createElement('div');
+      k.className = 's-katak';
+      k.style.width = kataKo + 'px';
+      k.style.height = kataKo + 'px';
+      k.dataset.r = r; k.dataset.c = c;
+
+      // Qalin chegara (box ajratish)
+      if (r % bh === 0 && r !== 0) k.style.borderTop = '2px solid rgba(168,85,247,0.5)';
+      if (c % bw === 0 && c !== 0) k.style.borderLeft = '2px solid rgba(168,85,247,0.5)';
+
+      if (berilgan[r][c]) {
+        k.classList.add('berilgan');
+        k.textContent = taxta[r][c];
+      } else if (taxta[r][c]) {
+        k.textContent = taxta[r][c];
+      }
+
+      k.onclick = () => kataKTanla(r, c);
+      el.appendChild(k);
+    }
+  }
+}
+
+function kataKTanla(r, c) {
+  tanlangan = { r, c };
+  // Highlight
+  document.querySelectorAll('.s-katak').forEach(k => {
+    k.classList.remove('tanlangan', 'bir-qator');
+    const kr = parseInt(k.dataset.r), kc = parseInt(k.dataset.c);
+    if (kr === r && kc === c) k.classList.add('tanlangan');
+    else if (kr === r || kc === c) k.classList.add('bir-qator');
+  });
+}
+
+// ── RAQAM PANELI ──────────────────────────────────
+function raqamPanelYasat() {
+  const el = document.getElementById('raqam-panel');
+  el.style.gridTemplateColumns = `repeat(${N+1}, 40px)`;
+  el.innerHTML = '';
+  for (let i = 1; i <= N; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'r-btn'; btn.textContent = i;
+    btn.onclick = () => raqamKirit(i);
+    el.appendChild(btn);
+  }
+  const del = document.createElement('button');
+  del.className = 'r-btn ochirish'; del.textContent = '⌫';
+  del.onclick = () => raqamKirit(0);
+  el.appendChild(del);
+}
+
+// ── RAQAM KIRITISH ────────────────────────────────
+function raqamKirit(num) {
+  if (!tanlangan) return;
+  const { r, c } = tanlangan;
+  if (berilgan[r][c]) return;
+
+  taxta[r][c] = num;
+  const katak = document.querySelector(`.s-katak[data-r="${r}"][data-c="${c}"]`);
+  katak.textContent = num || '';
+  katak.classList.remove('xato', 'togri');
+
+  if (num && xatoKo) {
+    if (hal[r][c] !== num) {
+      katak.classList.add('xato');
+      xatoSon++;
+      document.getElementById('xato-info').textContent = xatoSon;
+      document.getElementById('status').textContent = '❌ Xato raqam!';
+    } else {
+      katak.classList.add('togri');
+      document.getElementById('status').textContent = '✅ To\'g\'ri!';
+      tugadimi();
+    }
+  } else if (num) {
+    tugadimi();
+  }
+}
+
+// ── KEYBOARD ──────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (!tanlangan) return;
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= N) raqamKirit(num);
+  if (e.key === 'Backspace' || e.key === 'Delete') raqamKirit(0);
+  // Arrow keys
+  const { r, c } = tanlangan;
+  if (e.key === 'ArrowUp' && r > 0) kataKTanla(r-1, c);
+  if (e.key === 'ArrowDown' && r < N-1) kataKTanla(r+1, c);
+  if (e.key === 'ArrowLeft' && c > 0) kataKTanla(r, c-1);
+  if (e.key === 'ArrowRight' && c < N-1) kataKTanla(r, c+1);
+});
+
+// ── HINT ──────────────────────────────────────────
+function hintBer() {
+  if (!hintKo || hintQoldi <= 0) return;
+  // Bo'sh yoki xato katak toping
+  const bosh = [];
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
+      if (!berilgan[r][c] && taxta[r][c] !== hal[r][c]) bosh.push({ r, c });
+    }
+  }
+  if (bosh.length === 0) return;
+  const { r, c } = bosh[Math.floor(Math.random() * bosh.length)];
+  taxta[r][c] = hal[r][c];
+  const katak = document.querySelector(`.s-katak[data-r="${r}"][data-c="${c}"]`);
+  katak.textContent = hal[r][c];
+  katak.classList.remove('xato'); katak.classList.add('togri');
+  hintQoldi--; hintIshlatildi++;
+  document.getElementById('hint-info').textContent = hintQoldi;
+  if (hintQoldi <= 0) document.getElementById('btn-hint').disabled = true;
+  document.getElementById('status').textContent = `💡 Hint ishlatildi! (${hintQoldi} ta qoldi)`;
+  tugadimi();
+}
+
+// ── HAMMANI TEKSHIR ───────────────────────────────
+function hammaTekshir() {
+  let xato = 0;
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
+      if (!berilgan[r][c] && taxta[r][c]) {
+        const k = document.querySelector(`.s-katak[data-r="${r}"][data-c="${c}"]`);
+        k.classList.remove('xato', 'togri');
+        if (taxta[r][c] !== hal[r][c]) { k.classList.add('xato'); xato++; }
+        else k.classList.add('togri');
+      }
+    }
+  }
+  document.getElementById('status').textContent = xato > 0
+    ? `❌ ${xato} ta xato topildi!`
+    : '✅ Hamma to\'g\'ri!';
+}
+
+// ── TUGADIMI ──────────────────────────────────────
+function tugadimi() {
+  for (let r = 0; r < N; r++)
+    for (let c = 0; c < N; c++)
+      if (taxta[r][c] !== hal[r][c]) return;
+  natijaKo();
+}
+
+// ── TIMER ─────────────────────────────────────────
+function timerBoshlash() {
+  stopTimer();
+  timerInterval = setInterval(() => {
+    sekundlar++;
+    const m = Math.floor(sekundlar / 60);
+    const s = sekundlar % 60;
+    document.getElementById('vaqt-info').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    if (vaqtKo && timerMax > 0) {
+      const bar = document.getElementById('timer-bar');
+      const foiz = Math.max(0, 100 - (sekundlar / timerMax) * 100);
+      bar.style.width = foiz + '%';
+      if (foiz < 20) bar.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+      else if (foiz < 50) bar.style.background = 'linear-gradient(90deg, #fbbf24, #f59e0b)';
+      if (sekundlar >= timerMax) { stopTimer(); natijaKo(true); }
+    }
+  }, 1000);
+}
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+// ── NATIJA ────────────────────────────────────────
+function natijaKo(vaqtTugdi = false) {
+  stopTimer();
+  const m = Math.floor(sekundlar / 60);
+  const s = sekundlar % 60;
+  document.getElementById('n-vaqt').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  document.getElementById('n-xato').textContent = xatoSon;
+  document.getElementById('n-hint').textContent = hintIshlatildi;
+
+  let emoji, h, sub;
+  if (vaqtTugdi) {
+    emoji = '⏱'; h = 'Vaqt tugadi!'; sub = 'Keyinroq uring!';
+  } else if (xatoSon === 0 && hintIshlatildi === 0) {
+    emoji = '🏆'; h = 'Mukammal!'; sub = 'Hech qanday xato va hintsiz yechdingiz!';
+  } else if (xatoSon <= 3) {
+    emoji = '🎉'; h = 'Zo\'r!'; sub = 'Sudokuni muvaffaqiyatli yechdingiz!';
+  } else {
+    emoji = '👍'; h = 'Barakalla!'; sub = 'Sudoku yechildi!';
+  }
+  document.getElementById('n-emoji').textContent = emoji;
+  document.getElementById('n-h').textContent = h;
+  document.getElementById('n-sub').textContent = sub;
+  document.getElementById('natija-overlay').classList.add('show');
+}
+
+function yangiOyin() {
+  document.getElementById('natija-overlay').classList.remove('show');
+  stopTimer();
+  showScreen('screen-sozlash');
+}
+function orqaga() { stopTimer(); ipcRenderer.invoke('goto', 'oyinlar'); }
+
+// Yulduzlar
+const container = document.getElementById('particles');
+for (let i = 0; i < 50; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  const size = Math.random() * 2.5 + 0.5;
+  dot.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;opacity:${Math.random()*0.5};`;
+  container.appendChild(dot);
+}
+
+function fitWindow() {
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  document.body.style.transform = `scale(${scale})`;
+  document.body.style.marginLeft = `${Math.max(0, (window.innerWidth - 1280 * scale) / 2)}px`;
+  document.body.style.marginTop = `${Math.max(0, (window.innerHeight - 720 * scale) / 2)}px`;
+}
+window.addEventListener('resize', fitWindow);
+fitWindow();
+
+</script>
+</body>
+</html>

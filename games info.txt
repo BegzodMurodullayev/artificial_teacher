@@ -1,0 +1,594 @@
+# 🎮 Guruh O'yinlari - To'liq Logika va Qoidalar
+
+## 1. 🕵️ MAFIA O'YINI
+
+### O'yin Tuzilishi
+
+**O'yinchilar soni:** 6-12 kishi
+**Rollar:**
+- **Mafia** (2-3 ta) - bir-birini biladi
+- **Komissar** (1 ta) - tinch aholi tarafida
+- **Shifokor** (1 ta) - tinch aholi tarafida
+- **Tinch aholi** (qolganlari) - rollarni bilmaydi
+
+### O'yin Bosqichlari
+
+#### **BOSQICH 1: Ro'yxatdan o'tish**
+```
+Bot: "🕵️ Mafia o'yini boshlanmoqda!
+Qatnashish uchun /join buyrug'ini bosing
+Minimal ishtirokchilar: 6
+Joriy: 0/6
+O'yin 2 daqiqadan keyin boshlanadi..."
+
+Timer: 120 soniya
+Har bir /join → "✅ [Ism] qo'shildi! Joriy: X/6"
+```
+
+#### **BOSQICH 2: Rollarni Taqsimlash**
+```
+Agar ishtirokchilar >= 6:
+  - Rollarni random taqsimlash
+  - Har bir ishtirokchiga DM (shaxsiy xabar):
+    
+    "🎭 Sizning rol: [Mafia/Tinch/Komissar/Shifokor]
+    
+    Qoidalar:
+    - Tun davomida o'z rolingiz bo'yicha harakat qilasiz
+    - Kun davomida munozara qilasiz
+    - O'z rollaringizni oshkor qilmang!
+    
+    O'yin boshlanishi kutilmoqda..."
+  
+  - Agar Mafia bo'lsa:
+    "🔪 Mafia a'zolari: @user1, @user2
+    Siz bir-biringizni bilasiz. Tun davomida kimni o'ldirishni tanlang."
+```
+
+#### **BOSQICH 3: TUN (Night Phase)**
+
+**Tun Jarayoni:**
+```
+Bot (guruhga): "🌙 TUN BOSHLANDI
+Shahar uxlayapti...
+Mafia uygonadi va qurbonni tanlaydi."
+
+[Private - Mafia guruhiga]
+"🔪 Qaysi ishtirokchini o'ldirasiz?
+/ishtirokchi @username yoki /kill [raqam]
+
+Vaqt: 60 soniya"
+
+[Private - Komissarga]
+"🔍 Kimni tekshirmoqchisiz?
+/check @username
+Bu shaxs Mafia ekanligini bilasiz.
+Vaqt: 60 soniya"
+
+[Private - Shifokorga]
+"⚕️ Kimni davolamoqchisiz?
+/heal @username
+Bu shaxs o'ldirilmaydi.
+Vaqt: 60 soniya"
+```
+
+**Tun Natijalari:**
+```
+Bot harakatlar yig'ilgandan keyin:
+
+1. Shifokor kimni davolaganini tekshirish
+2. Mafia kimni o'ldirmoqchi ekanligini tekshirish
+3. Agar bir xil odam bo'lsa → O'lim bekor qilinadi
+4. Komissar tekshiruvini saqlash (keyingi kunda e'lon qilinadi)
+
+Natija DM:
+- O'lganlarga: "💀 Siz o'ldingiz. Endi tomosha qilishingiz mumkin."
+- Tiriklarga: (hech narsa)
+```
+
+#### **BOSQICH 4: KUN (Day Phase)**
+```
+Bot (guruhga): "☀️ KUN BOSHLANDI
+
+[Mafia o'ldirgan odam]
+"💀 [Ism] o'ldirilgan holda topildi!
+Uning so'nggi so'zi: [ixtiyoriy]
+
+Endi munozara boshlanadi.
+Kimni gumon qilayapsizlar?
+Ovoz berish uchun /vote @username
+
+Vaqt: 120 soniya"
+
+[Munozara jarayoni]
+- Ishtirokchilar chatda gaplashadi
+- Har kim o'z fikrini bildiradi
+- Komissar o'z tekshiruv natijasini aytishi mumkin
+
+[Ovoz berish]
+/vote @username yoki /vote [raqam]
+
+Ovoz berish tugagach:
+"📊 Natijalar:
+@user1: 5 ovoz
+@user2: 3 ovoz
+@user3: 1 ovoz
+
+💀 @user1 osildi!
+Uning roli: [Mafia/Tinch/Komissar/Shifokor]
+
+[Agar Mafia bo'lsa]
+"🎉 Mafia a'zosi topildi! Tinch aholi g'alaba qozondi!"
+
+[Agar Tinch bo'lsa]
+"😢 Begunoh odam o'ldirildi. O'yin davom etadi..."
+```
+
+#### **BOSQICH 5: G'alaba Shartlari**
+
+**Tekshirish har kuni oxirida:**
+```
+Agar barcha Mafia o'ldirilgan bo'lsa:
+  "🏆 TINCH AHOLI G'ALABA QOZONDI!
+  Barcha mafiyalar topildi!
+  
+  📊 Statistika:
+  - O'yin davomiyligi: X kun
+  - O'lgan tinch aholi: X
+  - Eng faol: @username
+  
+  🎁 Mukofotlar:
+  - Har bir tirik ishtirokchi: +50 ball
+  - Komissar: +100 ball
+  - Shifokor: +75 ball
+  - To'g'ri ovoz berganlar: +25 ball"
+
+Agar Mafia soni >= Tinch aholi soni:
+  "🏆 MAFIA G'ALABA QOZONDI!
+  Mafia shaharni egalladi!
+  
+  📊 Statistika:
+  - O'yin davomiyligi: X kun
+  - O'ldirilgan tinch aholi: X
+  
+  🎁 Mukofotlar:
+  - Har bir Mafia a'zosi: +100 ball
+  - Eng yaxshi niqoblangan: +50 ball"
+```
+
+### Bot Buyruqlari (O'yin Davomida)
+
+```
+/join - O'yinga qo'shilish
+/leave - O'yindan chiqish
+/start_mafia - O'yinni boshlash (admin)
+/stop_mafia - O'yinni to'xtatish (admin)
+
+# O'yin ichida:
+/kill @username - Mafia qurbonni tanlaydi
+/check @username - Komissar tekshiradi
+/heal @username - Shifokor davolaydi
+/vote @username - Kun ovoz berish
+/skip - Ovoz bermaslik
+
+/stats - O'yin statistikasi
+/roles - Tirik rollar soni (faqat tinch)
+/rules - Qoidalarni ko'rsatish
+```
+
+### Ma'lumotlar Bazasi Struktura
+
+```python
+# Mafia Game DB Schema
+class MafiaGame:
+    chat_id: int
+    status: str  # waiting, night, day, finished
+    players: List[Player]
+    current_round: int
+    night_actions: {
+        'mafia_kill': user_id,
+        'doctor_heal': user_id,
+        'commissioner_check': user_id
+    }
+    votes: Dict[user_id, voted_user_id]
+    dead_players: List[user_id]
+    start_time: datetime
+    last_action_time: datetime
+
+class Player:
+    user_id: int
+    username: str
+    role: str  # mafia, civilian, commissioner, doctor
+    is_alive: bool
+    votes_received: int
+    is_mafia_partner: List[user_id]  # faqat mafia uchun
+```
+
+---
+
+## 2. 🔤 SO'Z TOPISH (Antonim/Sinonim)
+
+### O'yin Mantigi
+
+```
+Bot: "🔤 SO'Z TOPISH O'YINI
+Rejim: Antonim (qarama-qarshi ma'noli so'zlar)
+
+Birinchi to'g'ri javob bergan +10 ball oladi!
+
+Savol: 'Katta' so'zining Antonimini yozing
+Vaqt: 30 soniya
+
+Javoblar:"
+
+[Chatda ishtirokchilar yozadi]
+User1: "kichik"
+Bot: "✅ To'g'ri! @user1 +10 ball!"
+
+User2: "kichkina"  
+Bot: "✅ To'g'ri! @user2 +10 ball!"
+
+User3: "baland"
+Bot: "❌ Noto'g'ri. 'Baland' - 'Katta'ning antonimi emas."
+
+30 soniya tugagach:
+"⏰ Vaqt tugadi!
+To'g'ri javob: kichik, kichkina, past
+Javob berganlar: @user1, @user2"
+```
+
+### So'z Bazasi
+
+```python
+# So'zlar bazasi (misol)
+words_db = {
+    'antonim': {
+        'katta': ['kichik', 'kichkina', 'past'],
+        'yaxshi': ['yomon', 'bad', 'nojo'ya'],
+        'issiq': ['sovuq', 'salqin'],
+        'tezkor': ['sekin', 'astoydil'],
+        'baland': ['past', 'quyi'],
+        'uzun': ['qisqa', 'kalta'],
+        'og'ir': ['yengil'],
+        'qorong'u': ['yorug'', 'aydon'],
+        # ... 100+ so'z
+    },
+    'sinonim': {
+        'chiroyli': ['go'zal', 'suluv', 'jamila'],
+        'aqlli': ['donishmand', 'bilmli', 'ziyrak'],
+        'jasur': ['botir', 'mard', 'qo'rqmas'],
+        'do'st': ['og'ayni', 'safdoosh', 'yordamchi'],
+        # ... 100+ so'z
+    }
+}
+```
+
+### O'yin Flow
+
+```
+1. Bot so'zni tanlaydi (random)
+2. Rejimni tanlaydi (antonim/sinonim)
+3. Savolni yuboradi: "[So'z]ning [antonim/sinonim]ini yozing"
+4. 30 soniya timer boshlanadi
+5. Har bir javobni tekshiradi:
+   - To'g'ri ro'yxatda bormi?
+   - Agar ha → +10 ball, javobni qabul qil
+   - Agar yo'q → "❌ Noto'g'ri"
+6. Vaqt tugagach:
+   - Barcha to'g'ri javoblarni ko'rsat
+   - Ballarni hisobla
+   - Leaderboard yangilash
+```
+
+---
+
+## 3. ❌ XATONI TOP (Grammar Error Finding)
+
+### O'yin Mantigi
+
+```
+Bot: "❌ XATONI TOPING!
+
+Quyidagi gapda grammatik xato bor:
+'He go to school yesterday.'
+
+Xato so'zni va to'g'ri variantini yozing:
+Format: go → went
+
+Vaqt: 45 soniya
+Birinchi to'g'ri javob: +15 ball"
+
+[Chatda javoblar]
+User1: "go → went"
+Bot: "✅ To'g'ri! @user1 +15 ball!"
+
+User2: "go → goed"
+Bot: "❌ Noto'g'ri. 'Goed' mavjud so'z emas."
+
+User3: "went"
+Bot: "⚠️ Faqat to'g'ri variant yetarli emas. 
+Xato so'zni ham ko'rsating: go → went"
+```
+
+### Xatolar Bazasi
+
+```python
+grammar_errors_db = {
+    'tenses': [
+        {
+            'wrong': "He go to school yesterday.",
+            'error': "go",
+            'correct': "went",
+            'explanation': "O'tgan zamon (yesterday) uchun V2 shakl"
+        },
+        {
+            'wrong': "She don't like apples.",
+            'error': "don't",
+            'correct': "doesn't",
+            'explanation': "She/he/it uchun doesn't ishlatiladi"
+        },
+        {
+            'wrong': "I am agree with you.",
+            'error': "am agree",
+            'correct': "agree",
+            'explanation': "Agree - fe'l, 'am' kerak emas"
+        }
+    ],
+    'articles': [
+        {
+            'wrong': "I have a apple.",
+            'error': "a apple",
+            'correct': "an apple",
+            'explanation': "Unli tovushdan oldin 'an'"
+        }
+    ],
+    'prepositions': [
+        {
+            'wrong': "She is good in math.",
+            'error': "in",
+            'correct': "at",
+            'explanation': "Good at - o'zgarmas birikma"
+        }
+    ]
+    # ... 100+ xato
+}
+```
+
+### Tekshirish Logikasi
+
+```python
+def check_answer(user_answer, correct_error, correct_word):
+    """
+    Foydalanuvchi javobini tekshirish
+    
+    Qabul qilinadigan formatlar:
+    - "go → went"
+    - "go -> went"
+    - "go - went"
+    - "go/went"
+    - "went" (faqat to'g'ri variant)
+    """
+    
+    user_answer = user_answer.lower().strip()
+    correct_answer = f"{correct_error} → {correct_word}"
+    
+    # To'liq javob
+    if user_answer == correct_answer.lower():
+        return True, "To'liq to'g'ri!"
+    
+    # Faqat to'g'ri so'z
+    if user_answer == correct_word.lower():
+        return True, "To'g'ri, lekin xato so'zni ham ko'rsating"
+    
+    # Xato so'z + to'g'ri so'z (boshqa ajratuvchi)
+    import re
+    pattern = rf"{re.escape(correct_error)}\s*[-→/]\s*{re.escape(correct_word)}"
+    if re.match(pattern, user_answer, re.IGNORECASE):
+        return True, "To'g'ri!"
+    
+    return False, f"Noto'g'ri. To'g'ri javob: {correct_answer}"
+```
+
+---
+
+## 4. 🏃 TARJIMA POYGASI
+
+### O'yin Mantigi
+
+```
+Bot: "🏃 TARJIMA POYGASI!
+
+O'zbekcha gap:
+'Men bugun do'stlarim bilan kinoga bordim.'
+
+Inglizchaga tarjima qiling:
+Vaqt: 60 soniya
+Eng tez va to'g'ri: +20 ball"
+
+[Chatda javoblar]
+User1: "I went to cinema with my friends today."
+Bot: "✅ A'lo! @user1 +20 ball!"
+
+User2: "I go cinema with friends today"
+Bot: "⚠️ Yaxshi urinish, lekin xatolar bor:
+- 'go' → 'went' (o'tgan zamon)
+- 'cinema' → 'to the cinema'
++5 ball (qisman to'g'ri)"
+
+User3: "Men bugun kinoga bordim"
+Bot: "❌ Bu o'zbekcha. Inglizchaga tarjima qiling!"
+```
+
+### AI Tekshiruv Kriteriyalari
+
+```python
+translation_criteria = {
+    'perfect': {
+        'points': 20,
+        'requirements': [
+            'Grammatik jihatdan to\'g\'ri',
+            'Barcha so\'zlar tarjima qilingan',
+            'Zamon to\'g\'ri',
+            'Imlo xatosi yo\'q'
+        ]
+    },
+    'good': {
+        'points': 15,
+        'requirements': [
+            'Asosiy ma\'no to\'g\'ri',
+            '1-2 kichik xato',
+            'Zamon to\'g\'ri'
+        ]
+    },
+    'partial': {
+        'points': 5,
+        'requirements': [
+            'Ma\'no taxminan to\'g\'ri',
+            'Jiddiy xatolar bor',
+            'Ba\'zi so\'zlar tushib qolgan'
+        ]
+    },
+    'wrong': {
+        'points': 0,
+        'requirements': [
+            'Ma\'no noto\'g\'ri',
+            'Ko\'p xatolar'
+        ]
+    }
+}
+```
+
+### Tekshirish Algoritmi
+
+```python
+def check_translation(user_translation, correct_translation, ai_model):
+    """
+    Tarjimalarni solishtirish
+    
+    1. To'g'ri javob bilan solishtirish
+    2. AI orqali ma'noni tekshirish
+    3. Grammatikani tekshirish
+    4. Ball berish
+    """
+    
+    # 1. Exact match
+    if user_translation.lower().strip() == correct_translation.lower().strip():
+        return 'perfect', 20, "A'lo tarjima!"
+    
+    # 2. AI semantic check
+    ai_result = ai_model.check_semantic_similarity(
+        user_translation,
+        correct_translation
+    )
+    
+    # 3. Grammar check
+    grammar_errors = grammar_checker.check(user_translation)
+    
+    # 4. Scoring
+    if ai_result.similarity > 0.9 and len(grammar_errors) == 0:
+        return 'perfect', 20, "A'lo!"
+    elif ai_result.similarity > 0.8 and len(grammar_errors) <= 2:
+        return 'good', 15, "Yaxshi, lekin kichik xatolar bor"
+    elif ai_result.similarity > 0.6:
+        return 'partial', 5, "Qisman to'g'ri"
+    else:
+        return 'wrong', 0, "Noto'g'ri tarjima"
+```
+
+---
+
+## 5. 🏆 BALLAR VA MUKOFOTLAR
+
+### Ball Tizimi
+
+```python
+game_rewards = {
+    'mafia': {
+        'win_civilian': 50,
+        'win_mafia': 100,
+        'commissioner_bonus': 50,
+        'doctor_bonus': 25,
+        'correct_vote': 10
+    },
+    'word_game': {
+        'correct_answer': 10,
+        'first_answer_bonus': 5
+    },
+    'error_finding': {
+        'correct_answer': 15,
+        'first_answer_bonus': 5
+    },
+    'translation': {
+        'perfect': 20,
+        'good': 15,
+        'partial': 5
+    }
+}
+```
+
+### Leaderboard
+
+```python
+# Har kuni yangilanadi
+daily_leaderboard = {
+    'date': '2024-01-15',
+    'top_players': [
+        {'user_id': 123, 'username': '@user1', 'points': 250},
+        {'user_id': 456, 'username': '@user2', 'points': 180},
+        {'user_id': 789, 'username': '@user3', 'points': 150},
+    ]
+}
+
+# Haftalik va oylik ham
+weekly_leaderboard = {...}
+monthly_leaderboard = {...}
+```
+
+---
+
+## 6. O'YINLARNI BOSHQARISH
+
+### Admin Buyruqlari
+
+```
+/start_game [game_name] - O'yinni boshlash
+/stop_game - Joriy o'yinni to'xtatish
+/game_settings - Sozlamalarni ko'rsatish
+/set_game_time [seconds] - Vaqt limitini o'zgartirish
+/set_game_points [points] - Ball miqdorini o'zgartirish
+/game_stats - O'yin statistikasi
+/reset_game_scores - Ballarni tozalash
+```
+
+### Sozlamalar
+
+```python
+game_settings = {
+    'mafia': {
+        'min_players': 6,
+        'max_players': 12,
+        'night_time': 60,
+        'day_time': 120,
+        'mafia_count': 2
+    },
+    'word_game': {
+        'time_limit': 30,
+        'points': 10,
+        'mode': 'random'  # antonim/sinonim/random
+    },
+    'error_finding': {
+        'time_limit': 45,
+        'points': 15,
+        'category': 'random'  # tenses/articles/prepositions
+    },
+    'translation': {
+        'time_limit': 60,
+        'ai_check': True,
+        'min_similarity': 0.6
+    }
+}
+```
+
+---
+
+Bu hujjatlar AI yoki dasturchiga o'yinlarni to'liq implementatsiya qilish uchun yetarli ma'lumot beradi. Har bir o'yinning aniq qoidalari, flow'i, ma'lumotlar bazasi strukturalari va tekshirish algoritmlari keltirilgan.

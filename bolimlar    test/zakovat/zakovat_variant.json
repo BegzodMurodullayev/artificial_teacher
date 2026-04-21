@@ -1,0 +1,3782 @@
+[
+  {
+    "id": 1,
+    "savol": "Ushbu olim bir kuni uyidan chiqib, bir soat yurdi. Ortiga qaytib, uyiga yetib kelganda bir soat yo‘l yurganini bilmadi. U o‘z uyiga qaytib kelishda qanday manzilga borib kelgan edi?",
+    "variantlar": [
+      "Do‘konga",
+      "Masjidga",
+      "Aylanma yo‘l",
+      "Temir yo‘l vokzaliga"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Fan"
+  },
+  {
+    "id": 2,
+    "savol": "Dunyodagi eng katta to‘lqinlarni qaysi dengizda kuzatish mumkin?",
+    "variantlar": [
+      "Qizil dengiz",
+      "O‘rta er dengizi",
+      "Fundi qo‘ltig‘i (Atlantika)",
+      "Hind okeani"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 3,
+    "savol": "Qadimgi Yunonistonda bu ibora “Boshini qumga qo‘ymoq” degan ma’noni anglatgan. Hozirgi kunda esa “muammodan qochmoq” ma’nosida ishlatiladi. Qanday qush haqida gap ketmoqda?",
+    "variantlar": [
+      "Boyqush",
+      "Tuyaqush",
+      "Qarg‘a",
+      "Burgut"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Madaniyat"
+  },
+  {
+    "id": 4,
+    "savol": "O‘zbekistonda 2019-yilda qaysi futbol klubi Osiyo Chempionlar ligasi guruh bosqichida ishtirok etib, “Al-Nasr”, “Zob Ahan” va “Al-Vasl” klublari bilan bir guruhda o‘ynagan?",
+    "variantlar": [
+      "Paxtakor",
+      "Lokomotiv",
+      "Nasaf",
+      "Bunyodkor"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 5,
+    "savol": "Qaysi yulduz turkumidagi yulduzlar qadimgi Misrda Nil daryosining toshish vaqtini aniqlashda xizmat qilgan?",
+    "variantlar": [
+      "Katta Ayiq",
+      "Kichik Ayiq",
+      "Orion",
+      "Sirius (Katta It)"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 6,
+    "savol": "Ushbu o‘simlikning urug‘i 4000 yil davomida unib chiqish xususiyatini yo‘qotmagan. Qadimgi Quddusda topilgan bu urug‘ hozirda palma daraxtiga aylangan. Bu qanday o‘simlik?",
+    "variantlar": [
+      "Saksovul",
+      "Sarv",
+      "Xurmo",
+      "Zaytun"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Fan"
+  },
+  {
+    "id": 7,
+    "savol": "O‘rta Osiyoda hukm surgan qaysi sulola vakillari “Sulton ul-azam”, “Xoqoni muazzam” kabi unvonlarni qo‘llagan?",
+    "variantlar": [
+      "Somoniylar",
+      "Qoraxoniylar",
+      "Temuriylar",
+      "Shayboniylar"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 8,
+    "savol": "1924-yilda Parijda bo‘lib o‘tgan Olimpiada o‘yinlarida birinchi marta qanday marosim o‘tkazilgan?",
+    "variantlar": [
+      "Olimpiya olovi yoqildi",
+      "Sportchilar qasamyodi",
+      "Ayollar ishtirok etdi",
+      "Mash’ala estafetasi"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 9,
+    "savol": "Ushbu atama lotincha “sohil” so‘zidan olingan bo‘lib, dastlab “dengiz sohilidagi aholi” ma’nosini anglatgan. Keyinchalik “dengiz piyodalari” deb atalgan. Bu qanday harbiy tuzilma?",
+    "variantlar": [
+      "Desant",
+      "Marines",
+      "Dengiz floti",
+      "Sohil qo‘riqlash"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 10,
+    "savol": "Futbol tarixidagi eng ko‘p sovrin yutgan hakam (7 marta “Yilning eng yaxshi hakami”) qaysi mamlakat vakili?",
+    "variantlar": [
+      "Angliya",
+      "Italiya",
+      "Germaniya",
+      "Fransiya"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 11,
+    "savol": "“Zakovat” intellektual o‘yinining asoschisi kim?",
+    "variantlar": [
+      "Muhammad Yunus",
+      "Baxtiyor Tursunov",
+      "Bahodir Ahmedov",
+      "Fayzullo Raximov"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Madaniyat"
+  },
+  {
+    "id": 12,
+    "savol": "Qaysi mamlakatda “Ko‘lchilik” sport turi milliy sport hisoblanadi?",
+    "variantlar": [
+      "Finlyandiya",
+      "Kanada",
+      "Yaponiya",
+      "Shvetsiya"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 13,
+    "savol": "Bu joy dunyodagi eng baland nuqta (8848 m) va eng chuqur nuqta (11022 m) o‘rtasidagi masofa jihatidan eng yaqin joyda joylashgan. Qaysi davlatda?",
+    "variantlar": [
+      "Xitoy",
+      "Nepal",
+      "Hindiston",
+      "Myanma"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 14,
+    "savol": "Qadimgi Rimda gladiatorlar jangida omma “Pollice verso” (bosh barmoqni pastga) imo-ishorasi bilan mag‘lubning o‘limini talab qilgan. Bu imo-ishora aslida nimani anglatgan?",
+    "variantlar": [
+      "Qilichni yerga qo‘y",
+      "O‘limga hukm",
+      "Ozodlik",
+      "Qalqonni ko‘tar"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 15,
+    "savol": "Astronomiyada “Merkuriyning perigeliy siljishi” muammosini qaysi nazariya to‘liq izohlagan?",
+    "variantlar": [
+      "Nyuton gravitatsiyasi",
+      "Eynshteynning umumiy nisbiylik nazariyasi",
+      "Kvant mexanikasi",
+      "Maksvell elektrodinamikasi"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 16,
+    "savol": "“Arkan” o‘yini qaysi xalqning milliy o‘yinlaridan biri?",
+    "variantlar": [
+      "O‘zbek",
+      "Qozoq",
+      "Qirg‘iz",
+      "Turkman"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 17,
+    "savol": "O‘zbekiston Respublikasining birinchi Konstitutsiyasi qachon qabul qilingan?",
+    "variantlar": [
+      "1991-yil 1-sentyabr",
+      "1992-yil 8-dekabr",
+      "1993-yil 21-yanvar",
+      "1994-yil 1-mart"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 18,
+    "savol": "Qaysi mamlakat poytaxti “Gul shahri” deb ataladi va bu nom fors tilidan olingan?",
+    "variantlar": [
+      "Pokiston (Islomobod)",
+      "Eron (Tehron)",
+      "Tojikiston (Dushanbe)",
+      "Afg‘oniston (Kobul)"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 19,
+    "savol": "“Bilim va tafakkur” ma’nosini bildiruvchi qadimgi yunoncha so‘z hozirgi kunda qanday fan nomi sifatida ishlatiladi?",
+    "variantlar": [
+      "Falsafa",
+      "Logika",
+      "Psixologiya",
+      "Epistemologiya"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Fan"
+  },
+  {
+    "id": 20,
+    "savol": "O‘zbekiston milliy basketbol terma jamoasi birinchi marta qaysi Osiyo o‘yinlarida ishtirok etgan?",
+    "variantlar": [
+      "1994 Xirosima",
+      "1998 Bangkok",
+      "2002 Pusan",
+      "2006 Doha"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 21,
+    "savol": "“Doniyor” so‘zi qadimgi fors tilida “bilimdon” ma’nosini bildiradi. “Donishmand” so‘zi ham shu o‘zakdan. Hozirgi kunda qaysi davlatda “Donishmand” ordeni mavjud?",
+    "variantlar": [
+      "Eron",
+      "Afg‘oniston",
+      "Tojikiston",
+      "O‘zbekiston"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Madaniyat"
+  },
+  {
+    "id": 22,
+    "savol": "Qaysi sayyora Quyosh atrofida aylanishda eng katta ekssentrisitetga (orbital tuxumsimonlikka) ega?",
+    "variantlar": [
+      "Merkuriy",
+      "Venera",
+      "Mars",
+      "Pluton (mitti sayyora)"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 23,
+    "savol": "Qadimgi Xitoyda “Ipak yo‘li” orqali olib boriladigan eng qimmatbaho tovarlardan biri “ajdar yoshlari” deb atalgan. Bu nima edi?",
+    "variantlar": [
+      "Marvarid",
+      "Chinni",
+      "Qimmatbaho toshlar",
+      "Choy"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 24,
+    "savol": "“Yerdagi eng chuqur sun’iy o‘yilgan kon” deb Ginnes rekordlar kitobiga kiritilgan joy qayerda?",
+    "variantlar": [
+      "Janubiy Afrika (Kimpberli)",
+      "Rossiya (Mirniy)",
+      "Chili (Chukikamata)",
+      "AQSH (Bingem)"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 25,
+    "savol": "Ushbu matematik atama arabcha “al-jabr” so‘zidan olingan bo‘lib, dastlab “suyaklarni tiklash” ma’nosini bildirgan. U asoschisi Muhammad al-Xorazmiy hisoblanadi. Bu qanday fan?",
+    "variantlar": [
+      "Algoritm",
+      "Algebra",
+      "Geometriya",
+      "Arifmetika"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Fan"
+  },
+  {
+    "id": 26,
+    "savol": "Futbol bo‘yicha 2018-yilgi jahon chempionatida eng ko‘p gol (6 ta) urgan futbolchi kim edi?",
+    "variantlar": [
+      "Kilian Mbappe",
+      "Antuan Grizman",
+      "Xarri Keyn",
+      "Luka Modrich"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 27,
+    "savol": "“Laylak” (Stork) qadimgi Yunonistonda “pelargos” deb atalgan. Ushbu qush nomi qaysi geometrik shakl nomiga asos bo‘lgan?",
+    "variantlar": [
+      "Prizma",
+      "Piramida",
+      "Parallelepiped",
+      "Pentaedr"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Fan"
+  },
+  {
+    "id": 28,
+    "savol": "Hindistonning “Kajuraho” ibodatxonalari qaysi sulola davrida qurilgan va qanday uslubi bilan mashhur?",
+    "variantlar": [
+      "Budda uslubi",
+      "Erotik haykallar",
+      "To‘liq marmardan",
+      "G‘or ibodatxonalari"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Madaniyat"
+  },
+  {
+    "id": 29,
+    "savol": "Qaysi jang 1815-yilda bo‘lib o‘tgan va Napoleon Bonapartning so‘nggi mag‘lubiyati bilan tugagan?",
+    "variantlar": [
+      "Austerlits jangi",
+      "Borodino jangi",
+      "Vaterloo jangi",
+      "Trafalgar jangi"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 30,
+    "savol": "“Marafon” yugurish masofasi (42 km 195 m) qadimgi Yunoniston qahramoni Fidippidning yugurgan masofasi asosida belgilangan. Aslida u yugurgan masofa qancha edi?",
+    "variantlar": [
+      "Taxminan 40 km",
+      "Taxminan 35 km",
+      "Taxminan 30 km",
+      "Taxminan 50 km"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 31,
+    "savol": "“Bosfor” bo‘g‘ozining nomi qadimgi yunon tilida “sigir o‘tish joyi” degan ma’noni anglatadi. Bu nom afsonaviy qahramonning qaysi hayvonga aylanishi bilan bog‘liq?",
+    "variantlar": [
+      "Sigir",
+      "Echki",
+      "Iloh",
+      "Ot"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 32,
+    "savol": "Ushbu kashfiyot 1965-yilda Arno Penzias va Robert Uilson tomonidan tasodifan aniqlangan bo‘lib, ular buning uchun Nobel mukofotini olgan. Bu Katta portlash nazariyasini tasdiqlagan eng muhim dalillardan biri. Bu nima?",
+    "variantlar": [
+      "Qora tuynuk nurlanishi",
+      "Relikt nurlanish",
+      "Gamma portlash",
+      "Gravitatsion to‘lqinlar"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 33,
+    "savol": "Qadimgi Misrda fir’avnlar o‘z sarkardalariga “buzoq oyog‘i” ordenini berishgan. Bu bugungi kunda qanday atama sifatida ishlatiladi?",
+    "variantlar": [
+      "Bumerang",
+      "Gavana",
+      "Zigzag",
+      "Orden"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 34,
+    "savol": "“Oltin to‘p” (Ballon d‘Or) mukofotini eng ko‘p qo‘lga kiritgan futbolchi kim?",
+    "variantlar": [
+      "Lionel Messi",
+      "Cristiano Ronaldo",
+      "Michel Platini",
+      "Johan Cruyff"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 35,
+    "savol": "“Toshkent” so‘zining etimologiyasi haqidagi bir taxminga ko‘ra, u “tosh shahar” degan ma’noni bildiradi. Boshqa bir taxminda esa “tosh” qadimgi turkiy tilda “to‘q”, “kent” esa “shahar” ma’nosida. “To‘q shahar” qaysi davrga ishora qiladi?",
+    "variantlar": [
+      "Amir Temur davri",
+      "Qoraxoniylar davri",
+      "Choch davlati",
+      "Sovet davri"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 36,
+    "savol": "Atmosferada qatlamlarni vertikal bo‘yicha o‘rganuvchi asbob “radiosonda” deb ataladi. Bu asbobni kim ixtiro qilgan?",
+    "variantlar": [
+      "Pavel Molchanov",
+      "Robert Goddard",
+      "Verner fon Braun",
+      "Konstantin Tsiolkovskiy"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Fan"
+  },
+  {
+    "id": 37,
+    "savol": "Qaysi davlat bayrog‘ida yagona rang – yashil rang va unda “Allohu akbar” deb yozilgan?",
+    "variantlar": [
+      "Saudiya Arabistoni",
+      "Pokiston",
+      "Liviya (1977-2011)",
+      "Eron"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 38,
+    "savol": "“Akademiya” so‘zi qadimgi yunon faylasufi Platonning dars bergan bog‘i nomidan olingan. Bu bog‘ qaysi afsonaviy qahramon nomi bilan atalgan?",
+    "variantlar": [
+      "Akadem",
+      "Akademos",
+      "Akatos",
+      "Akant"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Madaniyat"
+  },
+  {
+    "id": 39,
+    "savol": "1896-yilda birinchi zamonaviy Olimpiada o‘yinlari qayerda bo‘lib o‘tgan?",
+    "variantlar": [
+      "London",
+      "Parij",
+      "Afina",
+      "Rim"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 40,
+    "savol": "“Qo‘rqit ota” kitobidagi qahramon Qo‘rqit ota o‘z qabrini qayerda qazdirgan?",
+    "variantlar": [
+      "Sirdaryo bo‘yida",
+      "Amudaryo bo‘yida",
+      "Zarafshon bo‘yida",
+      "Qoraqalpog‘istonda"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Madaniyat"
+  },
+  {
+    "id": 41,
+    "savol": "Quyosh tizimidagi eng kichik sayyora qaysi?",
+    "variantlar": [
+      "Merkuriy",
+      "Mars",
+      "Venera",
+      "Yer"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 42,
+    "savol": "O‘zbekiston mustaqillikka erishgach, qaysi shahar o‘z tarixiy nomi – “Marg‘ilon”ni qaytargan?",
+    "variantlar": [
+      "Marg‘ilon",
+      "Andijon",
+      "Farg‘ona",
+      "Namangan"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 43,
+    "savol": "Ushbu daryo janubiy Amerikadan oqib o‘tadi va dunyodagi eng katta suv havzasi hisoblanadi. Uning nomi afsonaviy ayollar qabilasi bilan bog‘liq. Qaysi daryo?",
+    "variantlar": [
+      "Amazon",
+      "Parana",
+      "Orinoko",
+      "Rio Negro"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 44,
+    "savol": "“Matematika” so‘zi qadimgi yunon tilida “o‘rganish, ilm” ma’nosini anglatgan “mathema” dan olingan. Bu so‘zning qadimgi yunon tilidagi talaffuzi bugungi qaysi fan nomiga o‘xshaydi?",
+    "variantlar": [
+      "Fizika",
+      "Astronomiya",
+      "Biologiya",
+      "Tarix"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Fan"
+  },
+  {
+    "id": 45,
+    "savol": "Futbol bo‘yicha O‘zbekiston terma jamoasining eng ko‘p o‘yin o‘tkazgan futbolchisi kim?",
+    "variantlar": [
+      "Server Jeparov",
+      "Odil Ahmedov",
+      "Timur Kapadze",
+      "Ignatiy Nesterov"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Sport"
+  },
+  {
+    "id": 46,
+    "savol": "Qadimgi Rimda “Kapitoliy tog‘i” davlatning eng muhim ibodatxonalari joylashgan markaz edi. Bugungi kunda “Kapitoliy” atamasi nimani anglatadi?",
+    "variantlar": [
+      "Parlament binosi",
+      "Shahar markazi",
+      "Harbiy shtab",
+      "Sud binosi"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Tarix"
+  },
+  {
+    "id": 47,
+    "savol": "Astronomiyada “qizil siljish” hodisasi nimani isbotlaydi?",
+    "variantlar": [
+      "Koinot kengaymoqda",
+      "Yulduzlar yaqinlashmoqda",
+      "Galaktikalar aylanmoqda",
+      "Qora tuynuklar mavjud"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 48,
+    "savol": "“Hamsa” – bu Alisher Navoiyning besh dostonidan iborat asari. “Hamsa” so‘zi arab tilida nimani anglatadi?",
+    "variantlar": [
+      "Besh",
+      "Olti",
+      "Yetti",
+      "To‘qqiz"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Madaniyat"
+  },
+  {
+    "id": 49,
+    "savol": "Dunyodagi eng chuqur ko‘l qaysi?",
+    "variantlar": [
+      "Baykal",
+      "Tanganyika",
+      "Viktoriya",
+      "Michigan"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 50,
+    "savol": "Qaysi ixtiro tufayli 1901-yilda birinchi Nobel mukofoti fizika bo‘yicha Vilgelm Rentgenga berilgan?",
+    "variantlar": [
+      "Radioaktivlik",
+      "Rentgen nurlari",
+      "Elektron",
+      "Foton"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Fan"
+  },
+  {
+    "id": 51,
+    "savol": "Uzbekistan davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Nyu-Dehli",
+      "Toshkent",
+      "Lima",
+      "Kopengagen"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 52,
+    "savol": "Uzbekistan davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "so'm",
+      "AQSH dollari",
+      "birr",
+      "yevro"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 53,
+    "savol": "Qozog'iston davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Astana",
+      "Singapur",
+      "Berlin",
+      "Qohira"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 54,
+    "savol": "Qozog'iston davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "manat",
+      "krona",
+      "frank",
+      "tenge"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 55,
+    "savol": "Qirg'iziston davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bern",
+      "Vena",
+      "Bishkek",
+      "Lissabon"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 56,
+    "savol": "Qirg'iziston davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "som",
+      "sol",
+      "krone",
+      "yevro"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 57,
+    "savol": "Tojikiston davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Dushanbe",
+      "Anqara",
+      "Tbilisi",
+      "Yerevan"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 58,
+    "savol": "Tojikiston davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "ringgit",
+      "Kanada dollari",
+      "somoni",
+      "peso"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 59,
+    "savol": "Turkmaniston davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Kobul",
+      "Pekin",
+      "Ashxobod",
+      "Tehron"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 60,
+    "savol": "Turkmaniston davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "von",
+      "so'm",
+      "manat",
+      "krona"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 61,
+    "savol": "Turkiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Abu-Dabi",
+      "Boku",
+      "Anqara",
+      "Kopengagen"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 62,
+    "savol": "Turkiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "funt sterling",
+      "rupiya",
+      "lira",
+      "lari"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 63,
+    "savol": "Ozarbayjon davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Islomobod",
+      "Dushanbe",
+      "Mexiko",
+      "Boku"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 64,
+    "savol": "Ozarbayjon davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yuan",
+      "ringgit",
+      "Yangi Zelandiya dollari",
+      "manat"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 65,
+    "savol": "Gruziya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Stokgolm",
+      "Abuja",
+      "Tbilisi",
+      "Ashxobod"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 66,
+    "savol": "Gruziya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "rial",
+      "lari",
+      "frank",
+      "tenge"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 67,
+    "savol": "Armaniston davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Boku",
+      "Ottava",
+      "Yerevan",
+      "Oslo"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 68,
+    "savol": "Armaniston davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "Singapur dollari",
+      "dram",
+      "so'm",
+      "tenge"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 69,
+    "savol": "Rossiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Moskva",
+      "Dublin",
+      "Toshkent",
+      "Seul"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 70,
+    "savol": "Rossiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "somoni",
+      "peso",
+      "baht",
+      "rubl"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 71,
+    "savol": "Xitoy davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Abu-Dabi",
+      "Pekin",
+      "Ar-Riyod",
+      "Oslo"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 72,
+    "savol": "Xitoy davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "so'm",
+      "peso",
+      "yuan",
+      "tenge"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 73,
+    "savol": "Yaponiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Tokio",
+      "Ashxobod",
+      "Addis-Abeba",
+      "Madrid"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 74,
+    "savol": "Yaponiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "rubl",
+      "baht",
+      "funt",
+      "yen"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 75,
+    "savol": "Janubiy Koreya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bishkek",
+      "Ashxobod",
+      "Seul",
+      "Rim"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 76,
+    "savol": "Janubiy Koreya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "peso",
+      "funt",
+      "von",
+      "baht"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 77,
+    "savol": "Hindiston davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Kobul",
+      "Tbilisi",
+      "Nyu-Dehli",
+      "Seul"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 78,
+    "savol": "Hindiston davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yevro",
+      "rupiya",
+      "Kanada dollari",
+      "rubl"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 79,
+    "savol": "Pokiston davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bangkok",
+      "Ottava",
+      "Yerevan",
+      "Islomobod"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 80,
+    "savol": "Pokiston davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "riyal",
+      "yen",
+      "yevro",
+      "rupiya"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 81,
+    "savol": "Afg'oniston davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Oslo",
+      "Jakarta",
+      "Kobul",
+      "Nyu-Dehli"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 82,
+    "savol": "Afg'oniston davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "sol",
+      "yevro",
+      "afg'oni",
+      "so'm"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 83,
+    "savol": "Eron davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Dushanbe",
+      "Kuala-Lumpur",
+      "Tehron",
+      "Bogota"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 84,
+    "savol": "Eron davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "rial",
+      "yuan",
+      "AQSH dollari",
+      "tenge"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 85,
+    "savol": "Saudiya Arabistoni davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Dushanbe",
+      "Ar-Riyod",
+      "Kobul",
+      "Xanoy"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 86,
+    "savol": "Saudiya Arabistoni davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "peso",
+      "riyal",
+      "yevro",
+      "rubl"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 87,
+    "savol": "BAA davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Abu-Dabi",
+      "Bogota",
+      "Bryussel",
+      "Parij"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 88,
+    "savol": "BAA davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "dirham",
+      "peso",
+      "manat",
+      "manat"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 89,
+    "savol": "Misr davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Seul",
+      "Qohira",
+      "Ashxobod",
+      "Kuala-Lumpur"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 90,
+    "savol": "Misr davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "riyal",
+      "funt",
+      "somoni",
+      "sol"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 91,
+    "savol": "Janubiy Afrika Respublikasi davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bogota",
+      "Nayrobi",
+      "Pretoriya",
+      "Singapur"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 92,
+    "savol": "Janubiy Afrika Respublikasi davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "rand",
+      "baht",
+      "manat",
+      "rupiya"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 93,
+    "savol": "Nigeriya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Dublin",
+      "Toshkent",
+      "Abuja",
+      "Anqara"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 94,
+    "savol": "Nigeriya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "Yangi Zelandiya dollari",
+      "naira",
+      "som",
+      "manat"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 95,
+    "savol": "Keniya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Toshkent",
+      "Ottava",
+      "Nayrobi",
+      "Parij"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 96,
+    "savol": "Keniya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yevro",
+      "yevro",
+      "shilling",
+      "lari"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 97,
+    "savol": "Efiopiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Tokio",
+      "Singapur",
+      "Toshkent",
+      "Addis-Abeba"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 98,
+    "savol": "Efiopiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "birr",
+      "von",
+      "krone",
+      "lira"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 99,
+    "savol": "Avstraliya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Jakarta",
+      "Kanberra",
+      "Boku",
+      "Stokgolm"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 100,
+    "savol": "Avstraliya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "AQSH dollari",
+      "afg'oni",
+      "Avstraliya dollari",
+      "von"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 101,
+    "savol": "Yangi Zelandiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Islomobod",
+      "Dublin",
+      "Bishkek",
+      "Vellington"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 102,
+    "savol": "Yangi Zelandiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "dong",
+      "frank",
+      "Yangi Zelandiya dollari",
+      "yevro"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 103,
+    "savol": "Indoneziya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Mexiko",
+      "Jakarta",
+      "Santyago",
+      "Toshkent"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 104,
+    "savol": "Indoneziya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yen",
+      "rupiya",
+      "funt sterling",
+      "rubl"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 105,
+    "savol": "Malayziya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Tbilisi",
+      "Kuala-Lumpur",
+      "Dublin",
+      "Berlin"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 106,
+    "savol": "Malayziya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "ringgit",
+      "yevro",
+      "som",
+      "afg'oni"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 107,
+    "savol": "Singapur davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Pretoriya",
+      "Kuala-Lumpur",
+      "Singapur",
+      "Moskva"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 108,
+    "savol": "Singapur davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "frank",
+      "Singapur dollari",
+      "rupiya",
+      "naira"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 109,
+    "savol": "Tailand davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Moskva",
+      "Bangkok",
+      "Berlin",
+      "Ar-Riyod"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 110,
+    "savol": "Tailand davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "lira",
+      "baht",
+      "peso",
+      "Yangi Zelandiya dollari"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 111,
+    "savol": "Vyetnam davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bishkek",
+      "Xanoy",
+      "Boku",
+      "Singapur"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 112,
+    "savol": "Vyetnam davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "Avstraliya dollari",
+      "rial",
+      "sol",
+      "dong"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 113,
+    "savol": "Filippin davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Mexiko",
+      "Manila",
+      "Tehron",
+      "Boku"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 114,
+    "savol": "Filippin davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "rupiya",
+      "manat",
+      "Yangi Zelandiya dollari",
+      "peso"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 115,
+    "savol": "Germaniya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Vashington",
+      "Islomobod",
+      "Seul",
+      "Berlin"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 116,
+    "savol": "Germaniya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yevro",
+      "somoni",
+      "real",
+      "rubl"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 117,
+    "savol": "Fransiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Nyu-Dehli",
+      "Islomobod",
+      "Bangkok",
+      "Parij"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 118,
+    "savol": "Fransiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "lira",
+      "peso",
+      "ringgit",
+      "yevro"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 119,
+    "savol": "Italiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bishkek",
+      "Dublin",
+      "Bogota",
+      "Rim"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 120,
+    "savol": "Italiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "manat",
+      "yevro",
+      "peso",
+      "yen"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 121,
+    "savol": "Ispaniya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Tehron",
+      "Madrid",
+      "Berlin",
+      "Yerevan"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 122,
+    "savol": "Ispaniya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "rial",
+      "yevro",
+      "baht",
+      "som"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 123,
+    "savol": "Portugaliya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bogota",
+      "Nyu-Dehli",
+      "Lissabon",
+      "Bishkek"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 124,
+    "savol": "Portugaliya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "lira",
+      "so'm",
+      "yevro",
+      "rand"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 125,
+    "savol": "Niderlandiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Amsterdam",
+      "Seul",
+      "London",
+      "Parij"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 126,
+    "savol": "Niderlandiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yevro",
+      "tenge",
+      "so'm",
+      "birr"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 127,
+    "savol": "Belgiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bryussel",
+      "Vellington",
+      "Addis-Abeba",
+      "Vashington"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 128,
+    "savol": "Belgiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "so'm",
+      "yevro",
+      "ringgit",
+      "peso"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 129,
+    "savol": "Shvetsiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Lima",
+      "Stokgolm",
+      "Yerevan",
+      "Dushanbe"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 130,
+    "savol": "Shvetsiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "rupiya",
+      "baht",
+      "yevro",
+      "krona"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 131,
+    "savol": "Norvegiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Parij",
+      "Lima",
+      "Nyu-Dehli",
+      "Oslo"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 132,
+    "savol": "Norvegiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "AQSH dollari",
+      "krone",
+      "baht",
+      "rial"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 133,
+    "savol": "Daniya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bangkok",
+      "Buenos-Ayres",
+      "Kopengagen",
+      "Abu-Dabi"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 134,
+    "savol": "Daniya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "birr",
+      "rupiya",
+      "krone",
+      "manat"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 135,
+    "savol": "Shveytsariya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Bern",
+      "Astana",
+      "Bogota",
+      "Dushanbe"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 136,
+    "savol": "Shveytsariya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "frank",
+      "yen",
+      "som",
+      "dong"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 137,
+    "savol": "Avstriya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Vena",
+      "Lima",
+      "Bern",
+      "Dushanbe"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 138,
+    "savol": "Avstriya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "rupiya",
+      "yevro",
+      "dong",
+      "krone"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 139,
+    "savol": "Gretsiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Dushanbe",
+      "Kobul",
+      "Afina",
+      "Addis-Abeba"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 140,
+    "savol": "Gretsiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yevro",
+      "manat",
+      "riyal",
+      "yen"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 141,
+    "savol": "Buyuk Britaniya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "London",
+      "Bangkok",
+      "Madrid",
+      "Manila"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 142,
+    "savol": "Buyuk Britaniya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "dong",
+      "som",
+      "funt sterling",
+      "peso"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 143,
+    "savol": "Irlandiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Nayrobi",
+      "Buenos-Ayres",
+      "Islomobod",
+      "Dublin"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 144,
+    "savol": "Irlandiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "som",
+      "yevro",
+      "tenge",
+      "yen"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 145,
+    "savol": "Kanada davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Ottava",
+      "Yerevan",
+      "Astana",
+      "Tokio"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 146,
+    "savol": "Kanada davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "tenge",
+      "som",
+      "funt sterling",
+      "Kanada dollari"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 147,
+    "savol": "AQSH davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Oslo",
+      "Toshkent",
+      "Islomobod",
+      "Vashington"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 148,
+    "savol": "AQSH davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "AQSH dollari",
+      "lira",
+      "peso",
+      "lari"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 149,
+    "savol": "Meksika davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Pretoriya",
+      "Amsterdam",
+      "Mexiko",
+      "Boku"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 150,
+    "savol": "Meksika davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yuan",
+      "rial",
+      "yevro",
+      "peso"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 151,
+    "savol": "Braziliya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Kuala-Lumpur",
+      "Brazilia",
+      "Buenos-Ayres",
+      "Ashxobod"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 152,
+    "savol": "Braziliya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "peso",
+      "real",
+      "som",
+      "yevro"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 153,
+    "savol": "Argentina davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Astana",
+      "Toshkent",
+      "Buenos-Ayres",
+      "Oslo"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 154,
+    "savol": "Argentina davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "afg'oni",
+      "peso",
+      "frank",
+      "yen"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 155,
+    "savol": "Chili davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Lissabon",
+      "Santyago",
+      "Bishkek",
+      "Islomobod"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 156,
+    "savol": "Chili davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "yevro",
+      "dirham",
+      "somoni",
+      "peso"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 157,
+    "savol": "Peru davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Xanoy",
+      "Toshkent",
+      "Lima",
+      "Kobul"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 158,
+    "savol": "Peru davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "birr",
+      "yevro",
+      "afg'oni",
+      "sol"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 159,
+    "savol": "Kolumbiya davlatining poytaxti qaysi?",
+    "variantlar": [
+      "Manila",
+      "Bogota",
+      "Xanoy",
+      "Lima"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 160,
+    "savol": "Kolumbiya davlatining rasmiy valyutasi qaysi?",
+    "variantlar": [
+      "Singapur dollari",
+      "rubl",
+      "peso",
+      "Yangi Zelandiya dollari"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 161,
+    "savol": "\"Xamsa\" asarining muallifi kim?",
+    "variantlar": [
+      "Lev Tolstoy",
+      "Alisher Navoiy",
+      "Migel de Servantes",
+      "Jyul Vern"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 162,
+    "savol": "Alisher Navoiy qaysi asari bilan mashhur?",
+    "variantlar": [
+      "O'tkan kunlar",
+      "Dorian Greyning portreti",
+      "Xo'rlanganlar",
+      "Xamsa"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 163,
+    "savol": "\"O'tkan kunlar\" asarining muallifi kim?",
+    "variantlar": [
+      "Abdulla Qodiriy",
+      "Alisher Navoiy",
+      "J.K. Rouling",
+      "Viktor Gyugo"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 164,
+    "savol": "Abdulla Qodiriy qaysi asari bilan mashhur?",
+    "variantlar": [
+      "O'tkan kunlar",
+      "Iliada",
+      "Jarayon",
+      "Don Kixot"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 165,
+    "savol": "\"Kecha va kunduz\" asarining muallifi kim?",
+    "variantlar": [
+      "Cho'lpon",
+      "Nikolay Gogol",
+      "Jon Steynbek",
+      "Aleksandr Dyuma"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 166,
+    "savol": "Cho'lpon qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Sichqonlar va odamlar",
+      "Dorian Greyning portreti",
+      "Kecha va kunduz",
+      "Garri Potter va falsafa toshi"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 167,
+    "savol": "\"Chol va dengiz\" asarining muallifi kim?",
+    "variantlar": [
+      "Migel de Servantes",
+      "Ernest Heminguey",
+      "Lev Tolstoy",
+      "Viktor Gyugo"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 168,
+    "savol": "Ernest Heminguey qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Sherlok Holms haqida hikoyalar",
+      "Chol va dengiz",
+      "Garri Potter va falsafa toshi",
+      "Dorian Greyning portreti"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 169,
+    "savol": "\"Urush va tinchlik\" asarining muallifi kim?",
+    "variantlar": [
+      "Lev Tolstoy",
+      "Alber Kamyu",
+      "Uilyam Shekspir",
+      "Antuan de Sent-Ekzyuperi"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 170,
+    "savol": "Lev Tolstoy qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Dorian Greyning portreti",
+      "Sakson kunda dunyo bo'ylab",
+      "Don Kixot",
+      "Urush va tinchlik"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 171,
+    "savol": "\"Jinoyat va jazo\" asarining muallifi kim?",
+    "variantlar": [
+      "Fyodor Dostoyevskiy",
+      "Viktor Gyugo",
+      "Gomer",
+      "Artur Konan Doyl"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 172,
+    "savol": "Fyodor Dostoyevskiy qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Kecha va kunduz",
+      "Dorian Greyning portreti",
+      "Jinoyat va jazo",
+      "Tom Soyerning sarguzashtlari"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 173,
+    "savol": "\"Don Kixot\" asarining muallifi kim?",
+    "variantlar": [
+      "Nikolay Gogol",
+      "Ernest Heminguey",
+      "Fyodor Dostoyevskiy",
+      "Migel de Servantes"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 174,
+    "savol": "Migel de Servantes qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Don Kixot",
+      "Xo'rlanganlar",
+      "Faust",
+      "Odisseya"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 175,
+    "savol": "\"Xo'rlanganlar\" asarining muallifi kim?",
+    "variantlar": [
+      "Nikolay Gogol",
+      "Alisher Navoiy",
+      "Viktor Gyugo",
+      "Harper Li"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 176,
+    "savol": "Viktor Gyugo qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Xamsa",
+      "Sakson kunda dunyo bo'ylab",
+      "Xo'rlanganlar",
+      "Uch mushketyor"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 177,
+    "savol": "\"Sakson kunda dunyo bo'ylab\" asarining muallifi kim?",
+    "variantlar": [
+      "Jyul Vern",
+      "Frans Kafka",
+      "Paulo Koelo",
+      "Iogann Volfgang Gyote"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 178,
+    "savol": "Jyul Vern qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Robinzon Kruzo",
+      "Kichkina shahzoda",
+      "Sakson kunda dunyo bo'ylab",
+      "Sichqonlar va odamlar"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 179,
+    "savol": "\"Robinzon Kruzo\" asarining muallifi kim?",
+    "variantlar": [
+      "Gabriel Garsia Markes",
+      "J.K. Rouling",
+      "Daniel Defo",
+      "Mark Tven"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 180,
+    "savol": "Daniel Defo qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Odisseya",
+      "Robinzon Kruzo",
+      "Yuz yil tanholikda",
+      "Urush va tinchlik"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 181,
+    "savol": "\"Kichkina shahzoda\" asarining muallifi kim?",
+    "variantlar": [
+      "Antuan de Sent-Ekzyuperi",
+      "Daniel Defo",
+      "Iogann Volfgang Gyote",
+      "Jyul Vern"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 182,
+    "savol": "Antuan de Sent-Ekzyuperi qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Kichkina shahzoda",
+      "Xo'rlanganlar",
+      "Gitanjali",
+      "1984"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 183,
+    "savol": "\"1984\" asarining muallifi kim?",
+    "variantlar": [
+      "Gabriel Garsia Markes",
+      "Rabindranat Tagor",
+      "Jorj Oruell",
+      "Lev Tolstoy"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 184,
+    "savol": "Jorj Oruell qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Jinoyat va jazo",
+      "Robinzon Kruzo",
+      "Dorian Greyning portreti",
+      "1984"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 185,
+    "savol": "\"Molxona\" asarining muallifi kim?",
+    "variantlar": [
+      "Jorj Oruell",
+      "Rabindranat Tagor",
+      "Iogann Volfgang Gyote",
+      "Alisher Navoiy"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 186,
+    "savol": "Jorj Oruell qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Don Kixot",
+      "Sherlok Holms haqida hikoyalar",
+      "Tom Soyerning sarguzashtlari",
+      "Molxona"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 187,
+    "savol": "\"Garri Potter va falsafa toshi\" asarining muallifi kim?",
+    "variantlar": [
+      "Abdulla Qodiriy",
+      "Cho'lpon",
+      "J.K. Rouling",
+      "Artur Konan Doyl"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 188,
+    "savol": "J.K. Rouling qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Dorian Greyning portreti",
+      "Chol va dengiz",
+      "Garri Potter va falsafa toshi",
+      "Xo'rlanganlar"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 189,
+    "savol": "\"Sherlok Holms haqida hikoyalar\" asarining muallifi kim?",
+    "variantlar": [
+      "Alisher Navoiy",
+      "Artur Konan Doyl",
+      "Jorj Oruell",
+      "Rabindranat Tagor"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 190,
+    "savol": "Artur Konan Doyl qaysi asari bilan mashhur?",
+    "variantlar": [
+      "Xo'rlanganlar",
+      "Alkimyogar",
+      "Sherlok Holms haqida hikoyalar",
+      "Don Kixot"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 191,
+    "savol": "\"Tom Soyerning sarguzashtlari\" asarining muallifi kim?",
+    "variantlar": [
+      "Uilyam Shekspir",
+      "Cho'lpon",
+      "Mark Tven",
+      "Iogann Volfgang Gyote"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 192,
+    "savol": "\"Hamlet\" asarining muallifi kim?",
+    "variantlar": [
+      "Aleksandr Dyuma",
+      "Ernest Heminguey",
+      "Jorj Oruell",
+      "Uilyam Shekspir"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 193,
+    "savol": "\"Faust\" asarining muallifi kim?",
+    "variantlar": [
+      "Iogann Volfgang Gyote",
+      "Jorj Oruell",
+      "Jyul Vern",
+      "Antuan de Sent-Ekzyuperi"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 194,
+    "savol": "\"Jarayon\" asarining muallifi kim?",
+    "variantlar": [
+      "Jorj Oruell",
+      "J.K. Rouling",
+      "Frans Kafka",
+      "Jyul Vern"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 195,
+    "savol": "\"Revizor\" asarining muallifi kim?",
+    "variantlar": [
+      "Oskar Uayld",
+      "Jon Steynbek",
+      "Nikolay Gogol",
+      "Fyodor Dostoyevskiy"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 196,
+    "savol": "\"Uch mushketyor\" asarining muallifi kim?",
+    "variantlar": [
+      "Artur Konan Doyl",
+      "Paulo Koelo",
+      "Aleksandr Dyuma",
+      "Alisher Navoiy"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 197,
+    "savol": "\"Masxaraboz qushni o'ldirish\" asarining muallifi kim?",
+    "variantlar": [
+      "Harper Li",
+      "Gomer",
+      "Jyul Vern",
+      "Jon Steynbek"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 198,
+    "savol": "\"Alkimyogar\" asarining muallifi kim?",
+    "variantlar": [
+      "Gomer",
+      "Jorj Oruell",
+      "Viktor Gyugo",
+      "Paulo Koelo"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 199,
+    "savol": "\"Sichqonlar va odamlar\" asarining muallifi kim?",
+    "variantlar": [
+      "Fyodor Dostoyevskiy",
+      "Jon Steynbek",
+      "Gomer",
+      "Migel de Servantes"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 200,
+    "savol": "\"Yuz yil tanholikda\" asarining muallifi kim?",
+    "variantlar": [
+      "J.K. Rouling",
+      "Gabriel Garsia Markes",
+      "Abdulla Qodiriy",
+      "Alisher Navoiy"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 201,
+    "savol": "\"Begona\" asarining muallifi kim?",
+    "variantlar": [
+      "Alber Kamyu",
+      "Cho'lpon",
+      "Migel de Servantes",
+      "Antuan de Sent-Ekzyuperi"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 202,
+    "savol": "\"Iliada\" asarining muallifi kim?",
+    "variantlar": [
+      "Alisher Navoiy",
+      "Gomer",
+      "Iogann Volfgang Gyote",
+      "J.K. Rouling"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 203,
+    "savol": "\"Odisseya\" asarining muallifi kim?",
+    "variantlar": [
+      "Nikolay Gogol",
+      "Migel de Servantes",
+      "Gomer",
+      "Iogann Volfgang Gyote"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 204,
+    "savol": "\"Gitanjali\" asarining muallifi kim?",
+    "variantlar": [
+      "Rabindranat Tagor",
+      "Aleksandr Dyuma",
+      "J.K. Rouling",
+      "Abdulla Qodiriy"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 205,
+    "savol": "\"Dorian Greyning portreti\" asarining muallifi kim?",
+    "variantlar": [
+      "Daniel Defo",
+      "Fyodor Dostoyevskiy",
+      "Oskar Uayld",
+      "Alber Kamyu"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Adabiyot"
+  },
+  {
+    "id": 206,
+    "savol": "Vodorod elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "H",
+      "Si",
+      "Al",
+      "Na"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 207,
+    "savol": "H belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Xlor",
+      "Oltingugurt",
+      "Vodorod",
+      "Geliy"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 208,
+    "savol": "Geliy elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Cu",
+      "Si",
+      "He",
+      "Fe"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 209,
+    "savol": "He belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Geliy",
+      "Temir",
+      "Vodorod",
+      "Alyuminiy"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 210,
+    "savol": "Litiy elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Fe",
+      "Au",
+      "Cl",
+      "Li"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 211,
+    "savol": "Li belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Temir",
+      "Natriy",
+      "Litiy",
+      "Uglerod"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 212,
+    "savol": "Uglerod elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "C",
+      "Li",
+      "Cl",
+      "Fe"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 213,
+    "savol": "C belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Geliy",
+      "Uglerod",
+      "Azot",
+      "Temir"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 214,
+    "savol": "Azot elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Cu",
+      "Na",
+      "N",
+      "Mg"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 215,
+    "savol": "N belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Azot",
+      "Vodorod",
+      "Geliy",
+      "Kumush"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 216,
+    "savol": "Kislorod elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Au",
+      "C",
+      "Li",
+      "O"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 217,
+    "savol": "O belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Kalsiy",
+      "Mis",
+      "Alyuminiy",
+      "Kislorod"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 218,
+    "savol": "Natriy elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Na",
+      "Cu",
+      "K",
+      "H"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 219,
+    "savol": "Na belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Fosfor",
+      "Kremniy",
+      "Kumush",
+      "Natriy"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 220,
+    "savol": "Magniy elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "H",
+      "Mg",
+      "O",
+      "Ag"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 221,
+    "savol": "Mg belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Xlor",
+      "Vodorod",
+      "Geliy",
+      "Magniy"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 222,
+    "savol": "Alyuminiy elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "C",
+      "Au",
+      "Al",
+      "Li"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 223,
+    "savol": "Al belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Vodorod",
+      "Alyuminiy",
+      "Magniy",
+      "Oltingugurt"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 224,
+    "savol": "Kremniy elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "P",
+      "Cl",
+      "Si",
+      "H"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 225,
+    "savol": "Si belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Magniy",
+      "Temir",
+      "Alyuminiy",
+      "Kremniy"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 226,
+    "savol": "Fosfor elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Cl",
+      "H",
+      "P",
+      "He"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 227,
+    "savol": "P belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Kalsiy",
+      "Fosfor",
+      "Oltingugurt",
+      "Uglerod"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 228,
+    "savol": "Oltingugurt elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "S",
+      "Na",
+      "P",
+      "Fe"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 229,
+    "savol": "S belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Litiy",
+      "Temir",
+      "Kaliy",
+      "Oltingugurt"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 230,
+    "savol": "Xlor elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Ag",
+      "Na",
+      "S",
+      "Cl"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 231,
+    "savol": "Cl belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Mis",
+      "Simob",
+      "Alyuminiy",
+      "Xlor"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 232,
+    "savol": "Kaliy elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "H",
+      "Cl",
+      "S",
+      "K"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 233,
+    "savol": "K belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Kremniy",
+      "Kaliy",
+      "Natriy",
+      "Simob"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 234,
+    "savol": "Kalsiy elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "H",
+      "Si",
+      "He",
+      "Ca"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 235,
+    "savol": "Ca belgisi qaysi elementga tegishli?",
+    "variantlar": [
+      "Natriy",
+      "Magniy",
+      "Kalsiy",
+      "Azot"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 236,
+    "savol": "Temir elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Mg",
+      "Fe",
+      "Au",
+      "H"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 237,
+    "savol": "Mis elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Cu",
+      "K",
+      "C",
+      "He"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 238,
+    "savol": "Kumush elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Ag",
+      "S",
+      "C",
+      "Li"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 239,
+    "savol": "Oltin elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "Au",
+      "Cl",
+      "H",
+      "He"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 240,
+    "savol": "Simob elementining kimyoviy belgisi qaysi?",
+    "variantlar": [
+      "K",
+      "P",
+      "S",
+      "Hg"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 241,
+    "savol": "Quyosh tizimidagi eng katta sayyora?",
+    "variantlar": [
+      "Teri",
+      "Yupiter",
+      "Merkuriy",
+      "Nil"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 242,
+    "savol": "Qizil sayyora deb ataladigan osmon jismi?",
+    "variantlar": [
+      "Merkuriy",
+      "Azot",
+      "Mars",
+      "Xlorofill"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 243,
+    "savol": "Yerning yagona tabiiy yo'ldoshi?",
+    "variantlar": [
+      "Kelvin",
+      "Baykal",
+      "Oy",
+      "Nil"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 244,
+    "savol": "Quyoshga eng yaqin sayyora?",
+    "variantlar": [
+      "Merkuriy",
+      "Amper",
+      "Yurak",
+      "206"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 245,
+    "savol": "Quyosh tizimidagi eng issiq sayyora?",
+    "variantlar": [
+      "Venera",
+      "206",
+      "Neytral muhit",
+      "Sputnik 1"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 246,
+    "savol": "Dunyodagi eng katta okean?",
+    "variantlar": [
+      "Gemoglobin",
+      "Tinch okeani",
+      "Proton",
+      "365"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 247,
+    "savol": "Dunyodagi eng chuqur ko'l?",
+    "variantlar": [
+      "Tinch okeani",
+      "Amper",
+      "Nyuton",
+      "Baykal"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 248,
+    "savol": "Dunyodagi eng baland tog' cho'qqisi?",
+    "variantlar": [
+      "Venera",
+      "Everest",
+      "Grenlandiya",
+      "World Wide Web"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 249,
+    "savol": "Afrikadagi eng uzun daryo?",
+    "variantlar": [
+      "Nil",
+      "Xlorofill",
+      "Mars",
+      "Yupiter"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 250,
+    "savol": "Inson tanasidagi eng katta a'zo?",
+    "variantlar": [
+      "Kelvin",
+      "Azot",
+      "Venera",
+      "Teri"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Biologiya"
+  },
+  {
+    "id": 251,
+    "savol": "Qonni haydaydigan a'zo?",
+    "variantlar": [
+      "Yurak",
+      "Azot",
+      "Venera",
+      "206"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Biologiya"
+  },
+  {
+    "id": 252,
+    "savol": "Fotosintezdagi yashil pigment?",
+    "variantlar": [
+      "Xlorofill",
+      "Venera",
+      "Dezoksiribonuklein kislota",
+      "Nyuton"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Biologiya"
+  },
+  {
+    "id": 253,
+    "savol": "Suvning kimyoviy formulasi?",
+    "variantlar": [
+      "Yupiter",
+      "Mars",
+      "206",
+      "H2O"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 254,
+    "savol": "Yer atmosferasida eng ko'p uchraydigan gaz?",
+    "variantlar": [
+      "365",
+      "Azot",
+      "Everest",
+      "Elektron"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 255,
+    "savol": "Elektr tokini o'lchash birligi?",
+    "variantlar": [
+      "365",
+      "Gemoglobin",
+      "Amper",
+      "Yupiter"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Fizika"
+  },
+  {
+    "id": 256,
+    "savol": "Kuch birligi?",
+    "variantlar": [
+      "Nyuton",
+      "Nil",
+      "Neytral muhit",
+      "Elektron"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Fizika"
+  },
+  {
+    "id": 257,
+    "savol": "Haroratning SI birligi?",
+    "variantlar": [
+      "Venera",
+      "Kelvin",
+      "Teri",
+      "Gemoglobin"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Fizika"
+  },
+  {
+    "id": 258,
+    "savol": "DNA qisqartmasining to'liq nomi?",
+    "variantlar": [
+      "Dezoksiribonuklein kislota",
+      "Amper",
+      "H2O",
+      "Elektron"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Biologiya"
+  },
+  {
+    "id": 259,
+    "savol": "Kompyuterning asosiy hisoblash qismi?",
+    "variantlar": [
+      "Oy",
+      "Merkuriy",
+      "Tinch okeani",
+      "Protsessor"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Texnologiya"
+  },
+  {
+    "id": 260,
+    "savol": "WWW qisqartmasining kengaytmasi?",
+    "variantlar": [
+      "Mars",
+      "World Wide Web",
+      "Everest",
+      "Protsessor"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Texnologiya"
+  },
+  {
+    "id": 261,
+    "savol": "Birinchi sun'iy yo'ldosh nomi?",
+    "variantlar": [
+      "Dezoksiribonuklein kislota",
+      "Xlorofill",
+      "Baykal",
+      "Sputnik 1"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Kosmos"
+  },
+  {
+    "id": 262,
+    "savol": "Yer Quyosh atrofini taxminan necha kunda aylanadi?",
+    "variantlar": [
+      "Amper",
+      "Xlorofill",
+      "Venera",
+      "365"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Astronomiya"
+  },
+  {
+    "id": 263,
+    "savol": "Geografik yo'nalishni ko'rsatuvchi asbob?",
+    "variantlar": [
+      "Everest",
+      "Kompas",
+      "Tinch okeani",
+      "Amper"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 264,
+    "savol": "Musbat zaryadli zarracha?",
+    "variantlar": [
+      "Amper",
+      "Proton",
+      "Nil",
+      "Baykal"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Fizika"
+  },
+  {
+    "id": 265,
+    "savol": "Manfiy zaryadli zarracha?",
+    "variantlar": [
+      "Baykal",
+      "Elektron",
+      "Proton",
+      "Yupiter"
+    ],
+    "togri": [
+      1
+    ],
+    "mavzu": "Fizika"
+  },
+  {
+    "id": 266,
+    "savol": "pH 7 nimani bildiradi?",
+    "variantlar": [
+      "Sputnik 1",
+      "Merkuriy",
+      "Neytral muhit",
+      "Baykal"
+    ],
+    "togri": [
+      2
+    ],
+    "mavzu": "Kimyo"
+  },
+  {
+    "id": 267,
+    "savol": "Eng katta qit'a?",
+    "variantlar": [
+      "Osiyo",
+      "206",
+      "Baykal",
+      "Nyuton"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 268,
+    "savol": "Dunyodagi eng katta orol?",
+    "variantlar": [
+      "Grenlandiya",
+      "Yurak",
+      "Merkuriy",
+      "Kompas"
+    ],
+    "togri": [
+      0
+    ],
+    "mavzu": "Geografiya"
+  },
+  {
+    "id": 269,
+    "savol": "Inson skeletida nechta suyak bo'ladi?",
+    "variantlar": [
+      "H2O",
+      "Venera",
+      "Baykal",
+      "206"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Biologiya"
+  },
+  {
+    "id": 270,
+    "savol": "Qonning qizil rangini beruvchi modda?",
+    "variantlar": [
+      "Venera",
+      "Yupiter",
+      "H2O",
+      "Gemoglobin"
+    ],
+    "togri": [
+      3
+    ],
+    "mavzu": "Biologiya"
+  }
+]

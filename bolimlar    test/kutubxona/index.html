@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BilimBox — Kutubxona</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1280px; height: 720px; overflow: hidden;
+    font-family: 'Segoe UI', sans-serif; background: #0a0a1a; user-select: none;
+    transform-origin: top left; position: relative;
+  }
+  .bg {
+    position: fixed; inset: 0;
+    background-image: url('../../ui/assets/bg_kirish.jpg');
+    background-size: cover; background-position: center;
+    filter: brightness(0.35); z-index: 0;
+  }
+  .overlay {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 30%, rgba(168,85,247,0.15) 0%, transparent 55%);
+    z-index: 1;
+  }
+
+  /* Titlebar */
+  .titlebar {
+    position: fixed; top: 0; left: 0; right: 0; height: 44px;
+    -webkit-app-region: drag; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+    background: rgba(5,8,25,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .tl { display: flex; align-items: center; gap: 12px; -webkit-app-region: no-drag; }
+  .tr { display: flex; align-items: center; gap: 8px; -webkit-app-region: no-drag; }
+  .back-btn {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(180,200,255,0.8); padding: 5px 14px; border-radius: 8px;
+    cursor: pointer; font-size: 12px; transition: all 0.2s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .app-name {
+    font-size: 16px; font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .titlebar button { width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer; }
+  .titlebar button:hover { opacity: 0.8; }
+  .btn-close { background: #ff5f57; } .btn-min { background: #febc2e; } .btn-max { background: #78c3ff; }
+  .btn-max   { background: #78c3ff; } .btn-max { background: #78c3ff; }
+
+  /* Layout */
+  .layout {
+    position: absolute; top: 44px; left: 0; right: 0; bottom: 0;
+    display: flex; z-index: 10;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px; height: 100%; flex-shrink: 0;
+    background: rgba(8,12,35,0.8); backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(255,255,255,0.07);
+    display: flex; flex-direction: column; padding: 12px 10px; gap: 3px;
+    overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+
+  .s-title {
+    font-size: 10px; color: rgba(180,200,255,0.3);
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 0 8px; margin: 10px 0 4px;
+  }
+  .nav-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; border-radius: 10px; border: none;
+    background: transparent; color: rgba(180,200,255,0.6);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; text-align: left; width: 100%;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .nav-btn.aktiv { background: rgba(96,165,250,0.15); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+
+  .janr-btn {
+    padding: 7px 12px; border-radius: 8px; border: none;
+    background: transparent; color: rgba(180,200,255,0.5);
+    font-size: 12px; cursor: pointer; transition: all 0.2s;
+    text-align: left; width: 100%; display: flex; align-items: center; gap: 6px;
+  }
+  .janr-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .janr-btn.aktiv { color: #a855f7; background: rgba(168,85,247,0.12); }
+
+  .stats-box {
+    margin-top: auto; padding: 12px;
+    background: rgba(255,255,255,0.04); border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.07); text-align: center; margin-top: 12px;
+  }
+  .stats-son { font-size: 26px; font-weight: 800; color: #60a5fa; }
+  .stats-nom { font-size: 11px; color: rgba(180,200,255,0.4); margin-top: 2px; }
+
+  /* Main */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Topbar */
+  .topbar {
+    padding: 10px 18px; display: flex; gap: 10px; align-items: center;
+    background: rgba(8,12,35,0.5); border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+  .q-wrap { flex: 1; position: relative; }
+  .q-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 13px; color: rgba(180,200,255,0.3); }
+  .q-input {
+    width: 100%; padding: 8px 14px 8px 34px; border-radius: 10px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; font-size: 13px; outline: none; transition: all 0.2s;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .q-input:focus { border-color: rgba(96,165,250,0.4); background: rgba(255,255,255,0.1); }
+  .q-input::placeholder { color: rgba(255,255,255,0.18); }
+
+  .qtur-wrap { display: flex; gap: 3px; }
+  .qtur-btn {
+    padding: 7px 11px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05); color: rgba(180,200,255,0.6);
+    font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .qtur-btn.aktiv { background: rgba(96,165,250,0.18); border-color: #60a5fa; color: #60a5fa; }
+  .qtur-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+  .natija-txt { font-size: 12px; color: rgba(180,200,255,0.35); white-space: nowrap; }
+
+  /* Jadval */
+  .jadval-wrap { flex: 1; overflow-y: auto; }
+  .jadval-wrap::-webkit-scrollbar { width: 4px; }
+  .jadval-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead tr {
+    background: rgba(5,8,30,0.9); border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky; top: 0; z-index: 5;
+  }
+  th {
+    padding: 10px 16px; text-align: left;
+    font-size: 11px; font-weight: 700; color: rgba(180,200,255,0.4);
+    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: color 0.2s;
+  }
+  th:hover { color: rgba(180,200,255,0.8); }
+  th.aktiv-sort { color: #60a5fa; }
+
+  /* Oddiy qator */
+  .qator-asosiy td {
+    padding: 13px 16px; font-size: 13px; color: rgba(200,220,255,0.75);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: all 0.2s;
+  }
+  .qator-asosiy { cursor: pointer; transition: background 0.15s; }
+  .qator-asosiy:hover { background: rgba(96,165,250,0.07); }
+  .qator-asosiy:hover td { color: rgba(220,235,255,0.95); }
+  .qator-asosiy.tanlangan { background: rgba(96,165,250,0.1); }
+  .qator-asosiy.tanlangan td { color: #fff; }
+
+  .td-nom { font-weight: 600; }
+  .td-icon { font-size: 17px; margin-right: 9px; }
+
+  .janr-tag {
+    display: inline-block; padding: 3px 8px; border-radius: 6px;
+    font-size: 11px; font-weight: 600;
+    background: rgba(168,85,247,0.13); color: #a855f7;
+    border: 1px solid rgba(168,85,247,0.2);
+  }
+
+  .sevimli-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 14px; padding: 2px 6px; border-radius: 6px;
+    transition: transform 0.2s; opacity: 0.4;
+  }
+  .sevimli-btn:hover { transform: scale(1.3); opacity: 1; }
+  .sevimli-btn.aktiv { opacity: 1; }
+
+  .oxirgi-chip {
+    display: inline-block; padding: 2px 7px; border-radius: 5px;
+    font-size: 10px; background: rgba(34,197,94,0.15); color: #4ade80;
+    border: 1px solid rgba(34,197,94,0.2); margin-left: 6px;
+  }
+
+  /* Kengaytirilgan qator */
+  .qator-detail td {
+    padding: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(6,10,30,0.6);
+  }
+  .qator-detail { display: none; }
+  .qator-detail.ochiq { display: table-row; }
+
+  .detail-ichki {
+    padding: 16px 20px 16px 52px;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 20px;
+    animation: slideDown 0.25s ease;
+  }
+  @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+
+  .detail-chap { flex: 1; }
+
+  .detail-meta {
+    display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .d-chip {
+    font-size: 12px; color: rgba(180,200,255,0.6);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .d-chip strong { color: rgba(220,235,255,0.9); }
+
+  .detail-tavsif {
+    font-size: 13px; color: rgba(180,200,255,0.65); line-height: 1.6;
+    max-width: 600px;
+    background: rgba(255,255,255,0.04); border-radius: 10px;
+    padding: 10px 14px; border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .detail-holat {
+    display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+  }
+  .holat-btn {
+    padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05); color: rgba(180,200,255,0.6);
+    font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .holat-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .holat-btn.aktiv { background: rgba(34,197,94,0.15); border-color: #4ade80; color: #4ade80; }
+
+  .detail-ong {
+    display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0;
+  }
+
+  .ochish-btn {
+    padding: 10px 22px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #3b82f6, #7c3aed);
+    color: #fff; font-size: 14px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .ochish-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,0.5); }
+
+  .davom-btn {
+    padding: 7px 14px; border-radius: 10px; border: none;
+    background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3);
+    color: #4ade80; font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .davom-btn:hover { background: rgba(34,197,94,0.25); }
+
+  /* Bo'sh holat */
+  .bosh {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 380px; gap: 10px; color: rgba(180,200,255,0.3);
+  }
+  .bosh-icon { font-size: 52px; opacity: 0.25; }
+  .bosh-text { font-size: 15px; font-weight: 600; }
+  .bosh-sub { font-size: 12px; }
+
+  /* Particles */
+  .particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+  .dot {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.5);
+    animation: twinkle var(--d,3s) ease-in-out infinite; animation-delay: var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:0.1} 50%{opacity:0.6} }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="overlay"></div>
+<div class="particles" id="particles"></div>
+
+<div class="titlebar">
+  <div class="tl">
+    <button class="back-btn" onclick="ipcRenderer.invoke('goto','menu')">← Orqaga</button>
+    <span class="app-name">✦ BilimBox — Kutubxona</span>
+  </div>
+  <div class="tr">
+    <button class="btn-min" onclick="ipcRenderer.invoke('minimize-app')"></button>
+    <button class="btn-max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button>
+    <button class="btn-max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button>
+    <button class="btn-close" onclick="ipcRenderer.invoke('close-app')"></button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="s-title">Ko'rinish</div>
+    <button class="nav-btn aktiv" id="nav-barchasi" onclick="navTanla('barchasi')">📚 Barcha kitoblar</button>
+    <button class="nav-btn" id="nav-oxirgi" onclick="navTanla('oxirgi')">📖 Oxirgi o'qilgan</button>
+    <button class="nav-btn" id="nav-sevimli" onclick="navTanla('sevimli')">⭐ Sevimlilar</button>
+    <button class="nav-btn" id="nav-oqilgan" onclick="navTanla('oqilgan')">✅ O'qilgan</button>
+    <button class="nav-btn" id="nav-oqilmagan" onclick="navTanla('oqilmagan')">🔖 O'qilmagan</button>
+
+    <div class="s-title">Janr</div>
+    <div id="janrlar"></div>
+
+    <div class="stats-box">
+      <div class="stats-son" id="jami-son">0</div>
+      <div class="stats-nom">ta kitob</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="q-wrap">
+        <span class="q-icon">🔍</span>
+        <input class="q-input" id="q-input" placeholder="Kitob qidiring..." oninput="filtrlash()">
+      </div>
+      <div class="qtur-wrap">
+        <button class="qtur-btn aktiv" id="qtur-nom" onclick="qturTanla('nom')">Nom</button>
+        <button class="qtur-btn" id="qtur-yozuvchi" onclick="qturTanla('yozuvchi')">Yozuvchi</button>
+        <button class="qtur-btn" id="qtur-janr" onclick="qturTanla('janr')">Janr</button>
+      </div>
+      <span class="natija-txt" id="natija-txt"></span>
+    </div>
+
+    <div class="jadval-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th id="th-nom" onclick="sortTanla('nom')">📖 Kitob nomi</th>
+            <th id="th-yozuvchi" onclick="sortTanla('yozuvchi')">✍️ Yozuvchi</th>
+            <th id="th-janr" onclick="sortTanla('janr')" style="width:130px">🏷 Janr</th>
+            <th style="width:60px">⭐</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div id="bosh" style="display:none">
+        <div class="bosh">
+          <div class="bosh-icon">📚</div>
+          <div class="bosh-text" id="bosh-text">Kutubxona bo'sh</div>
+          <div class="bosh-sub" id="bosh-sub">kitob_baza.json fayliga kitob qo'shing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const { ipcRenderer } = require('electron');
+const fs = require('fs');
+const path = require('path');
+
+const JANR_ICON = {
+  'Rivojlanish':'🚀','Fantastika':'🔮','Antiutopiya':'⚠️','Motivatsiya':'💪',
+  'Roman':'📖','Iqtisodiyot':'💹','Psixologiya':'🧠','Biografiya':'👤',
+  'Klassika':'🏛️','Tarix':'📜','Fan':'🔬','Bolalar':'🧸','default':'📚'
+};
+
+// LocalStorage kalitlari
+const SEVIMLI_KEY = 'bb_sevimlilar';
+const HOLAT_KEY   = 'bb_holat';
+const SAHIFA_KEY  = 'bb_sahifalar';
+
+let barcha = [];
+let filtrJanr = null;
+let navHolat = 'barchasi';
+let qtur = 'nom';
+let sortK = 'nom', sortY = 1;
+let ochiqId = null;
+
+// Localda saqlanadigan ma'lumotlar
+function sevimlilar() { try { return JSON.parse(localStorage.getItem(SEVIMLI_KEY)||'[]'); } catch{ return []; } }
+function holatlar()   { try { return JSON.parse(localStorage.getItem(HOLAT_KEY)||'{}'); } catch{ return {}; } }
+function sahifalar()  { try { return JSON.parse(localStorage.getItem(SAHIFA_KEY)||'{}'); } catch{ return {}; } }
+
+function sevimliToggle(id) {
+  const s = sevimlilar();
+  const idx = s.indexOf(id);
+  if (idx >= 0) s.splice(idx, 1); else s.push(id);
+  localStorage.setItem(SEVIMLI_KEY, JSON.stringify(s));
+}
+
+function holatSet(id, holat) {
+  const h = holatlar(); h[id] = holat;
+  localStorage.setItem(HOLAT_KEY, JSON.stringify(h));
+}
+
+// Kitoblarni JSON dan yuklash
+function kitoblarYukla() {
+  const bazaYol = path.join(__dirname, 'kitob_baza.json');
+  if (!fs.existsSync(bazaYol)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(bazaYol, 'utf-8'));
+  } catch { return []; }
+}
+
+window.onload = () => {
+  barcha = kitoblarYukla();
+  document.getElementById('jami-son').textContent = barcha.length;
+  janrYasat();
+  filtrlash();
+  yulduzlar();
+  fitWindow();
+};
+window.addEventListener('resize', fitWindow);
+
+function janrYasat() {
+  const el = document.getElementById('janrlar');
+  const janrlar = [...new Set(barcha.map(k => k.janr).filter(Boolean))].sort();
+  el.innerHTML = '';
+  janrlar.forEach(j => {
+    const b = document.createElement('button');
+    b.className = 'janr-btn' + (filtrJanr === j ? ' aktiv' : '');
+    b.textContent = (JANR_ICON[j]||'📚') + ' ' + j;
+    b.onclick = () => { filtrJanr = filtrJanr === j ? null : j; janrYasat(); filtrlash(); };
+    el.appendChild(b);
+  });
+}
+
+function navTanla(n) {
+  navHolat = n; filtrJanr = null;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('aktiv'));
+  document.getElementById('nav-' + n).classList.add('aktiv');
+  janrYasat(); filtrlash();
+}
+
+function qturTanla(t) {
+  qtur = t;
+  document.querySelectorAll('.qtur-btn').forEach(b => b.classList.remove('aktiv'));
+  document.getElementById('qtur-' + t).classList.add('aktiv');
+  filtrlash();
+}
+
+function sortTanla(k) {
+  if (sortK === k) sortY *= -1; else { sortK = k; sortY = 1; }
+  document.querySelectorAll('th[id]').forEach(t => t.classList.remove('aktiv-sort'));
+  const el = document.getElementById('th-' + k);
+  if (el) el.classList.add('aktiv-sort');
+  filtrlash();
+}
+
+function filtrlash() {
+  const q = document.getElementById('q-input').value.trim().toLowerCase();
+  const sev = sevimlilar();
+  const hol = holatlar();
+  let list = [...barcha];
+
+  // Nav filtri
+  if (navHolat === 'oxirgi') {
+    const sah = sahifalar();
+    list = list.filter(k => sah[k.id]).sort((a,b) => (sah[b.id]?.vaqt||0) - (sah[a.id]?.vaqt||0)).slice(0,10);
+  } else if (navHolat === 'sevimli') {
+    list = list.filter(k => sev.includes(k.id));
+  } else if (navHolat === 'oqilgan') {
+    list = list.filter(k => hol[k.id] === 'oqilgan');
+  } else if (navHolat === 'oqilmagan') {
+    list = list.filter(k => hol[k.id] !== 'oqilgan');
+  }
+
+  if (filtrJanr) list = list.filter(k => k.janr === filtrJanr);
+  if (q) list = list.filter(k => (k[qtur]||'').toString().toLowerCase().includes(q));
+
+  list.sort((a,b) => {
+    const va = (a[sortK]||'').toString().toLowerCase();
+    const vb = (b[sortK]||'').toString().toLowerCase();
+    return va < vb ? -sortY : va > vb ? sortY : 0;
+  });
+
+  document.getElementById('natija-txt').textContent = list.length + ' ta natija';
+  const tbody = document.getElementById('tbody');
+  const bosh = document.getElementById('bosh');
+
+  if (!list.length) {
+    tbody.innerHTML = '';
+    bosh.style.display = 'block';
+    document.getElementById('bosh-text').textContent = q ? 'Kitob topilmadi' : 'Bu bo\'limda kitob yo\'q';
+    document.getElementById('bosh-sub').textContent = q ? 'Boshqa so\'z bilan qidiring' : '';
+    return;
+  }
+
+  bosh.style.display = 'none';
+  const sah = sahifalar();
+
+  tbody.innerHTML = '';
+  list.forEach((k, i) => {
+    const icon = JANR_ICON[k.janr] || JANR_ICON.default;
+    const isSev = sev.includes(k.id);
+    const holat = hol[k.id] || 'oqilmagan';
+    const sahifaMa = sah[k.id];
+    const isOxirgi = sahifaMa && (Date.now() - sahifaMa.vaqt < 7*24*60*60*1000);
+
+    // Asosiy qator
+    const tr = document.createElement('tr');
+    tr.className = 'qator-asosiy' + (ochiqId === k.id ? ' tanlangan' : '');
+    tr.innerHTML = `
+      <td style="color:rgba(180,200,255,0.25);font-size:12px">${i+1}</td>
+      <td class="td-nom">
+        <span class="td-icon">${icon}</span>${k.nom}
+        ${isOxirgi ? `<span class="oxirgi-chip">📖 ${sahifaMa.sahifa}-sahifa</span>` : ''}
+      </td>
+      <td>${k.yozuvchi || '<span style="opacity:0.3">—</span>'}</td>
+      <td><span class="janr-tag">${k.janr || '—'}</span></td>
+      <td>
+        <button class="sevimli-btn ${isSev ? 'aktiv' : ''}" 
+          onclick="event.stopPropagation();sevimliBosildi(${k.id})" 
+          title="Sevimlilarga qo'shish">
+          ${isSev ? '⭐' : '☆'}
+        </button>
+      </td>
+    `;
+    tr.onclick = () => qatorBos(k.id);
+    tbody.appendChild(tr);
+
+    // Detail qator
+    const trD = document.createElement('tr');
+    trD.className = 'qator-detail' + (ochiqId === k.id ? ' ochiq' : '');
+    trD.id = 'detail-' + k.id;
+    trD.innerHTML = `
+      <td colspan="5">
+        <div class="detail-ichki">
+          <div class="detail-chap">
+            <div class="detail-meta">
+              <div class="d-chip">✍️ <strong>${k.yozuvchi || 'Noma\'lum'}</strong></div>
+              <div class="d-chip">🏷 <strong>${k.janr || '—'}</strong></div>
+              <div class="d-chip">🆔 <strong>${k.id}</strong></div>
+            </div>
+            <div class="detail-tavsif">
+              ${k.tavsif || '<span style="opacity:0.4;font-style:italic">Tavsif qo\'shilmagan</span>'}
+            </div>
+            <div class="detail-holat">
+              <button class="holat-btn ${holat==='oqilgan'?'aktiv':''}" onclick="holatBosildi(${k.id},'oqilgan')">✅ O'qilgan</button>
+              <button class="holat-btn ${holat==='oqilyapti'?'aktiv':''}" onclick="holatBosildi(${k.id},'oqilyapti')">📖 O'qilyapti</button>
+              <button class="holat-btn ${holat==='oqilmagan'?'aktiv':''}" onclick="holatBosildi(${k.id},'oqilmagan')">🔖 O'qilmagan</button>
+            </div>
+          </div>
+          <div class="detail-ong">
+            ${sahifaMa ? `<button class="davom-btn" onclick="kitobOchi(${k.id})">▶ Davom etish (${sahifaMa.sahifa}-sahifa)</button>` : ''}
+            <button class="ochish-btn" onclick="kitobOchi(${k.id})">📖 O'qishni boshlash</button>
+          </div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(trD);
+  });
+}
+
+function qatorBos(id) {
+  if (ochiqId === id) {
+    ochiqId = null;
+  } else {
+    ochiqId = id;
+  }
+  filtrlash();
+  // Scroll qilingan qatorga
+  if (ochiqId) {
+    setTimeout(() => {
+      const el = document.getElementById('detail-' + ochiqId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+}
+
+function sevimliBosildi(id) {
+  sevimliToggle(id);
+  filtrlash();
+}
+
+function holatBosildi(id, holat) {
+  holatSet(id, holat);
+  filtrlash();
+}
+
+function kitobOchi(id) {
+  const k = barcha.find(x => x.id === id);
+  if (!k) return;
+
+  // PDF fayl yo'lini aniqlash
+  const kitoblarDir = path.join(__dirname, 'kitoblar');
+  if (!fs.existsSync(kitoblarDir)) { alert('kitoblar/ papkasi topilmadi!'); return; }
+
+  const fayllar = fs.readdirSync(kitoblarDir);
+  const fayl = fayllar.find(f => f.startsWith(String(id) + '_') || f.startsWith(String(id) + '.'));
+  if (!fayl) { alert(`${k.nom} uchun PDF fayl topilmadi!\nKutilgan: ${id}_*.pdf`); return; }
+
+  const yol = path.join(kitoblarDir, fayl);
+
+  // Oxirgi sahifani olish
+  const sah = sahifalar();
+  const joriyS = sah[id]?.sahifa || 1;
+
+  ipcRenderer.invoke('kitob-och', { ...k, fayl_yoli: yol, boshlash_sahifa: joriyS });
+}
+
+function yulduzlar() {
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 35; i++) {
+    const d = document.createElement('div'); d.className = 'dot';
+    const s = Math.random() * 2 + 0.5;
+    d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;opacity:${Math.random()*0.4};`;
+    c.appendChild(d);
+  }
+}
+
+function fitWindow() {
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  document.body.style.transform = `scale(${scale})`;
+  document.body.style.marginLeft = `${Math.max(0, (window.innerWidth - 1280 * scale) / 2)}px`;
+  document.body.style.marginTop = `${Math.max(0, (window.innerHeight - 720 * scale) / 2)}px`;
+}
+</script>
+</body>
+</html>

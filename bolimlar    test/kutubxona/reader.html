@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>BilimBox — O'qish</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 100%; height: 100vh; overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    background: #1a1a2e; display: flex; flex-direction: column;
+  }
+
+  .titlebar {
+    height: 40px; background: #0d0d1f;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px; flex-shrink: 0;
+  }
+  .tl { display: flex; align-items: center; gap: 10px; }
+  .tr { display: flex; align-items: center; gap: 8px; }
+
+  .k-nom {
+    font-size: 13px; font-weight: 700;
+    color: rgba(200,220,255,0.9);
+    max-width: 500px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .k-meta { font-size: 11px; color: rgba(180,200,255,0.4); }
+
+  .info-chip {
+    padding: 3px 10px; border-radius: 6px;
+    background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.2);
+    color: #60a5fa; font-size: 11px; font-weight: 600;
+  }
+
+  /* PDF iframe */
+  .pdf-frame {
+    flex: 1; border: none; width: 100%; height: 100%;
+    background: #fff;
+  }
+
+  /* Yuklanish */
+  .loading-wrap {
+    position: absolute; inset: 40px 0 0 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: #1a1a2e; gap: 16px; z-index: 10;
+  }
+  .spinner {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 3px solid rgba(96,165,250,0.15);
+    border-top-color: #60a5fa;
+    animation: spin 0.8s linear infinite;
+  }
+  .loading-txt { font-size: 14px; color: rgba(180,200,255,0.5); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <div class="tl">
+    <div>
+      <div class="k-nom" id="k-nom">Yuklanmoqda...</div>
+      <div class="k-meta" id="k-meta"></div>
+    </div>
+  </div>
+  <div class="tr">
+    <span class="info-chip" id="k-janr"></span>
+  </div>
+</div>
+
+<div class="loading-wrap" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-txt">PDF ochilmoqda...</div>
+</div>
+
+<iframe class="pdf-frame" id="pdf-frame" onload="yuklandı()"></iframe>
+
+<script>
+const { ipcRenderer } = require('electron');
+
+window.onload = async () => {
+  const kitob = await ipcRenderer.invoke('joriy-kitob-olish');
+  if (!kitob?.fayl_yoli) {
+    document.getElementById('loading').innerHTML = '<span style="color:#f87171;font-size:16px">❌ Kitob topilmadi!</span>';
+    return;
+  }
+
+  document.getElementById('k-nom').textContent = kitob.nom;
+  document.getElementById('k-meta').textContent = [kitob.yozuvchi, kitob.janr].filter(Boolean).join(' · ');
+  document.getElementById('k-janr').textContent = kitob.janr || '';
+
+  const yol = kitob.fayl_yoli.replace(/\\/g, '/');
+  document.getElementById('pdf-frame').src = 'file:///' + yol;
+};
+
+function yuklandı() {
+  document.getElementById('loading').style.display = 'none';
+}
+</script>
+</body>
+</html>

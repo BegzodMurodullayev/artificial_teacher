@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer
@@ -43,6 +44,7 @@ function UsageMeter({ used, limit, label, color = '#00f3ff' }: {
 }
 
 export default function HomePage() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const { hydrateDashboard, setActiveTab } = useStore()
   const user     = useUser()
@@ -132,6 +134,39 @@ export default function HomePage() {
           >
             <span className="text-xl">{item.icon}</span>
             <span className="text-text-primary text-sm font-medium">{item.label}</span>
+          </motion.button>
+        ))}
+      </div>
+
+      {/* ── Games & Modules ── */}
+      <h2 className="text-text-secondary text-xs font-semibold uppercase tracking-wider mt-5 mb-1 ml-1">
+          O'yinlar va Bo'limlar
+      </h2>
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {[
+          { icon: '🔢', label: 'Raqam Top', route: '/games/number' },
+          { icon: '⚡', label: 'Tez Hisob', route: '/games/math' },
+          { icon: '📚', label: 'Kutubxona', route: null },
+          { icon: '❌', label: 'X-O', route: '/games/xo' },
+          { icon: '🃏', label: 'Xotira', route: '/games/memory' },
+          { icon: '💡', label: 'Evrika', route: null },
+        ].map((item, i) => (
+          <motion.button
+            key={item.label}
+            onClick={() => {
+              if (item.route) {
+                navigate(item.route)
+              } else {
+                window.Telegram?.WebApp?.showAlert?.(`${item.label} bo'limiga xush kelibsiz! Tez kunda ishga tushadi.`)
+              }
+            }}
+            className="glass-card rounded-2xl p-3 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform border border-white/5 hover:bg-white/5"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.05 + 0.3 }}
+          >
+            <span className="text-2xl drop-shadow-lg">{item.icon}</span>
+            <span className="text-text-primary text-xs font-medium text-center">{item.label}</span>
           </motion.button>
         ))}
       </div>

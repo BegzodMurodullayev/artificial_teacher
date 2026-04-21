@@ -36,10 +36,12 @@ async def safe_reply(
         if "message is not modified" in str(e):
             return None
         logger.warning("safe_reply error: %s", e)
-        # Retry without parse_mode if parsing fails
+        # Retry without parse_mode if parsing fails, stripping html tags
         try:
+            import re
+            clean_text = re.sub(r'<[^>]+>', '', text)
             return await message.answer(
-                text,
+                clean_text,
                 reply_markup=reply_markup,
                 disable_web_page_preview=disable_web_page_preview,
             )
@@ -75,7 +77,22 @@ async def safe_edit(
         if "message is not modified" in str(e):
             return None
         logger.warning("safe_edit error: %s", e)
-        return None
+        try:
+            import re
+            clean_text = re.sub(r'<[^>]+>', '', text)
+            if isinstance(target, CallbackQuery):
+                if target.message:
+                    return await target.message.edit_text(
+                        clean_text,
+                        reply_markup=reply_markup,
+                    )
+            else:
+                return await target.edit_text(
+                    clean_text,
+                    reply_markup=reply_markup,
+                )
+        except Exception:
+            return None
     except Exception as e:
         logger.exception("Unexpected error in safe_edit: %s", e)
         return None

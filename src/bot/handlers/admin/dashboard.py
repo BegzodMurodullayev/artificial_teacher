@@ -23,10 +23,15 @@ router.callback_query.filter(RoleFilter("admin", "owner"))
 @router.message(Command("admin"))
 async def cmd_admin(message: Message, db_user: dict | None = None):
     """Show admin dashboard."""
-    total_users = await user_dao.count_users()
-    paid_users = await subscription_dao.count_paid_users()
-    pending = await payment_dao.count_pending_payments()
-    revenue = await payment_dao.get_total_revenue()
+    try:
+        total_users = await user_dao.count_users()
+        paid_users = await subscription_dao.count_paid_users()
+        pending = await payment_dao.count_pending_payments()
+        revenue = await payment_dao.get_total_revenue()
+    except Exception as e:
+        logger.error("Admin dashboard DB error: %s", e)
+        await safe_reply(message, "⚠️ Server xatosi. Iltimos qayta urinib ko'ring.")
+        return
 
     conversion = f"{(paid_users / total_users * 100):.1f}%" if total_users > 0 else "0%"
 
@@ -38,28 +43,8 @@ async def cmd_admin(message: Message, db_user: dict | None = None):
         f"💰 Umumiy tushum: <b>{fmt_price(revenue)}</b>\n"
         f"⏳ Kutilayotgan to'lovlar: <b>{pending}</b>\n"
     )
-
-    buttons = [
-        [
-            InlineKeyboardButton(text=f"💳 To'lovlar ({pending})", callback_data="adm:payments"),
-            InlineKeyboardButton(text="👥 Userlar", callback_data="adm:users"),
-        ],
-        [
-            InlineKeyboardButton(text="📢 Broadcast", callback_data="adm:broadcast"),
-            InlineKeyboardButton(text="📈 Statistika", callback_data="adm:stats"),
-        ],
-        [
-            InlineKeyboardButton(text="⚙️ Rejalar", callback_data="adm:plans"),
-            InlineKeyboardButton(text="📢 Homiylar", callback_data="adm:sponsors"),
-        ],
-        [
-            InlineKeyboardButton(text="🏆 Reyting", callback_data="adm:leaderboard"),
-        ],
-    ]
-
     from src.bot.keyboards.user_menu import admin_main_menu
     await safe_reply(message, text, reply_markup=admin_main_menu())
-    await safe_reply(message, "Tezkor amallar:", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
 
 @router.message(F.text == "💳 To'lovlar")
 async def _btn_adm_payments(message: Message, db_user: dict | None = None):
@@ -103,6 +88,47 @@ async def _btn_adm_back(message: Message, db_user: dict | None = None):
     plan_name = await subscription_dao.get_active_plan_name(db_user["user_id"]) if db_user else "free"
     role = db_user.get("role", "user") if db_user else "user"
     await safe_reply(message, "🔙 Asosiy menyuga qaytildi.", reply_markup=user_main_menu(plan_name, role))
+
+@router.message(F.text == "⚙️ Rejalar")
+async def _btn_adm_plans(message: Message, db_user: dict | None = None):
+    try:
+        from src.database.dao.subscription_dao import get_all_plans
+        plans = await get_all_plans() if hasattr(subscription_dao, 'get_all_plans') else []
+    except Exception:
+        plans = []
+    
+    text = "⚙️ <b>Tarif Rejalar</b>\n\n"
+    if plans:
+        for p in plans:
+            text += f"• <b>{escape_html(p.get('display_name', p.get('name', '?')))}</b> — {fmt_price(p.get('price_monthly', 0))}/oy\n"
+    else:
+        text += (
+            "⭐ Free — Bepul\n"
+            "⭐ Standard — 29,000 so'm/oy\n"
+            "💸 Pro — 59,000 so'm/oy\n"
+            "👑 Premium — 99,000 so'm/oy\n"
+        )
+    text += "\n/admin buyrug'i bilan dashboardga qaytish."
+    await safe_reply(message, text)
+
+@router.message(F.text == "🏆 Reyting")
+async def _btn_adm_leaderboard(message: Message, db_user: dict | None = None):
+    try:
+        from src.database.dao.stats_dao import get_leaderboard
+        leaders = await stats_dao.get_leaderboard(limit=10) if hasattr(stats_dao, 'get_leaderboard') else []
+    except Exception:
+        leaders = []
+    
+    if leaders:
+        text = "🏆 <b>Top 10 O'yinchilar</b>\n\n"
+        for i, row in enumerate(leaders, 1):
+            name = escape_html(str(row.get("first_name", row.get("user_id", "?"))))
+            score = row.get("score", row.get("total_points", 0))
+            text += f"{i}. {name} — <b>{fmt_num(score)}</b> ball\n"
+    else:
+        text = "🏆 <b>Reyting</b>\n\nHali ma'lumot yo'q."
+    
+    await safe_reply(message, text)
 
 @router.callback_query(F.data == "adm:payments")
 async def callback_admin_payments(callback: CallbackQuery, db_user: dict | None = None):

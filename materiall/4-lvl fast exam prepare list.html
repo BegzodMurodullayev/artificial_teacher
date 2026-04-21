@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 English Grammar Master — 4-Etap</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --card: #141c2e;
+  --border: #1e2d45;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+  --pink: #ec4899;
+  --cyan: #06b6d4;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Space Grotesk', sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* HEADER */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,14,26,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.header-logo {
+  font-size: 18px; font-weight: 700; color: var(--accent2);
+  white-space: nowrap;
+}
+.search-wrap {
+  flex: 1; position: relative;
+}
+.search-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 8px 16px 8px 40px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-icon {
+  position: absolute; left: 13px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3); font-size: 14px; pointer-events: none;
+}
+.back-btn {
+  display: none;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 7px 14px;
+  color: var(--text2);
+  font-family: var(--sans);
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent2); }
+
+/* VIEWS */
+.view { display: none; }
+.view.active { display: block; }
+
+/* HOME VIEW */
+.hero {
+  padding: 32px 16px 20px;
+  text-align: center;
+}
+.hero h1 {
+  font-size: clamp(22px, 5vw, 36px);
+  font-weight: 700;
+  background: linear-gradient(135deg, #60a5fa, #8b5cf6, #ec4899);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+.hero p { color: var(--text2); font-size: 14px; }
+.stats-row {
+  display: flex; gap: 8px; justify-content: center;
+  flex-wrap: wrap; margin-top: 16px;
+}
+.stat-chip {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 4px 14px;
+  font-size: 12px; color: var(--text2);
+}
+.stat-chip span { color: var(--accent2); font-weight: 600; }
+
+/* SECTION GRID */
+.sections { padding: 0 12px 24px; }
+.section-group { margin-bottom: 20px; }
+.section-title {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--text3);
+  padding: 0 4px; margin-bottom: 10px;
+}
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+}
+.topic-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+.topic-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--c1), var(--c2));
+  opacity: 0; transition: opacity .2s;
+}
+.topic-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.topic-card:hover::before { opacity: 1; }
+.topic-card:active { transform: scale(0.98); }
+.topic-icon { font-size: 22px; margin-bottom: 8px; }
+.topic-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.topic-sub { font-size: 11px; color: var(--text3); }
+.topic-badge {
+  display: inline-block;
+  background: rgba(239,68,68,0.15);
+  color: #fca5a5;
+  font-size: 9px; font-weight: 600;
+  border-radius: 4px; padding: 1px 5px;
+  margin-left: 4px; vertical-align: middle;
+}
+
+/* DETAIL VIEW */
+.detail-header {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.detail-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 50px; padding: 4px 12px;
+  font-size: 12px; color: var(--text2);
+  margin-bottom: 12px;
+}
+.detail-title {
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 700; margin-bottom: 6px;
+}
+.detail-desc { font-size: 14px; color: var(--text2); }
+
+.detail-body { padding: 16px; }
+
+/* CONTENT BLOCKS */
+.block { margin-bottom: 20px; }
+
+.formula-box {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08));
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.formula-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 8px;
+}
+.formula-text {
+  font-family: var(--mono);
+  font-size: 15px; font-weight: 600;
+  color: #a5f3fc;
+}
+
+.keyword-box {
+  background: rgba(16,185,129,0.06);
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.keyword-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--green);
+  margin-bottom: 8px;
+}
+.keyword-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.keyword-tag {
+  background: rgba(16,185,129,0.12);
+  color: #6ee7b7;
+  border-radius: 50px;
+  padding: 3px 10px;
+  font-size: 12px; font-family: var(--mono); font-weight: 600;
+}
+
+.examples-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.examples-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--amber);
+  margin-bottom: 12px;
+}
+.example-item {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.example-item:last-child { border-bottom: none; padding-bottom: 0; }
+.example-uz { font-size: 13px; color: var(--text2); }
+.example-en {
+  font-family: var(--mono);
+  font-size: 14px; color: #bfdbfe;
+  font-weight: 600;
+}
+.example-en mark {
+  background: rgba(245,158,11,0.2);
+  color: #fde68a;
+  border-radius: 3px; padding: 0 3px;
+}
+
+.warning-box {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.warning-box .warn-label {
+  font-size: 11px; font-weight: 700; color: #fca5a5;
+  margin-bottom: 8px;
+}
+.wrong { color: #fca5a5; text-decoration: line-through; font-family: var(--mono); font-size: 13px; }
+.right { color: #86efac; font-family: var(--mono); font-size: 13px; }
+
+.tip-box {
+  background: rgba(139,92,246,0.06);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.tip-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--purple);
+  margin-bottom: 8px;
+}
+
+.diff-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.diff-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--cyan);
+  margin-bottom: 10px;
+}
+.diff-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 6px;
+}
+.diff-cell {
+  background: var(--bg2);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+.diff-cell-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+.diff-cell-text { font-family: var(--mono); font-size: 12px; color: var(--text); }
+
+/* TABLE */
+.grammar-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.grammar-table th {
+  background: var(--bg3);
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+}
+.grammar-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(30,45,69,0.5);
+  vertical-align: top;
+}
+.grammar-table tr:last-child td { border-bottom: none; }
+.grammar-table tr:hover td { background: rgba(59,130,246,0.04); }
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden; overflow-x: auto;
+}
+
+.section-h2 {
+  font-size: 15px; font-weight: 700;
+  color: var(--text);
+  margin: 20px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.section-h3 {
+  font-size: 13px; font-weight: 600;
+  color: var(--accent2); margin: 14px 0 6px;
+}
+
+/* SEARCH RESULTS */
+.search-results { padding: 16px; }
+.search-results-title { font-size: 13px; color: var(--text2); margin-bottom: 12px; }
+.search-item {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+  margin-bottom: 8px; cursor: pointer; transition: all .2s;
+}
+.search-item:hover { border-color: var(--accent); }
+.search-item-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.search-item-section { font-size: 12px; color: var(--text3); }
+.search-item-preview { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.no-results { text-align: center; padding: 40px 20px; color: var(--text3); }
+
+/* CHECKLIST */
+.checklist { list-style: none; }
+.checklist li {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.checklist li:last-child { border-bottom: none; }
+.check-icon { color: var(--green); font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+
+/* PILL */
+.pill {
+  display: inline-block;
+  border-radius: 50px; padding: 2px 10px;
+  font-size: 11px; font-weight: 600;
+}
+.pill-blue { background: rgba(59,130,246,0.15); color: #93c5fd; }
+.pill-green { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+.pill-amber { background: rgba(245,158,11,0.15); color: #fde68a; }
+.pill-red { background: rgba(239,68,68,0.15); color: #fca5a5; }
+.pill-purple { background: rgba(139,92,246,0.15); color: #c4b5fd; }
+
+/* MOBILE BOTTOM NAV */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(10,14,26,0.97);
+  border-top: 1px solid var(--border);
+  padding: 8px 0 12px;
+  z-index: 100;
+}
+@media (max-width: 640px) {
+  .bottom-nav { display: flex; justify-content: space-around; }
+  body { padding-bottom: 70px; }
+  .topics-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; cursor: pointer; padding: 4px 12px;
+  color: var(--text3); font-size: 10px; transition: color .2s;
+}
+.nav-item.active { color: var(--accent2); }
+.nav-item-icon { font-size: 18px; }
+
+/* ANIMATIONS */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.view.active { animation: fadeIn .2s ease; }
+
+/* Highlight in search */
+.hl { background: rgba(245,158,11,0.25); color: #fde68a; border-radius: 2px; padding: 0 2px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">🎓 Grammar</div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="searchInput" placeholder="Mavzu qidiring... (tenses, modal...)" oninput="handleSearch(this.value)">
+  </div>
+  <button class="back-btn" id="backBtn" onclick="goHome()">← Orqaga</button>
+</div>
+
+<!-- HOME VIEW -->
+<div class="view active" id="homeView">
+  <div class="hero">
+    <h1>English Grammar Master</h1>
+    <p>4-Etap imtihoniga to'liq tayyorgarlik</p>
+    <div class="stats-row">
+      <div class="stat-chip"><span>9</span> bo'lim</div>
+      <div class="stat-chip"><span>40+</span> mavzu</div>
+      <div class="stat-chip"><span>200+</span> misol</div>
+    </div>
+  </div>
+
+  <div class="sections" id="mainSections">
+    <!-- Sections rendered by JS -->
+  </div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div class="view" id="detailView">
+  <div class="detail-header">
+    <div class="detail-badge" id="detailBadge">📚 Section</div>
+    <div class="detail-title" id="detailTitle">Title</div>
+    <div class="detail-desc" id="detailDesc">Description</div>
+  </div>
+  <div class="detail-body" id="detailBody">
+    <!-- Content rendered by JS -->
+  </div>
+</div>
+
+<!-- SEARCH VIEW -->
+<div class="view" id="searchView">
+  <div class="search-results">
+    <div class="search-results-title" id="searchResultsTitle">Natijalar:</div>
+    <div id="searchResultsList"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="goHome()">
+    <div class="nav-item-icon">🏠</div>
+    <div>Bosh sahifa</div>
+  </div>
+  <div class="nav-item" id="nav-search" onclick="focusSearch()">
+    <div class="nav-item-icon">🔍</div>
+    <div>Qidirish</div>
+  </div>
+  <div class="nav-item" onclick="showChecklist()">
+    <div class="nav-item-icon">✅</div>
+    <div>Checklist</div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const sections = [
+  {
+    id: 's1',
+    title: 'TENSES — Zamonlar',
+    icon: '⏰',
+    color: ['#3b82f6','#6366f1'],
+    topics: [
+      { id: 't101', name: 'Present Simple', sub: 'Hozirgi oddiy', badge: false },
+      { id: 't102', name: 'Past Simple', sub: 'O\'tgan oddiy', badge: false },
+      { id: 't103', name: 'Future Simple', sub: 'Kelasi oddiy', badge: false },
+      { id: 't104', name: 'Present Continuous', sub: 'Davom etuvchi', badge: false },
+      { id: 't105', name: 'Past Continuous', sub: 'O\'tgan davomiy', badge: false },
+      { id: 't106', name: 'Present Perfect', sub: 'Hozirgi tugallangan', badge: true },
+      { id: 't107', name: 'Present Perfect Continuous', sub: 'Davomiy tugallangan', badge: true },
+      { id: 't108', name: 'Past Perfect', sub: 'O\'tgan tugallangan', badge: true },
+      { id: 't109', name: 'Past Perfect Continuous', sub: 'O\'tgan davomiy tug.', badge: false },
+      { id: 't110', name: 'Future Perfect', sub: 'Kelasi tugallangan', badge: false },
+    ]
+  },
+  {
+    id: 's2',
+    title: 'MODALS — Modal fe\'llar',
+    icon: '🔑',
+    color: ['#8b5cf6','#ec4899'],
+    topics: [
+      { id: 't201', name: 'Basic Modals', sub: 'can/could/may/might...', badge: true },
+      { id: 't202', name: 'Semi-Modals', sub: 'have to / need to...', badge: false },
+      { id: 't203', name: 'Modal Perfects', sub: 'must have / should have...', badge: true },
+      { id: 't204', name: 'NEED — 4 holat', sub: 'need vs needn\'t...', badge: true },
+    ]
+  },
+  {
+    id: 's3',
+    title: 'COMPLEX — Murakkab tuzilmalar',
+    icon: '🏗️',
+    color: ['#10b981','#06b6d4'],
+    topics: [
+      { id: 't301', name: 'Inversion', sub: 'Never/Nowhere/No sooner', badge: true },
+      { id: 't302', name: 'Conditionals', sub: 'Type 0/1/2/3/Mixed', badge: true },
+      { id: 't303', name: 'Passive Voice', sub: 'Barcha zamonlar', badge: false },
+      { id: 't304', name: 'Reported Speech', sub: 'Bilvosita nutq', badge: false },
+      { id: 't305', name: 'Causative', sub: 'have/get sth done', badge: false },
+    ]
+  },
+  {
+    id: 's4',
+    title: 'PARTICIPLES & GERUNDS',
+    icon: '🌿',
+    color: ['#f59e0b','#ef4444'],
+    topics: [
+      { id: 't401', name: 'Present Participle', sub: 'V-ing as adjective', badge: false },
+      { id: 't402', name: 'Past Participle', sub: 'V3 as adjective', badge: false },
+      { id: 't403', name: 'Perfect Participle', sub: 'Having + V3', badge: false },
+      { id: 't404', name: 'Gerund vs Infinitive', sub: 'V-ing vs to V1', badge: true },
+    ]
+  },
+  {
+    id: 's5',
+    title: 'QUESTIONS & TAGS',
+    icon: '❓',
+    color: ['#ec4899','#8b5cf6'],
+    topics: [
+      { id: 't501', name: 'Tag Questions', sub: 'Comment questions', badge: true },
+      { id: 't502', name: 'Indirect Questions', sub: 'whether / if', badge: false },
+      { id: 't503', name: 'Question Forms', sub: 'with Modals', badge: false },
+    ]
+  },
+  {
+    id: 's6',
+    title: 'ARTICLES & PREPOSITIONS',
+    icon: '📌',
+    color: ['#06b6d4','#3b82f6'],
+    topics: [
+      { id: 't601', name: 'Articles', sub: 'a / an / the / zero', badge: true },
+      { id: 't602', name: 'Prepositions — Joy', sub: 'in / on / at', badge: true },
+      { id: 't603', name: 'Prepositions — Vaqt', sub: 'in / on / at / for / since', badge: true },
+      { id: 't604', name: 'Prepositions — Harakat', sub: 'to / from / through...', badge: false },
+    ]
+  },
+  {
+    id: 's7',
+    title: 'COMPARATIVES',
+    icon: '📊',
+    color: ['#10b981','#06b6d4'],
+    topics: [
+      { id: 't701', name: 'Comparative', sub: '-er / more...than', badge: false },
+      { id: 't702', name: 'Superlative', sub: 'the -est / most', badge: false },
+      { id: 't703', name: 'Double Comparative', sub: 'The more...the more', badge: true },
+    ]
+  },
+  {
+    id: 's8',
+    title: 'CONNECTORS — Bog\'lovchilar',
+    icon: '🔗',
+    color: ['#f59e0b','#ef4444'],
+    topics: [
+      { id: 't801', name: 'Contrast', sub: 'although/despite/however', badge: false },
+      { id: 't802', name: 'Reason', sub: 'because/since/as', badge: false },
+      { id: 't803', name: 'Purpose', sub: 'so that / in order to', badge: false },
+      { id: 't804', name: 'Time Clauses', sub: 'when/while/until/by the time', badge: true },
+    ]
+  },
+  {
+    id: 's9',
+    title: 'SPECIAL PATTERNS ⭐',
+    icon: '🌟',
+    color: ['#8b5cf6','#ec4899'],
+    topics: [
+      { id: 't901', name: 'It is adj of smb', sub: 'Dalolatidir pattern', badge: true },
+      { id: 't902', name: 'Used to / Be used to', sub: 'Ko\'nish / Ko\'nikmoq', badge: true },
+      { id: 't903', name: 'Wish / If only', sub: 'Istak / Afsus', badge: true },
+      { id: 't904', name: 'So/Such...that', sub: 'Shunchalik...ki', badge: false },
+      { id: 't905', name: 'Too...to / Enough...to', sub: 'Juda / Yetarli', badge: false },
+    ]
+  },
+  {
+    id: 's10',
+    title: 'IMTIHON CHECKLIST',
+    icon: '✅',
+    color: ['#10b981','#3b82f6'],
+    topics: [
+      { id: 't1001', name: 'Kalit so\'zlar jadvali', sub: 'Trigger words', badge: true },
+      { id: 't1002', name: 'Eng ko\'p xatolar', sub: 'Common mistakes', badge: true },
+      { id: 't1003', name: 'Irregular Verbs', sub: 'Noto\'g\'ri fe\'llar', badge: false },
+    ]
+  },
+];
+
+// ============================================================
+// TOPIC CONTENT
+// ============================================================
+const topicData = {
+
+// ── TENSES ──────────────────────────────────────────────────
+
+t101: {
+  title: 'Present Simple',
+  desc: 'Hozirgi oddiy zamon — takrorlanadigan ishlar, umumiy haqiqatlar',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">I/You/We/They + V1</div>
+      <div class="formula-text" style="margin-top:6px">He/She/It + V1+<mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">s/es</mark></div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">always</span><span class="keyword-tag">usually</span><span class="keyword-tag">often</span>
+        <span class="keyword-tag">sometimes</span><span class="keyword-tag">never</span><span class="keyword-tag">every day</span>
+        <span class="keyword-tag">on Mondays</span><span class="keyword-tag">generally</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Men har kuni maktabga boraman</div><div class="example-en">I go to school <mark>every day</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">U ingliz tilini yaxshi ko'radi</div><div class="example-en">She <mark>loves</mark> English.</div></div>
+      <div class="example-item"><div class="example-uz">Quyosh sharqdan chiqadi (umumiy haqiqat)</div><div class="example-en">The sun <mark>rises</mark> in the east.</div></div>
+      <div class="example-item"><div class="example-uz">Ular odatda kechki ovqatda nima yeyishadi?</div><div class="example-en">What do they <mark>usually</mark> eat for dinner?</div></div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Qoida</div>
+      <div style="font-size:14px;color:var(--text2)">
+        <strong style="color:var(--text)">He/She/It uchun:</strong> go→goes, watch→watches, study→studies, have→has<br><br>
+        <strong style="color:var(--text)">Salbiy:</strong> don't / doesn't + V1<br>
+        <strong style="color:var(--text)">Savol:</strong> Do / Does + sub + V1?
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ XATO QILMA</div>
+      <div class="wrong">He go to school.</div> → <div class="right">He goes to school. ✅</div><br><br>
+      <div class="wrong">She don't like coffee.</div> → <div class="right">She doesn't like coffee. ✅</div>
+    </div>
+  `
+},
+
+t102: {
+  title: 'Past Simple',
+  desc: 'O\'tgan oddiy zamon — tugallangan o\'tmish voqealar',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">Subject + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V2</mark> (regular: V+ed)</div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">yesterday</span><span class="keyword-tag">last night</span><span class="keyword-tag">last year</span>
+        <span class="keyword-tag">ago</span><span class="keyword-tag">in 2020</span><span class="keyword-tag">when</span>
+        <span class="keyword-tag">then</span><span class="keyword-tag">once</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Kecha men kitob o'qidim</div><div class="example-en">I <mark>read</mark> a book <mark>yesterday</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">U 2020-yilda Toshkentga keldi</div><div class="example-en">He <mark>came</mark> to Tashkent <mark>in 2020</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Ular kecha dam oldilarmi?</div><div class="example-en">Did they rest <mark>yesterday</mark>?</div></div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Irregular verbs (asosiylar)</div>
+      <div class="table-wrap" style="margin-top:8px">
+        <table class="grammar-table">
+          <tr><th>V1</th><th>V2</th><th>V3</th></tr>
+          <tr><td>go</td><td>went</td><td>gone</td></tr>
+          <tr><td>see</td><td>saw</td><td>seen</td></tr>
+          <tr><td>come</td><td>came</td><td>come</td></tr>
+          <tr><td>get</td><td>got</td><td>got/gotten</td></tr>
+          <tr><td>take</td><td>took</td><td>taken</td></tr>
+          <tr><td>make</td><td>made</td><td>made</td></tr>
+          <tr><td>give</td><td>gave</td><td>given</td></tr>
+          <tr><td>know</td><td>knew</td><td>known</td></tr>
+          <tr><td>think</td><td>thought</td><td>thought</td></tr>
+          <tr><td>bring</td><td>brought</td><td>brought</td></tr>
+          <tr><td>teach</td><td>taught</td><td>taught</td></tr>
+          <tr><td>catch</td><td>caught</td><td>caught</td></tr>
+          <tr><td>buy</td><td>bought</td><td>bought</td></tr>
+          <tr><td>write</td><td>wrote</td><td>written</td></tr>
+          <tr><td>speak</td><td>spoke</td><td>spoken</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ XATO QILMA</div>
+      <div class="wrong">I thinked about it.</div> → <div class="right">I thought about it. ✅</div><br><br>
+      <div class="wrong">She teached us.</div> → <div class="right">She taught us. ✅</div>
+    </div>
+  `
+},
+
+t103: {
+  title: 'Future Simple',
+  desc: 'Kelasi oddiy zamon — kelajakdagi rejalar va va\'dalar',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">Subject + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">will</mark> + V1</div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">tomorrow</span><span class="keyword-tag">next week</span><span class="keyword-tag">soon</span>
+        <span class="keyword-tag">in the future</span><span class="keyword-tag">one day</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Ertaga boraman</div><div class="example-en">I <mark>will go</mark> tomorrow.</div></div>
+      <div class="example-item"><div class="example-uz">U seni kutadi</div><div class="example-en">She <mark>will wait</mark> for you.</div></div>
+      <div class="example-item"><div class="example-uz">Ular kelishmaydi</div><div class="example-en">They <mark>won't come</mark>.</div></div>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ Will vs Going to</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">Will — spontan qaror</div><div class="diff-cell-text">"I'll help you!" (hozir qaror qilindi)</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">Going to — oldindan reja</div><div class="diff-cell-text">"I'm going to study tonight." (reja bor)</div></div>
+      </div>
+    </div>
+  `
+},
+
+t104: {
+  title: 'Present Continuous',
+  desc: 'Hozirda davom etayotgan ish yoki yaqin kelajak rejasi',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">am / is / are + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V-ing</mark></div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">now</span><span class="keyword-tag">right now</span><span class="keyword-tag">at the moment</span>
+        <span class="keyword-tag">currently</span><span class="keyword-tag">look!</span><span class="keyword-tag">listen!</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Hozir kitob o'qiyapman</div><div class="example-en">I <mark>am reading</mark> a book now.</div></div>
+      <div class="example-item"><div class="example-uz">Ular ertaga ketishyapti (reja)</div><div class="example-en">They <mark>are leaving</mark> tomorrow.</div></div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ STATIVE VERBS — Continuous-da KELMAYDI!</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:8px">
+        know, love, like, hate, want, need, believe, understand, remember, seem, look (ko'rinmoq), hear, taste, smell<br><br>
+        <div class="wrong">She is knowing the answer.</div><br>
+        <div class="right">She knows the answer. ✅</div>
+      </div>
+    </div>
+  `
+},
+
+t105: {
+  title: 'Past Continuous',
+  desc: 'O\'tmishda davom etayotgan ish (biror voqea bilan kesishgan)',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">was / were + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V-ing</mark></div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">while</span><span class="keyword-tag">when</span><span class="keyword-tag">at 5 PM yesterday</span>
+        <span class="keyword-tag">all morning</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Men uxlayotgan edim, u keldi</div><div class="example-en">I <mark>was sleeping</mark> when he came.</div></div>
+      <div class="example-item"><div class="example-uz">Ular o'ynayotgan edi, telefon jiringladi</div><div class="example-en"><mark>While</mark> they were playing, the phone rang.</div></div>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ Past Simple vs Past Continuous</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">Past Simple — qisqa kesuvchi ish</div><div class="diff-cell-text">The phone rang. (bir zumda bo'ldi)</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">Past Continuous — uzun davom etuvchi</div><div class="diff-cell-text">I was studying. (jarayon)</div></div>
+      </div>
+    </div>
+  `
+},
+
+t106: {
+  title: 'Present Perfect ⭐',
+  desc: 'Ishi tugagan, natijasi hozir ko\'rinadi yoki tajriba',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">have / has + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V3</mark></div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">already</span><span class="keyword-tag">just</span><span class="keyword-tag">yet</span>
+        <span class="keyword-tag">ever</span><span class="keyword-tag">never</span><span class="keyword-tag">for</span>
+        <span class="keyword-tag">since</span><span class="keyword-tag">recently</span><span class="keyword-tag">lately</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Men bu kitobni o'qidim (hozir tugallanган)</div><div class="example-en">I <mark>have read</mark> this book.</div></div>
+      <div class="example-item"><div class="example-uz">U hech qachon Parijga bormagan</div><div class="example-en">He has <mark>never</mark> been to Paris.</div></div>
+      <div class="example-item"><div class="example-uz">Biz 3 yildan beri shu yerda ishlaymiz</div><div class="example-en">We have worked here <mark>for 3 years</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">U hali ovqatlanmadi</div><div class="example-en">She hasn't eaten <mark>yet</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Hech qachon shunaqa baliq yegandek?</div><div class="example-en">Have you <mark>ever</mark> eaten such fish?</div></div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 For vs Since</div>
+      <div style="font-size:14px;color:var(--text2)">
+        <strong style="color:#a5f3fc">for</strong> + davomiylik: for 3 years, for 2 hours, for a long time<br><br>
+        <strong style="color:#a5f3fc">since</strong> + boshlanish nuqtasi: since 2020, since Monday, since I was young
+      </div>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ Present Perfect vs Past Simple</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">Present Perfect</div><div class="diff-cell-text">I have seen him. (Qachon — noaniq, natija muhim)</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">Past Simple</div><div class="diff-cell-text">I saw him yesterday. (Vaqt ko'rsatilgan)</div></div>
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ XATO QILMA</div>
+      <div class="wrong">I have seen him yesterday.</div><br>
+      <div class="right">I saw him yesterday. ✅ (vaqt ko'rsatilsa → Past Simple)</div><br><br>
+      <div class="wrong">I have see → </div><div class="right">I have seen ✅ (V3!)</div>
+    </div>
+  `
+},
+
+t107: {
+  title: 'Present Perfect Continuous ⭐',
+  desc: 'Ish boshlangan, hali ham davom etyapti yoki yangi tugadi',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">have / has + been + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V-ing</mark></div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">for</span><span class="keyword-tag">since</span><span class="keyword-tag">all day</span>
+        <span class="keyword-tag">how long</span><span class="keyword-tag">lately</span><span class="keyword-tag">recently</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Men 2 soatdan beri kutayapman</div><div class="example-en">I <mark>have been waiting</mark> for 2 hours.</div></div>
+      <div class="example-item"><div class="example-uz">U yig'layapti — ko'zi qizargan (natija ko'rinadi)</div><div class="example-en">She <mark>has been crying</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Qancha vaqtdan beri ingliz o'rganyapsan?</div><div class="example-en">How long <mark>have</mark> you <mark>been learning</mark> English?</div></div>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ Present Perfect vs Present Perfect Continuous</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">PP — Natija muhim</div><div class="diff-cell-text">I have written 3 letters. (nechta = natija)</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">PPC — Jarayon muhim</div><div class="diff-cell-text">I have been writing for 2 hours. (necha vaqt = jarayon)</div></div>
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ Stative verbs ishlatilmaydi!</div>
+      <div class="wrong">I have been knowing her for years.</div><br>
+      <div class="right">I have known her for years. ✅</div>
+    </div>
+  `
+},
+
+t108: {
+  title: 'Past Perfect ⭐',
+  desc: 'O\'tmishdagi ikki voqeadan ENG BIRINCHISI',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">had + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V3</mark></div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">by the time</span><span class="keyword-tag">before</span><span class="keyword-tag">after</span>
+        <span class="keyword-tag">when</span><span class="keyword-tag">already</span><span class="keyword-tag">just</span>
+        <span class="keyword-tag">never</span>
+      </div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Asosiy Pattern</div>
+      <div style="font-size:14px;color:var(--text2)">
+        <strong style="color:#a5f3fc">Past Perfect</strong> (birinchi ish) + <strong style="color:#fde68a">Past Simple</strong> (ikkinchi ish)
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Men yetib borgunimcha, u ketgan edi</div><div class="example-en"><mark>By the time</mark> I arrived, he <mark>had left</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Men qo'ng'iroq qilganimda, u ovqatlanib bo'lgan edi</div><div class="example-en">He <mark>had already</mark> eaten when I called.</div></div>
+      <div class="example-item"><div class="example-uz">Dars boshlanguncha men uy ishimni bajarmagan edim</div><div class="example-en">I hadn't done my homework <mark>before</mark> the lesson started.</div></div>
+    </div>
+  `
+},
+
+t109: {
+  title: 'Past Perfect Continuous',
+  desc: 'O\'tmishdagi bir vaqtgacha davom etgan jarayon',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">had + been + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V-ing</mark></div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">U 3 soatdan beri yugurayotgan edi, men ko'rganimda</div><div class="example-en">He <mark>had been running</mark> for 3 hours when I saw him.</div></div>
+      <div class="example-item"><div class="example-uz">Ko'zlari qizargan edi — u yig'layotgan bo'lishi kerak edi</div><div class="example-en">His eyes were red. He <mark>had been crying</mark>.</div></div>
+    </div>
+  `
+},
+
+t110: {
+  title: 'Future Perfect & Continuous',
+  desc: 'Kelajakda ma\'lum vaqtga tugallangan yoki davom etayotgan ish',
+  section: '⏰ Tenses',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Future Perfect Formula</div>
+      <div class="formula-text">will + have + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V3</mark></div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Kalit so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">by tomorrow</span><span class="keyword-tag">by 5 PM</span><span class="keyword-tag">by the time</span>
+        <span class="keyword-tag">before</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Siz kelguncha men ishni tamomlab bo'lgan bo'laman</div><div class="example-en">I <mark>will have finished</mark> the work by the time you come.</div></div>
+      <div class="example-item"><div class="example-uz">Ertaga soat 5 ga kelib u 3 soatdan beri ishlayotgan bo'ladi</div><div class="example-en">By 5 PM tomorrow, he <mark>will have been working</mark> for 3 hours.</div></div>
+    </div>
+  `
+},
+
+// ── MODALS ──────────────────────────────────────────────────
+
+t201: {
+  title: 'Basic Modals ⭐',
+  desc: 'can / could / may / might / must / should / would',
+  section: '🔑 Modals',
+  content: `
+    <div class="tip-box block">
+      <div class="tip-label">💡 Muhim qoida</div>
+      <div style="font-size:14px;color:var(--text2)">Modal dan keyin HECH QACHON <strong style="color:#fca5a5">"to"</strong> kelmaydi!<br>
+      <span class="wrong">can to go / must to study</span> → <span class="right">can go / must study ✅</span>
+      </div>
+    </div>
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Modal</th><th>Ma'nosi</th><th>Misol</th></tr>
+        <tr><td><span class="pill pill-blue">can</span></td><td>ola olmoq (hozir)</td><td>I can swim.</td></tr>
+        <tr><td><span class="pill pill-blue">could</span></td><td>ola olardi / muloyim so'rov</td><td>Could you help me?</td></tr>
+        <tr><td><span class="pill pill-green">may</span></td><td>ehtimol / ruxsat</td><td>It may rain. / May I go?</td></tr>
+        <tr><td><span class="pill pill-green">might</span></td><td>kuchsiz ehtimol (50%)</td><td>He might come.</td></tr>
+        <tr><td><span class="pill pill-red">must</span></td><td>kuchli majburiyat / ishonchli taxmin</td><td>You must study. / He must be home.</td></tr>
+        <tr><td><span class="pill pill-red">mustn't</span></td><td>TAQIQ (kerak emas emas!)</td><td>You mustn't smoke here.</td></tr>
+        <tr><td><span class="pill pill-amber">should</span></td><td>maslahat / kerak</td><td>You should rest.</td></tr>
+        <tr><td><span class="pill pill-purple">would</span></td><td>taklif / o'tgan odat</td><td>Would you like tea?</td></tr>
+      </table>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ must vs have to</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">must — ichki majburiyat</div><div class="diff-cell-text">I must study. (o'zim shunday deb qaror qildim)</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">have to — tashqi majburiyat</div><div class="diff-cell-text">I have to wear a uniform. (qoida shunday)</div></div>
+      </div>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ mustn't vs don't have to</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">mustn't — TAQIQ</div><div class="diff-cell-text">You mustn't enter. (kirish mumkin emas!)</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">don't have to — majburiy emas</div><div class="diff-cell-text">You don't have to come. (kelishing shart emas, lekin xohlasang kelishing mumkin)</div></div>
+      </div>
+    </div>
+  `
+},
+
+t202: {
+  title: 'Semi-Modals',
+  desc: 'have to / need to / be able to / dare to',
+  section: '🔑 Modals',
+  content: `
+    <div class="examples-box block">
+      <div class="examples-label">📌 have to / has to — tashqi majburiyat</div>
+      <div class="example-item"><div class="example-uz">Men ishga borishim kerak</div><div class="example-en">I <mark>have to</mark> go to work.</div></div>
+      <div class="example-item"><div class="example-uz">U kechroq keldi, chunki ishlashi kerak edi</div><div class="example-en">She was late because she <mark>had to</mark> work.</div></div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 be able to — "olmoq"ning barcha zamonlari</div>
+      <div class="example-item"><div class="example-uz">Hozir yordam bera olaman</div><div class="example-en">I <mark>am able to</mark> help now.</div></div>
+      <div class="example-item"><div class="example-uz">Kelajakda kelola olaman</div><div class="example-en">I <mark>will be able to</mark> come.</div></div>
+      <div class="example-item"><div class="example-uz">U ishi tugatoldi</div><div class="example-en">She <mark>was able to</mark> finish the work.</div></div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ will can — XATO!</div>
+      <div class="wrong">I will can help you.</div><br>
+      <div class="right">I will be able to help you. ✅</div>
+    </div>
+  `
+},
+
+t203: {
+  title: 'Modal Perfects ⭐⭐⭐',
+  desc: 'must have / should have / could have + V3 — IMTIHONDA KO\'P KELADI!',
+  section: '🔑 Modals',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">Modal + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">have</mark> + V3</div>
+    </div>
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Formula</th><th>Ma'nosi</th><th>Misol</th></tr>
+        <tr><td><span class="pill pill-red">must have + V3</span></td><td>"albatta shunday bo'lgan" (90-100%)</td><td>He must have left.</td></tr>
+        <tr><td><span class="pill pill-green">might/could have + V3</span></td><td>"balki shunday bo'lgan" (50%)</td><td>She might have come.</td></tr>
+        <tr><td><span class="pill pill-amber">should have + V3</span></td><td>"qilish kerak edi (lekin qilmadi)"</td><td>You should have studied.</td></tr>
+        <tr><td><span class="pill pill-amber">shouldn't have + V3</span></td><td>"qilmaslik kerak edi (lekin qildi)"</td><td>You shouldn't have spent so much.</td></tr>
+        <tr><td><span class="pill pill-blue">needn't have + V3</span></td><td>"bekor qilding (kerak emas edi)"</td><td>You needn't have come.</td></tr>
+        <tr><td><span class="pill pill-purple">could have + V3</span></td><td>"qila olardi edi (lekin qilmadi)"</td><td>He could have won.</td></tr>
+        <tr><td><span class="pill pill-blue">can't have + V3</span></td><td>"bo'lishi mumkin emas edi"</td><td>She can't have done that.</td></tr>
+      </table>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Kontekst bilan misollar</div>
+      <div class="example-item"><div class="example-uz">Eshik yopiq — u ketgan bo'lsa kerak</div><div class="example-en">The door is closed. He <mark>must have left</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Sen o'qishing kerak edi, imtihondan yiqilib ketding</div><div class="example-en">You <mark>should have studied</mark>. You failed the exam.</div></div>
+      <div class="example-item"><div class="example-uz">Menga uyg'otishing shart emas edi, o'zim uyg'ongandim</div><div class="example-en">You <mark>needn't have woken</mark> me up. I woke up myself.</div></div>
+    </div>
+  `
+},
+
+t204: {
+  title: 'NEED — 4 ta holat ⭐',
+  desc: 'need vs need to vs needn\'t vs didn\'t need to',
+  section: '🔑 Modals',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>#</th><th>Formula</th><th>Ma'nosi</th><th>Misol</th></tr>
+        <tr><td>1</td><td>need + noun</td><td>kerakli narsa (ot)</td><td>I need help.</td></tr>
+        <tr><td>2</td><td>need to + V1</td><td>kerak bo'lmoq (asosiy fe'l)</td><td>I need to go.</td></tr>
+        <tr><td>3</td><td>needn't + V1</td><td>kerak emas (modal — rasmiy)</td><td>You needn't go.</td></tr>
+        <tr><td>4</td><td>didn't need to + V1</td><td>kerak emas edi, bormadim</td><td>I didn't need to go. (bormadim)</td></tr>
+        <tr><td>5</td><td>needn't have + V3</td><td>bordim, lekin kerak emas ekan</td><td>I needn't have gone. (bekor)</td></tr>
+      </table>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ ENG MUHIM FARQ</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">didn't need to go</div><div class="diff-cell-text">Kerak emas edi → shuning uchun BORMADIM</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">needn't have gone</div><div class="diff-cell-text">BORDIM, lekin kerak emas ekan (bekor qilingan ish)</div></div>
+      </div>
+    </div>
+  `
+},
+
+// ── COMPLEX ──────────────────────────────────────────────────
+
+t301: {
+  title: 'Inversion ⭐⭐⭐',
+  desc: 'Salbiy/cheklovchi so\'z bilan boshlangan gapda tartib o\'zgaradi',
+  section: '🏗️ Complex',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">Negative word + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">auxiliary</mark> + subject + V1</div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Trigger so'zlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">Never</span><span class="keyword-tag">Rarely</span><span class="keyword-tag">Seldom</span>
+        <span class="keyword-tag">Hardly</span><span class="keyword-tag">Nowhere</span><span class="keyword-tag">Not only</span>
+        <span class="keyword-tag">Only after</span><span class="keyword-tag">No sooner</span><span class="keyword-tag">Under no circumstances</span>
+        <span class="keyword-tag">Little</span><span class="keyword-tag">Not until</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item">
+        <div class="example-uz">Hech qachon kech qolmayman</div>
+        <div class="example-en"><mark>Never</mark> will I be late.</div>
+        <div style="font-size:11px;color:var(--text3)">❌ Never I will be late.</div>
+      </div>
+      <div class="example-item">
+        <div class="example-uz">Hech qayerda bunday ko'rmaganman</div>
+        <div class="example-en"><mark>Nowhere</mark> have I seen such a thing.</div>
+      </div>
+      <div class="example-item">
+        <div class="example-uz">Nafaqat u keldi, balki sovg'a ham keltirdi</div>
+        <div class="example-en"><mark>Not only</mark> did he come, but he also brought a gift.</div>
+      </div>
+      <div class="example-item">
+        <div class="example-uz">Faqat undan keyin tushundim</div>
+        <div class="example-en"><mark>Only after</mark> that did I understand.</div>
+      </div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 No sooner... than / Hardly... when</div>
+      <div style="font-size:14px;color:var(--text2)">
+        U yetib borgach zahoti yomg'ir boshlandi:<br><br>
+        <span class="right">No sooner <strong>had</strong> he arrived <strong>than</strong> it started raining.</span><br><br>
+        <span class="right">Hardly <strong>had</strong> he arrived <strong>when</strong> it started raining.</span>
+      </div>
+    </div>
+  `
+},
+
+t302: {
+  title: 'Conditionals',
+  desc: 'Type 0, 1, 2, 3 va Mixed — shart gaplari',
+  section: '🏗️ Complex',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Tur</th><th>If-clause</th><th>Main clause</th><th>Ma'no</th></tr>
+        <tr><td><span class="pill pill-green">Type 0</span></td><td>If + Present</td><td>Present</td><td>Umumiy haqiqat</td></tr>
+        <tr><td><span class="pill pill-blue">Type 1</span></td><td>If + Present</td><td>Will + V1</td><td>Real kelajak ehtimol</td></tr>
+        <tr><td><span class="pill pill-amber">Type 2</span></td><td>If + Past</td><td>Would + V1</td><td>Hozir hayoliy</td></tr>
+        <tr><td><span class="pill pill-red">Type 3</span></td><td>If + Past Perfect</td><td>Would have + V3</td><td>O'tmish hayoliy</td></tr>
+        <tr><td><span class="pill pill-purple">Mixed</span></td><td>If + Past Perfect</td><td>Would + V1</td><td>O'tgan → hozirgi natija</td></tr>
+      </table>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Muzni qizdirsang, eriydi (Type 0)</div><div class="example-en">If you <mark>heat</mark> ice, it <mark>melts</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Agar yomg'ir yog'sa, uyda qolaman (Type 1)</div><div class="example-en">If it <mark>rains</mark>, I <mark>will stay</mark> home.</div></div>
+      <div class="example-item"><div class="example-uz">Agar boy bo'lsam, mashina olardim (Type 2)</div><div class="example-en">If I <mark>were</mark> rich, I <mark>would buy</mark> a car.</div></div>
+      <div class="example-item"><div class="example-uz">Agar o'qiganimda, o'tardim (Type 3)</div><div class="example-en">If I <mark>had studied</mark>, I <mark>would have passed</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Agar o'qiganimda (o'tmish), hozir bilardim (Mixed)</div><div class="example-en">If I <mark>had studied</mark>, I <mark>would know</mark> the answer now.</div></div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ Type 2 da "I were" — barcha shaxslarda!</div>
+      <div class="wrong">If I was rich...</div><br>
+      <div class="right">If I were rich... ✅</div>
+    </div>
+  `
+},
+
+t303: {
+  title: 'Passive Voice',
+  desc: 'Barcha zamonlarda nisbiy niyatni ifodalash',
+  section: '🏗️ Complex',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">be (zamoniga qarab) + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V3</mark> (+ by someone)</div>
+    </div>
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Zamon</th><th>Formula</th><th>Misol</th></tr>
+        <tr><td>Present Simple</td><td>am/is/are + V3</td><td>The room is cleaned every day.</td></tr>
+        <tr><td>Past Simple</td><td>was/were + V3</td><td>The window was broken yesterday.</td></tr>
+        <tr><td>Future Simple</td><td>will be + V3</td><td>He will be called tomorrow.</td></tr>
+        <tr><td>Present Continuous</td><td>is/are being + V3</td><td>The road is being repaired.</td></tr>
+        <tr><td>Present Perfect</td><td>has/have been + V3</td><td>The work has been done.</td></tr>
+        <tr><td>Past Perfect</td><td>had been + V3</td><td>The letter had been sent.</td></tr>
+        <tr><td>Modal + Passive</td><td>modal + be + V3</td><td>This must be done. / can be done.</td></tr>
+      </table>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Active → Passive qoidasi</div>
+      <div style="font-size:14px;color:var(--text2)">
+        Active: <span style="color:#a5f3fc">Someone</span> cleans the room.<br>
+        Passive: The room <span style="color:#fde68a">is cleaned</span> (by someone).<br><br>
+        Object → Subject bo'ladi<br>
+        be + V3 qo'shiladi
+      </div>
+    </div>
+  `
+},
+
+t304: {
+  title: 'Reported Speech',
+  desc: 'Bilvosita nutq — Backshift qoidasi',
+  section: '🏗️ Complex',
+  content: `
+    <div class="tip-box block">
+      <div class="tip-label">💡 Asosiy qoida — Backshift (1 qadam orqaga)</div>
+    </div>
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Direct</th><th>Reported</th></tr>
+        <tr><td>Present Simple</td><td>Past Simple</td></tr>
+        <tr><td>Present Continuous</td><td>Past Continuous</td></tr>
+        <tr><td>Present Perfect</td><td>Past Perfect</td></tr>
+        <tr><td>Past Simple</td><td>Past Perfect</td></tr>
+        <tr><td>will</td><td>would</td></tr>
+        <tr><td>can</td><td>could</td></tr>
+        <tr><td>may</td><td>might</td></tr>
+        <tr><td>must</td><td>had to</td></tr>
+      </table>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Vaqt/joy so'zlari o'zgaradi</div>
+      <div class="table-wrap" style="margin-top:8px">
+        <table class="grammar-table">
+          <tr><th>Direct</th><th>Reported</th></tr>
+          <tr><td>now</td><td>then</td></tr>
+          <tr><td>today</td><td>that day</td></tr>
+          <tr><td>tomorrow</td><td>the next day / the following day</td></tr>
+          <tr><td>yesterday</td><td>the day before / the previous day</td></tr>
+          <tr><td>here</td><td>there</td></tr>
+          <tr><td>this</td><td>that</td></tr>
+          <tr><td>these</td><td>those</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">"I like it" → u aytdiki...</div><div class="example-en">He said (that) he <mark>liked</mark> it.</div></div>
+      <div class="example-item"><div class="example-uz">"I have finished" → u aytdiki...</div><div class="example-en">She said she <mark>had finished</mark>.</div></div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Buyruq gaplar</div>
+      <div style="font-size:14px;color:var(--text2)">
+        told / asked + smb + <strong style="color:#a5f3fc">to</strong> + V1<br><br>
+        "O'tir" dedi → He told me <mark style="background:rgba(59,130,246,0.2);color:#bfdbfe;border-radius:3px;padding:0 3px">to sit</mark> down.<br>
+        "Borma" dedi → He asked me <mark style="background:rgba(59,130,246,0.2);color:#bfdbfe;border-radius:3px;padding:0 3px">not to go</mark>.
+      </div>
+    </div>
+  `
+},
+
+t305: {
+  title: 'Causative',
+  desc: 'have/get something done — birovga qildirmoq',
+  section: '🏗️ Complex',
+  content: `
+    <div class="diff-box block">
+      <div class="diff-label">⚡ have vs get</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">have + obj + V3 (rasmiy)</div><div class="diff-cell-text">I had my hair cut.</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">get + obj + to V1 (norasmiy)</div><div class="diff-cell-text">I got him to help me.</div></div>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Men sochimni oldirdim</div><div class="example-en">I <mark>had</mark> my hair <mark>cut</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">U mashinasini yuvdirdi</div><div class="example-en">He <mark>had</mark> his car <mark>washed</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Biz uyimizni bo'yatmoqchimiz</div><div class="example-en">We are going to <mark>have</mark> our house <mark>painted</mark>.</div></div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ Fe'l DOIM V3 shaklida!</div>
+      <div class="wrong">I had my hair cutting.</div><br>
+      <div class="right">I had my hair cut. ✅</div>
+    </div>
+  `
+},
+
+// ── PARTICIPLES ──────────────────────────────────────────────
+
+t401: {
+  title: 'Present Participle',
+  desc: 'V-ing — faol sifat yoki shart gap',
+  section: '🌿 Participles',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text"><mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V-ing</mark> + noun = "... qilayotgan" (faol ma'no)</div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Yugurayotgan bola</div><div class="example-en">The <mark>running</mark> boy</div></div>
+      <div class="example-item"><div class="example-uz">Meni hayratga solgan yangilik</div><div class="example-en">The <mark>surprising</mark> news</div></div>
+      <div class="example-item"><div class="example-uz">Ko'chada yugurayotib, u...</div><div class="example-en"><mark>Running</mark> in the street, he... (u — yuguruvchi)</div></div>
+    </div>
+  `
+},
+
+t402: {
+  title: 'Past Participle',
+  desc: 'V3 — passiv sifat',
+  section: '🌿 Participles',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text"><mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">V3</mark> + noun = "... qilingan" (passiv ma'no)</div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Yozilgan kitob</div><div class="example-en">The <mark>written</mark> book</div></div>
+      <div class="example-item"><div class="example-uz">Sindirilgan deraza</div><div class="example-en">The <mark>broken</mark> window</div></div>
+      <div class="example-item"><div class="example-uz">O'qituvchi tomonidan tanqid qilinib, u...</div><div class="example-en"><mark>Criticized</mark> by the teacher, he... (u — tanqid qilingan)</div></div>
+    </div>
+  `
+},
+
+t403: {
+  title: 'Perfect Participle',
+  desc: 'Having + V3 — "dan keyin" ma\'nosi',
+  section: '🌿 Participles',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text"><mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">Having</mark> + V3 = "... qilganidan keyin"</div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Darsni tugatgach, u uyga ketdi</div><div class="example-en"><mark>Having finished</mark> the lesson, he went home.</div></div>
+      <div class="example-item"><div class="example-uz">Ovqatlanib bo'lgach, biz chiqib ketdik</div><div class="example-en"><mark>Having eaten</mark>, we left.</div></div>
+    </div>
+  `
+},
+
+t404: {
+  title: 'Gerund vs Infinitive ⭐',
+  desc: 'V-ing vs to V1 — qaysi fe\'ldan keyin nima keladi',
+  section: '🌿 Participles',
+  content: `
+    <div class="keyword-box block">
+      <div class="keyword-label">✅ Faqat V-ing dan keyin</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">enjoy</span><span class="keyword-tag">mind</span><span class="keyword-tag">suggest</span>
+        <span class="keyword-tag">avoid</span><span class="keyword-tag">finish</span><span class="keyword-tag">practice</span>
+        <span class="keyword-tag">miss</span><span class="keyword-tag">consider</span><span class="keyword-tag">imagine</span>
+        <span class="keyword-tag">deny</span><span class="keyword-tag">admit</span><span class="keyword-tag">risk</span>
+        <span class="keyword-tag">keep</span><span class="keyword-tag">delay</span>
+      </div>
+    </div>
+    <div class="keyword-box block" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2)">
+      <div class="keyword-label" style="color:var(--amber)">✅ Faqat to + V1 dan keyin</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">want</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">decide</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">hope</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">plan</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">promise</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">agree</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">refuse</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">offer</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">afford</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">manage</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">fail</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">learn</span>
+        <span class="keyword-tag" style="background:rgba(245,158,11,0.12);color:#fde68a">pretend</span>
+      </div>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ Ma'no farq qiladigan fe'llar</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">stop + V-ing</div><div class="diff-cell-text">Stop smoking = chekishni tashladi</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">stop + to V1</div><div class="diff-cell-text">Stop to smoke = chekish uchun to'xtadi</div></div>
+      </div>
+      <div class="diff-row" style="margin-top:8px">
+        <div class="diff-cell"><div class="diff-cell-label">remember + V-ing</div><div class="diff-cell-text">I remember doing it = qilganini eslayapti</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">remember + to V1</div><div class="diff-cell-text">Remember to do it = qilishni eslab qol</div></div>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Men suzishni yaxshi ko'raman</div><div class="example-en">I enjoy <mark>swimming</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Men borishga qaror qildim</div><div class="example-en">I decided <mark>to go</mark>.</div></div>
+    </div>
+  `
+},
+
+// ── QUESTIONS & TAGS ──────────────────────────────────────────
+
+t501: {
+  title: 'Tag Questions ⭐⭐⭐',
+  desc: 'Tasdiq → salbiy tag | Salbiy → ijobiy tag',
+  section: '❓ Questions',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Qoida</div>
+      <div class="formula-text">Gap ijobiy → tag <mark style="background:rgba(239,68,68,0.25);color:#fca5a5;border-radius:3px;padding:0 3px">salbiy</mark></div>
+      <div class="formula-text" style="margin-top:6px">Gap salbiy → tag <mark style="background:rgba(16,185,129,0.25);color:#6ee7b7;border-radius:3px;padding:0 3px">ijobiy</mark></div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Asosiy misollar</div>
+      <div class="example-item"><div class="example-en">You are a student, <mark>aren't you?</mark></div></div>
+      <div class="example-item"><div class="example-en">She doesn't like tea, <mark>does she?</mark></div></div>
+      <div class="example-item"><div class="example-en">They have come, <mark>haven't they?</mark></div></div>
+      <div class="example-item"><div class="example-en">He will come, <mark>won't he?</mark></div></div>
+      <div class="example-item"><div class="example-en">You can swim, <mark>can't you?</mark></div></div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ ISTISNOLAR — Yodlab ol!</div>
+      <div style="font-size:13px;color:var(--text2);line-height:2">
+        <span class="right">Let's go, <strong>shall we?</strong></span><br>
+        <span class="right">I am right, <strong>aren't I?</strong></span> (amn't I ❌)<br>
+        <span class="right">Open the door, <strong>will you?</strong></span> (buyruq)<br>
+        <span class="right">There is a problem, <strong>isn't there?</strong></span><br>
+        <span class="right">Nobody came, <strong>did they?</strong></span><br>
+        <span class="right">Nothing happened, <strong>did it?</strong></span>
+      </div>
+    </div>
+  `
+},
+
+t502: {
+  title: 'Indirect Questions',
+  desc: 'whether / if bilan — savol tartibida emas!',
+  section: '❓ Questions',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">ask/wonder/want to know + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">if/whether</mark> + gap</div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item">
+        <div class="example-uz">"U keldimi?" deb so'radik</div>
+        <div class="example-en">We asked <mark>whether/if</mark> he had come.</div>
+        <div style="font-size:11px;color:var(--red)">❌ We asked whether did he come.</div>
+      </div>
+      <div class="example-item">
+        <div class="example-uz">"Qayerda yashaysan?" deb bilmoqchiman</div>
+        <div class="example-en">I want to know <mark>where</mark> you live.</div>
+        <div style="font-size:11px;color:var(--red)">❌ I want to know where do you live.</div>
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ Indirect question ichida DO/DOES/DID ISHLATILMAYDI!</div>
+    </div>
+  `
+},
+
+t503: {
+  title: 'Question Forms with Modals',
+  desc: 'Modal fe\'llar bilan savol tuzish',
+  section: '❓ Questions',
+  content: `
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">U suzolarmikan?</div><div class="example-en"><mark>Can</mark> he swim?</div></div>
+      <div class="example-item"><div class="example-uz">Men chiqishim mumkinmi?</div><div class="example-en"><mark>May</mark> I leave?</div></div>
+      <div class="example-item"><div class="example-uz">Men borishi kerakmi?</div><div class="example-en"><mark>Does</mark> he have to go?</div></div>
+      <div class="example-item"><div class="example-uz">U borishi kerak edimi?</div><div class="example-en"><mark>Did</mark> she have to go?</div></div>
+      <div class="example-item"><div class="example-uz">U kelishi kerak emasmi?</div><div class="example-en"><mark>Needn't</mark> she come?</div></div>
+    </div>
+  `
+},
+
+// ── ARTICLES ──────────────────────────────────────────────────
+
+t601: {
+  title: 'Articles ⭐',
+  desc: 'a / an / the / zero article — qachon qaysi ishlatiladi',
+  section: '📌 Articles',
+  content: `
+    <div class="examples-box block">
+      <div class="examples-label" style="color:#60a5fa">A / AN — Noaniq, birinchi marta, bitta</div>
+      <div class="example-item"><div class="example-uz">Kasb</div><div class="example-en">He is <mark>a</mark> teacher.</div></div>
+      <div class="example-item"><div class="example-uz">Birinchi marta tilga olish</div><div class="example-en">I saw <mark>a</mark> dog. The dog was big.</div></div>
+      <div class="example-item"><div class="example-uz">Unli tovush bilan boshlanadigan so'z</div><div class="example-en"><mark>an</mark> apple, <mark>an</mark> hour, <mark>an</mark> umbrella</div></div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label" style="color:#10b981">THE — Aniq, ma'lum, yagona</div>
+      <div class="example-item"><div class="example-uz">Oldin tilga olingan</div><div class="example-en">I bought <mark>a</mark> car. <mark>The</mark> car is red.</div></div>
+      <div class="example-item"><div class="example-uz">Yagona narsalar</div><div class="example-en"><mark>the</mark> sun, <mark>the</mark> moon, <mark>the</mark> Internet</div></div>
+      <div class="example-item"><div class="example-uz">Superlative</div><div class="example-en"><mark>the</mark> best, <mark>the</mark> most expensive</div></div>
+      <div class="example-item"><div class="example-uz">Tartib sonlar</div><div class="example-en"><mark>the</mark> first, <mark>the</mark> second</div></div>
+      <div class="example-item"><div class="example-uz">Musiqa asboblari</div><div class="example-en">play <mark>the</mark> piano, <mark>the</mark> guitar</div></div>
+      <div class="example-item"><div class="example-uz">Mamlakatlar (ko'plik/respublika)</div><div class="example-en"><mark>the</mark> USA, <mark>the</mark> UK, <mark>the</mark> Netherlands</div></div>
+      <div class="example-item"><div class="example-uz">Daryo, okean, dengiz</div><div class="example-en"><mark>the</mark> Nile, <mark>the</mark> Pacific</div></div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label" style="color:var(--text3)">ZERO ARTICLE — Hech narsa yo'q</div>
+      <div class="example-item"><div class="example-uz">Ismlar</div><div class="example-en">Oybek, Dilsoz (➡️ the Oybek ❌)</div></div>
+      <div class="example-item"><div class="example-uz">Ko'p mamlakatlar</div><div class="example-en">Uzbekistan, Germany, France</div></div>
+      <div class="example-item"><div class="example-uz">Shahar, ko'cha</div><div class="example-en">Tashkent, Broadway</div></div>
+      <div class="example-item"><div class="example-uz">Til, sport</div><div class="example-en">English, football, chess</div></div>
+      <div class="example-item"><div class="example-uz">Umumiy ovqat</div><div class="example-en">I love coffee. I eat rice.</div></div>
+      <div class="example-item"><div class="example-uz">Maqsad sifatida joy</div><div class="example-en">go to school, be at university, go to church</div></div>
+    </div>
+  `
+},
+
+t602: {
+  title: 'Prepositions — Joy ⭐',
+  desc: 'in / on / at — joylashuv prepositionlari',
+  section: '📌 Prepositions',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Preposition</th><th>Qachon</th><th>Misollar</th></tr>
+        <tr><td><span class="pill pill-blue">IN</span></td><td>Katta joy, ichida</td><td>in Uzbekistan, in Tashkent, in the room, in the box</td></tr>
+        <tr><td><span class="pill pill-amber">ON</span></td><td>Sirt, transport</td><td>on the table, on the wall, on the bus, on the train, on the plane</td></tr>
+        <tr><td><span class="pill pill-green">AT</span></td><td>Aniq nuqta, manzil</td><td>at the door, at school, at home, at work, at the airport</td></tr>
+      </table>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Eslab qol</div>
+      <div class="example-item"><div class="example-uz">Uyda</div><div class="example-en">at home (not: in home ❌)</div></div>
+      <div class="example-item"><div class="example-uz">Avtobusda</div><div class="example-en">on the bus (not: in the bus ❌)</div></div>
+      <div class="example-item"><div class="example-uz">Mashinada</div><div class="example-en">in the car (kichik, ichida)</div></div>
+      <div class="example-item"><div class="example-uz">Maktabda (maqsad)</div><div class="example-en">at school</div></div>
+    </div>
+  `
+},
+
+t603: {
+  title: 'Prepositions — Vaqt ⭐',
+  desc: 'in / on / at / for / since / during / by / until',
+  section: '📌 Prepositions',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Preposition</th><th>Qachon</th><th>Misollar</th></tr>
+        <tr><td><span class="pill pill-blue">IN</span></td><td>Oy, yil, fasil, qism</td><td>in January, in 2024, in winter, in the morning/afternoon/evening</td></tr>
+        <tr><td><span class="pill pill-amber">ON</span></td><td>Aniq kun, sana</td><td>on Monday, on April 11th, on my birthday, on New Year's Day</td></tr>
+        <tr><td><span class="pill pill-green">AT</span></td><td>Aniq vaqt</td><td>at 3 PM, at noon, at night, at midnight, at Christmas</td></tr>
+        <tr><td><span class="pill pill-purple">FOR</span></td><td>Davomiylik</td><td>for 2 hours, for 3 years, for a long time</td></tr>
+        <tr><td><span class="pill pill-purple">SINCE</span></td><td>Boshlanish nuqtasi</td><td>since Monday, since 2020, since morning</td></tr>
+        <tr><td><span class="pill pill-blue">DURING</span></td><td>Davomida</td><td>during the lesson, during summer, during the war</td></tr>
+        <tr><td><span class="pill pill-red">BY</span></td><td>Muddatga qadar</td><td>by 5 PM, by Monday, by the end of the year</td></tr>
+        <tr><td><span class="pill pill-red">UNTIL</span></td><td>Gacha (davomiy)</td><td>wait until Monday, until 5 PM</td></tr>
+      </table>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ AT NIGHT — ON Friday night</div>
+      <div class="right">at night (umumiy) ✅</div><br>
+      <div class="right">on Friday night (aniq kun bilan) ✅</div>
+    </div>
+  `
+},
+
+t604: {
+  title: 'Prepositions — Harakat',
+  desc: 'to / from / through / across / along / towards...',
+  section: '📌 Prepositions',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Preposition</th><th>Ma'nosi</th><th>Misol</th></tr>
+        <tr><td><span class="pill pill-blue">to</span></td><td>tomonga (yo'nalish)</td><td>go to school, walk to the park</td></tr>
+        <tr><td><span class="pill pill-blue">from</span></td><td>dan (manba)</td><td>come from Tashkent</td></tr>
+        <tr><td><span class="pill pill-green">through</span></td><td>orqali (ichidan o'tib)</td><td>walk through the forest</td></tr>
+        <tr><td><span class="pill pill-green">across</span></td><td>kesib o'tib</td><td>swim across the river</td></tr>
+        <tr><td><span class="pill pill-green">along</span></td><td>bo'ylab</td><td>walk along the street</td></tr>
+        <tr><td><span class="pill pill-amber">towards</span></td><td>tomon (yo'nalish)</td><td>walk towards the door</td></tr>
+        <tr><td><span class="pill pill-amber">past</span></td><td>yonidan o'tib</td><td>walk past the shop</td></tr>
+        <tr><td><span class="pill pill-red">into</span></td><td>ichiga kirish</td><td>go into the room</td></tr>
+        <tr><td><span class="pill pill-red">out of</span></td><td>ichidan chiqish</td><td>come out of the building</td></tr>
+        <tr><td><span class="pill pill-purple">up / down</span></td><td>yuqoriga / pastga</td><td>climb up the hill, run down the stairs</td></tr>
+      </table>
+    </div>
+  `
+},
+
+// ── COMPARATIVES ──────────────────────────────────────────────
+
+t701: {
+  title: 'Comparative',
+  desc: '-er / more...than — taqqoslash',
+  section: '📊 Comparatives',
+  content: `
+    <div class="diff-box block">
+      <div class="diff-label">⚡ Qisqa vs Uzun sifatlar</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">1-2 bo'g'in: -er + than</div><div class="diff-cell-text">tall → taller<br>fast → faster<br>big → bigger<br>happy → happier</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">3+ bo'g'in: more + than</div><div class="diff-cell-text">interesting → more interesting<br>beautiful → more beautiful<br>expensive → more expensive</div></div>
+      </div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Istisnolar</div>
+      <div style="font-size:14px;color:var(--text2)">
+        good → <strong style="color:#a5f3fc">better</strong> → the best<br>
+        bad → <strong style="color:#a5f3fc">worse</strong> → the worst<br>
+        far → <strong style="color:#a5f3fc">farther/further</strong> → the farthest/furthest<br>
+        little → <strong style="color:#a5f3fc">less</strong> → the least<br>
+        much/many → <strong style="color:#a5f3fc">more</strong> → the most
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">U mendan balandroq</div><div class="example-en">He is <mark>taller than</mark> me.</div></div>
+      <div class="example-item"><div class="example-uz">Bu kitob qiziqarliroq</div><div class="example-en">This book is <mark>more interesting than</mark> that one.</div></div>
+    </div>
+  `
+},
+
+t702: {
+  title: 'Superlative',
+  desc: 'the -est / the most — eng darajasi',
+  section: '📊 Comparatives',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">the + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">-est</mark> / the + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">most</mark> + adj</div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">U sinfimizning eng aqlli o'quvchisi</div><div class="example-en">She is <mark>the cleverest</mark> student in our class.</div></div>
+      <div class="example-item"><div class="example-uz">Bu dunyo bo'yicha eng qimmat mashina</div><div class="example-en">This is <mark>the most expensive</mark> car in the world.</div></div>
+      <div class="example-item"><div class="example-uz">Bu yilning eng yaxshi kuni</div><div class="example-en">This is <mark>the best</mark> day of the year.</div></div>
+    </div>
+  `
+},
+
+t703: {
+  title: 'Double Comparative ⭐',
+  desc: 'The more...the more — qanchalik...shunchalik',
+  section: '📊 Comparatives',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">The + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">comparative</mark>..., the + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">comparative</mark>...</div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Qanchalik tez yursang, shunchalik tez yetasan</div><div class="example-en"><mark>The faster</mark> you walk, <mark>the sooner</mark> you arrive.</div></div>
+      <div class="example-item"><div class="example-uz">Qanchalik ko'p o'qisang, shunchalik ko'p bilasan</div><div class="example-en"><mark>The more</mark> you study, <mark>the more</mark> you know.</div></div>
+      <div class="example-item"><div class="example-uz">Qanchalik ko'p so'z yodlasang, IELTS shunchalik oson bo'ladi</div><div class="example-en"><mark>The more</mark> words you memorize, <mark>the easier</mark> IELTS becomes.</div></div>
+      <div class="example-item"><div class="example-uz">Qanchalik yosh bo'lsang, shunchalik yaxshi o'rganyapsan</div><div class="example-en"><mark>The younger</mark> you are, <mark>the better</mark> you learn.</div></div>
+    </div>
+  `
+},
+
+// ── CONNECTORS ──────────────────────────────────────────────────
+
+t801: {
+  title: 'Contrast Connectors',
+  desc: 'although / despite / however / whereas / while',
+  section: '🔗 Connectors',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Connector</th><th>Keyin nima?</th><th>Misol</th></tr>
+        <tr><td><span class="pill pill-blue">Although / Even though / Though</span></td><td>+ gap (subject + verb)</td><td>Although it rained, we went out.</td></tr>
+        <tr><td><span class="pill pill-amber">Despite / In spite of</span></td><td>+ noun / V-ing</td><td>Despite the rain, we went out.</td></tr>
+        <tr><td><span class="pill pill-green">However / Nevertheless / Yet</span></td><td>Yangi gap. Verguldan keyin</td><td>It was expensive. However, I bought it.</td></tr>
+        <tr><td><span class="pill pill-purple">Whereas / While</span></td><td>+ gap (ikki tomon taqqoslash)</td><td>I like tea, whereas she likes coffee.</td></tr>
+      </table>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ Despite vs Although</div>
+      <div class="wrong">Despite it rained, we went out.</div><br>
+      <div class="right">Despite the rain, we went out. ✅</div><br>
+      <div class="right">Although it rained, we went out. ✅</div>
+    </div>
+  `
+},
+
+t802: {
+  title: 'Reason Connectors',
+  desc: 'because / since / as / due to / owing to',
+  section: '🔗 Connectors',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Connector</th><th>Keyin nima?</th><th>Misol</th></tr>
+        <tr><td><span class="pill pill-blue">Because</span></td><td>+ gap</td><td>I stayed home because it rained.</td></tr>
+        <tr><td><span class="pill pill-green">Since / As</span></td><td>+ gap (gapning boshida)</td><td>Since it was late, we left.</td></tr>
+        <tr><td><span class="pill pill-amber">Due to / Owing to / Because of</span></td><td>+ noun / V-ing</td><td>Due to the rain, we stayed home.</td></tr>
+        <tr><td><span class="pill pill-purple">Therefore / Thus / As a result</span></td><td>Yangi gap</td><td>It rained. Therefore, we stayed.</td></tr>
+      </table>
+    </div>
+  `
+},
+
+t803: {
+  title: 'Purpose Connectors',
+  desc: 'so that / in order to / to / for',
+  section: '🔗 Connectors',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Connector</th><th>Keyin nima?</th><th>Misol</th></tr>
+        <tr><td><span class="pill pill-blue">So that</span></td><td>+ can/could/would + V1</td><td>I study hard so that I can pass.</td></tr>
+        <tr><td><span class="pill pill-green">In order to / To</span></td><td>+ V1</td><td>I study hard in order to pass. / I study to pass.</td></tr>
+        <tr><td><span class="pill pill-amber">For</span></td><td>+ noun</td><td>I went to the shop for milk.</td></tr>
+        <tr><td><span class="pill pill-red">In order not to / So as not to</span></td><td>+ V1</td><td>I left early so as not to be late.</td></tr>
+      </table>
+    </div>
+  `
+},
+
+t804: {
+  title: 'Time Clauses ⭐',
+  desc: 'when / while / until / by the time / as soon as',
+  section: '🔗 Connectors',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Connector</th><th>Ma'nosi</th><th>Misol</th></tr>
+        <tr><td><span class="pill pill-blue">When</span></td><td>...qilganda</td><td>When I entered, he was studying.</td></tr>
+        <tr><td><span class="pill pill-blue">While</span></td><td>...qilayotganda (parallel)</td><td>While he was studying, the phone rang.</td></tr>
+        <tr><td><span class="pill pill-green">Until / Till</span></td><td>...gacha</td><td>Wait until he comes.</td></tr>
+        <tr><td><span class="pill pill-amber">By the time</span></td><td>...guncha (Perfect bilan)</td><td>By the time I arrived, he had left.</td></tr>
+        <tr><td><span class="pill pill-purple">As soon as</span></td><td>zahoti, darhol</td><td>As soon as he came, we started.</td></tr>
+        <tr><td><span class="pill pill-red">Before / After</span></td><td>oldin / keyin</td><td>Before you leave, say goodbye.</td></tr>
+        <tr><td><span class="pill pill-green">Once</span></td><td>...qilgach</td><td>Once you finish, you can go.</td></tr>
+      </table>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Kelajakda — Present ishlatiladi!</div>
+      <div style="font-size:14px;color:var(--text2)">
+        Time clauses ichida kelajak uchun <strong style="color:#a5f3fc">Present Simple</strong> ishlatiladi, will emas!<br><br>
+        <span class="wrong">When he will come, we will start.</span><br>
+        <span class="right">When he comes, we will start. ✅</span>
+      </div>
+    </div>
+  `
+},
+
+// ── SPECIAL PATTERNS ──────────────────────────────────────────
+
+t901: {
+  title: 'It is adj of smb to V1 ⭐',
+  desc: 'Insonning xarakteriga baho — "Dalolatidir" pattern',
+  section: '🌟 Special',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Formula</div>
+      <div class="formula-text">It + is/was + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">adjective</mark> + of + somebody + to + V1</div>
+    </div>
+    <div class="keyword-box block">
+      <div class="keyword-label">🔑 Bunda ishlatiladigan sifatlar</div>
+      <div class="keyword-tags">
+        <span class="keyword-tag">stupid</span><span class="keyword-tag">clever</span><span class="keyword-tag">kind</span>
+        <span class="keyword-tag">rude</span><span class="keyword-tag">careless</span><span class="keyword-tag">generous</span>
+        <span class="keyword-tag">foolish</span><span class="keyword-tag">brave</span><span class="keyword-tag">selfish</span>
+        <span class="keyword-tag">wise</span><span class="keyword-tag">polite</span><span class="keyword-tag">cruel</span>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">Dilsozning testlarda yiqilishi — uning ahmoqligini dalolatidir</div><div class="example-en">It was <mark>stupid of</mark> Dilsoz to fail the quizzes.</div></div>
+      <div class="example-item"><div class="example-uz">Uning buni yechishi — aqlliligini ko'rsatadi</div><div class="example-en">It was <mark>clever of</mark> him to solve it.</div></div>
+      <div class="example-item"><div class="example-uz">Uning unutishi — e'tiborsizligining alomatidir</div><div class="example-en">It was <mark>careless of</mark> her to forget.</div></div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Boshqa "Dalolatidir" ifodalari</div>
+      <div style="font-size:14px;color:var(--text2)">
+        • X <strong style="color:#a5f3fc">is evidence of</strong> Y → His failure is evidence of his lack of preparation.<br>
+        • X <strong style="color:#a5f3fc">indicates/shows that</strong>... → This indicates that he didn't study.<br>
+        • X <strong style="color:#a5f3fc">is a sign of</strong> Y → This is a sign of progress.
+      </div>
+    </div>
+  `
+},
+
+t902: {
+  title: 'Used to / Be used to / Get used to ⭐',
+  desc: 'Avval qilar edi vs Ko\'nikkanman vs Ko\'nikyapman',
+  section: '🌟 Special',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>#</th><th>Formula</th><th>Ma'no</th><th>Misol</th></tr>
+        <tr><td>1</td><td><span class="pill pill-blue">used to + V1</span></td><td>Avval qilar edi (endi yo'q)</td><td>I used to smoke. (endi chekmayman)</td></tr>
+        <tr><td>2</td><td><span class="pill pill-green">be used to + V-ing/Noun</span></td><td>Ko'nikkanman (holat)</td><td>I am used to waking up early.</td></tr>
+        <tr><td>3</td><td><span class="pill pill-amber">get used to + V-ing/Noun</span></td><td>Ko'nikyapman (jarayon)</td><td>I am getting used to driving.</td></tr>
+      </table>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ ENG KATTA XATO: "to" dan keyin V-ing!</div>
+      <div class="wrong">I am used to wake up early.</div><br>
+      <div class="right">I am used to waking up early. ✅</div><br><br>
+      <div class="wrong">I am getting used to drive.</div><br>
+      <div class="right">I am getting used to driving. ✅</div>
+    </div>
+    <div class="diff-box block">
+      <div class="diff-label">⚡ 3 ta farq</div>
+      <div style="font-size:13px;color:var(--text2);line-height:2">
+        <span class="right">He used to play football.</span> → Yoshligida o'ynar edi, endi o'ynamaydi<br>
+        <span class="right">He is used to playing football.</span> → U futbol o'ynashga ko'nikkan<br>
+        <span class="right">He is getting used to playing football.</span> → U futbol o'ynashga ko'nikyapti
+      </div>
+    </div>
+  `
+},
+
+t903: {
+  title: 'Wish / If only',
+  desc: 'Hozir, o\'tmish va kelajak istaklari',
+  section: '🌟 Special',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Vaqt</th><th>Formula</th><th>Misol</th></tr>
+        <tr><td>Hozirgi afsus</td><td>Wish + Past Simple</td><td>I wish I were rich. (lekin emasman)</td></tr>
+        <tr><td>O'tmishga afsus</td><td>Wish + Past Perfect</td><td>I wish I had studied. (lekin o'qimadim)</td></tr>
+        <tr><td>Kelajak istak</td><td>Wish + Would + V1</td><td>I wish he would come soon.</td></tr>
+      </table>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 If only = kuchli wish</div>
+      <div style="font-size:14px;color:var(--text2)">
+        Xuddi shu qoidalar, lekin emotsional kuchliroq:<br><br>
+        <span class="right">If only I had more money! (afsuskim, ko'p pulim yo'q)</span><br>
+        <span class="right">If only I had studied! (afsuskim, o'qimadim)</span>
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ Hozirgi afsusda "were" — barcha shaxslarda!</div>
+      <div class="wrong">I wish I was taller.</div><br>
+      <div class="right">I wish I were taller. ✅</div>
+    </div>
+  `
+},
+
+t904: {
+  title: 'So/Such...that',
+  desc: 'Shunchalik...ki — natija',
+  section: '🌟 Special',
+  content: `
+    <div class="diff-box block">
+      <div class="diff-label">⚡ So vs Such</div>
+      <div class="diff-row">
+        <div class="diff-cell"><div class="diff-cell-label">So + adj/adv + that</div><div class="diff-cell-text">He ran so fast that I couldn't catch him.</div></div>
+        <div class="diff-cell"><div class="diff-cell-label">Such + (a/an) + adj + noun + that</div><div class="diff-cell-text">He is such a clever student that everyone is surprised.</div></div>
+      </div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">U shunchalik baland ediki, shipga tegdi</div><div class="example-en">He was <mark>so</mark> tall <mark>that</mark> he touched the ceiling.</div></div>
+      <div class="example-item"><div class="example-uz">Bu shunday qiyin kitobki, hech kim tushunmadi</div><div class="example-en">It was <mark>such</mark> a difficult book <mark>that</mark> nobody understood it.</div></div>
+      <div class="example-item"><div class="example-uz">Uning nomi shunchalik mashhurki...</div><div class="example-en">She has <mark>such</mark> fame <mark>that</mark>... (ot → such)</div></div>
+    </div>
+  `
+},
+
+t905: {
+  title: 'Too...to / Enough...to',
+  desc: 'Juda...qila olmaydi / Yetarli...qila oladi',
+  section: '🌟 Special',
+  content: `
+    <div class="formula-box block">
+      <div class="formula-label">✦ Too...to — salbiy natija</div>
+      <div class="formula-text">too + adj + <mark style="background:rgba(245,158,11,0.25);color:#fde68a;border-radius:3px;padding:0 3px">to</mark> + V1</div>
+    </div>
+    <div class="formula-box block" style="margin-top:10px">
+      <div class="formula-label">✦ Enough...to — ijobiy natija</div>
+      <div class="formula-text">adj + <mark style="background:rgba(16,185,129,0.25);color:#6ee7b7;border-radius:3px;padding:0 3px">enough</mark> + to + V1</div>
+    </div>
+    <div class="examples-box block">
+      <div class="examples-label">📌 Misollar</div>
+      <div class="example-item"><div class="example-uz">U juda yoshki, mashina hayday olmaydi</div><div class="example-en">He is <mark>too young to drive</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">U yetarli darajada kuchliki, ko'tara oladi</div><div class="example-en">He is <mark>strong enough to lift</mark> it.</div></div>
+      <div class="example-item"><div class="example-uz">U yetarli darajada aqlli emas, tushunmaydi</div><div class="example-en">He isn't <mark>clever enough to understand</mark>.</div></div>
+      <div class="example-item"><div class="example-uz">Havo juda sovuqki, tashqarida o'ynay olmaymiz</div><div class="example-en">It is <mark>too cold to play</mark> outside.</div></div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 "enough" sifatdan KEYIN keladi</div>
+      <div class="wrong">He is enough clever to understand.</div><br>
+      <div class="right">He is clever enough to understand. ✅</div>
+    </div>
+  `
+},
+
+// ── CHECKLIST ──────────────────────────────────────────────────
+
+t1001: {
+  title: 'Kalit so\'zlar jadvali ⭐',
+  desc: 'Savolni o\'qigach, shu so\'zlarni top — formula o\'z-o\'zidan kelib chiqadi',
+  section: '✅ Checklist',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>Kalit so'z</th><th>Zamon / Tuzilma</th></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">for / since / all day / how long</span></td><td>Present Perfect / Perfect Continuous</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">by the time / before / after</span></td><td>Past Perfect</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">never / nowhere / seldom / rarely</span></td><td>Inversion</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">eng / the most / -est</span></td><td>Superlative</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">gacha / guncha</span></td><td>Until / By the time + Past Perfect</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">dalolatidir</span></td><td>is evidence of / It is adj of smb to V1</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">bo'lsa kerak / albatta</span></td><td>must have + V3</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">balki / ehtimol</span></td><td>might have + V3 / could have + V3</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">kerak edi (lekin qilmadi)</span></td><td>should have + V3</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">qanchalik... shunchalik</span></td><td>The more... the more...</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">avval qilar edi</span></td><td>used to + V1</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">ko'nikkanman</span></td><td>be used to + V-ing</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">afsus (hozir)</span></td><td>I wish + Past Simple</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">afsus (o'tmish)</span></td><td>I wish + Past Perfect</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">birovga qildirmoq</span></td><td>have + obj + V3</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">juda (qila olmaydi)</span></td><td>too + adj + to + V1</td></tr>
+        <tr><td><span class="keyword-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-radius:50px;padding:2px 8px;font-size:12px;font-family:var(--mono)">yetarli (qila oladi)</span></td><td>adj + enough + to + V1</td></tr>
+      </table>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">🎯 Yozib bo'lgach, 3 narsani tekshir</div>
+      <div style="font-size:14px;color:var(--text2);line-height:2">
+        <strong style="color:#a5f3fc">1️⃣ Fe'l shakli:</strong> -di→V2, -gan→V3, -yapti→V-ing, -gan edi→had+V3<br>
+        <strong style="color:#a5f3fc">2️⃣ Modal Perfect:</strong> modal + HAVE + V3<br>
+        <strong style="color:#a5f3fc">3️⃣ Artikel/Preposition:</strong> the/a/an, in/on/at, for/since
+      </div>
+    </div>
+  `
+},
+
+t1002: {
+  title: 'Eng ko\'p xatolar ⭐',
+  desc: 'Imtihonda ko\'p qilinadigan xatolar ro\'yxati',
+  section: '✅ Checklist',
+  content: `
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ FE'L SHAKLLARI — Irregular verbs</div>
+      <div style="line-height:2.2;font-size:13px">
+        <span class="wrong">thinked</span> → <span class="right">thought ✅</span><br>
+        <span class="wrong">catched</span> → <span class="right">caught ✅</span><br>
+        <span class="wrong">teached</span> → <span class="right">taught ✅</span><br>
+        <span class="wrong">bringed</span> → <span class="right">brought ✅</span><br>
+        <span class="wrong">buyed</span> → <span class="right">bought ✅</span><br>
+        <span class="wrong">feeled</span> → <span class="right">felt ✅</span><br>
+        <span class="wrong">writed</span> → <span class="right">wrote ✅</span>
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ MODAL XATOLAR</div>
+      <div style="line-height:2.2;font-size:13px">
+        <span class="wrong">will can</span> → <span class="right">will be able to ✅</span><br>
+        <span class="wrong">can to go</span> → <span class="right">can go ✅</span><br>
+        <span class="wrong">must to study</span> → <span class="right">must study ✅</span><br>
+        <span class="wrong">can have been drive</span> → <span class="right">has been able to drive ✅</span>
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ SO'Z MA'NOSI XATOLARI</div>
+      <div style="line-height:2.2;font-size:13px">
+        <span class="wrong">hardly (qattiq)</span> → <span class="right">hard = qattiq | hardly = deyarli yo'q ✅</span><br>
+        <span class="wrong">is looking (ko'rinmoq)</span> → <span class="right">looks ✅ (stative!)</span><br>
+        <span class="wrong">without Sunday</span> → <span class="right">except Sunday ✅</span><br>
+        <span class="wrong">Maruf teacher</span> → <span class="right">Maruf ✅ (ism yetarli)</span>
+      </div>
+    </div>
+    <div class="warning-box block">
+      <div class="warn-label">⚠️ SANOQ TARTIBLI — Spelling</div>
+      <div style="line-height:2.2;font-size:13px">
+        <span class="wrong">fivth</span> → <span class="right">fifth ✅</span><br>
+        <span class="wrong">twelth</span> → <span class="right">twelfth ✅</span><br>
+        <span class="wrong">nineth</span> → <span class="right">ninth ✅</span>
+      </div>
+    </div>
+    <div class="tip-box block">
+      <div class="tip-label">💡 Imtihonda vaqt tejash strategiyasi</div>
+      <div style="font-size:14px;color:var(--text2);line-height:2">
+        1️⃣ Savolni 2 marta o'qi — kalit so'zni top<br>
+        2️⃣ Formulani esla — yoz<br>
+        3️⃣ Fe'l shaklini tekshir<br>
+        4️⃣ Katta harf/artikel/prepositionni ko'zdan kechir<br>
+        5️⃣ Keyingi savolga o't — qiyiniga yopishma
+      </div>
+    </div>
+  `
+},
+
+t1003: {
+  title: 'Irregular Verbs',
+  desc: 'Noto\'g\'ri o\'tgan zamon fe\'llari — V1/V2/V3',
+  section: '✅ Checklist',
+  content: `
+    <div class="table-wrap block">
+      <table class="grammar-table">
+        <tr><th>V1</th><th>V2</th><th>V3</th><th>Ma'nosi</th></tr>
+        <tr><td>be</td><td>was/were</td><td>been</td><td>bo'lmoq</td></tr>
+        <tr><td>become</td><td>became</td><td>become</td><td>bo'lmoq</td></tr>
+        <tr><td>begin</td><td>began</td><td>begun</td><td>boshlash</td></tr>
+        <tr><td>break</td><td>broke</td><td>broken</td><td>sindirish</td></tr>
+        <tr><td>bring</td><td>brought</td><td>brought</td><td>keltirish</td></tr>
+        <tr><td>build</td><td>built</td><td>built</td><td>qurish</td></tr>
+        <tr><td>buy</td><td>bought</td><td>bought</td><td>sotib olish</td></tr>
+        <tr><td>catch</td><td>caught</td><td>caught</td><td>tutish</td></tr>
+        <tr><td>choose</td><td>chose</td><td>chosen</td><td>tanlash</td></tr>
+        <tr><td>come</td><td>came</td><td>come</td><td>kelish</td></tr>
+        <tr><td>cut</td><td>cut</td><td>cut</td><td>kesish</td></tr>
+        <tr><td>do</td><td>did</td><td>done</td><td>qilish</td></tr>
+        <tr><td>draw</td><td>drew</td><td>drawn</td><td>chizish</td></tr>
+        <tr><td>drink</td><td>drank</td><td>drunk</td><td>ichish</td></tr>
+        <tr><td>drive</td><td>drove</td><td>driven</td><td>haydash</td></tr>
+        <tr><td>eat</td><td>ate</td><td>eaten</td><td>yeyish</td></tr>
+        <tr><td>fall</td><td>fell</td><td>fallen</td><td>yiqilish</td></tr>
+        <tr><td>feel</td><td>felt</td><td>felt</td><td>his qilish</td></tr>
+        <tr><td>find</td><td>found</td><td>found</td><td>topish</td></tr>
+        <tr><td>forget</td><td>forgot</td><td>forgotten</td><td>unutish</td></tr>
+        <tr><td>get</td><td>got</td><td>got/gotten</td><td>olish</td></tr>
+        <tr><td>give</td><td>gave</td><td>given</td><td>berish</td></tr>
+        <tr><td>go</td><td>went</td><td>gone</td><td>ketish</td></tr>
+        <tr><td>grow</td><td>grew</td><td>grown</td><td>o'sish</td></tr>
+        <tr><td>have</td><td>had</td><td>had</td><td>ega bo'lish</td></tr>
+        <tr><td>hear</td><td>heard</td><td>heard</td><td>eshitish</td></tr>
+        <tr><td>hold</td><td>held</td><td>held</td><td>ushlamoq</td></tr>
+        <tr><td>keep</td><td>kept</td><td>kept</td><td>saqlash</td></tr>
+        <tr><td>know</td><td>knew</td><td>known</td><td>bilish</td></tr>
+        <tr><td>leave</td><td>left</td><td>left</td><td>ketish</td></tr>
+        <tr><td>lend</td><td>lent</td><td>lent</td><td>qarz berish</td></tr>
+        <tr><td>let</td><td>let</td><td>let</td><td>ruxsat berish</td></tr>
+        <tr><td>lose</td><td>lost</td><td>lost</td><td>yo'qotish</td></tr>
+        <tr><td>make</td><td>made</td><td>made</td><td>qilish/yasash</td></tr>
+        <tr><td>mean</td><td>meant</td><td>meant</td><td>anglatish</td></tr>
+        <tr><td>meet</td><td>met</td><td>met</td><td>uchrashish</td></tr>
+        <tr><td>put</td><td>put</td><td>put</td><td>qo'yish</td></tr>
+        <tr><td>read</td><td>read</td><td>read</td><td>o'qish</td></tr>
+        <tr><td>run</td><td>ran</td><td>run</td><td>yugurish</td></tr>
+        <tr><td>say</td><td>said</td><td>said</td><td>demoq</td></tr>
+        <tr><td>see</td><td>saw</td><td>seen</td><td>ko'rish</td></tr>
+        <tr><td>sell</td><td>sold</td><td>sold</td><td>sotish</td></tr>
+        <tr><td>send</td><td>sent</td><td>sent</td><td>yuborish</td></tr>
+        <tr><td>set</td><td>set</td><td>set</td><td>o'rnatish</td></tr>
+        <tr><td>show</td><td>showed</td><td>shown</td><td>ko'rsatish</td></tr>
+        <tr><td>sit</td><td>sat</td><td>sat</td><td>o'tirish</td></tr>
+        <tr><td>sleep</td><td>slept</td><td>slept</td><td>uxlash</td></tr>
+        <tr><td>speak</td><td>spoke</td><td>spoken</td><td>gapirish</td></tr>
+        <tr><td>spend</td><td>spent</td><td>spent</td><td>sarflamoq</td></tr>
+        <tr><td>stand</td><td>stood</td><td>stood</td><td>turish</td></tr>
+        <tr><td>swim</td><td>swam</td><td>swum</td><td>suzish</td></tr>
+        <tr><td>take</td><td>took</td><td>taken</td><td>olish</td></tr>
+        <tr><td>teach</td><td>taught</td><td>taught</td><td>o'qitish</td></tr>
+        <tr><td>tell</td><td>told</td><td>told</td><td>aytish</td></tr>
+        <tr><td>think</td><td>thought</td><td>thought</td><td>o'ylash</td></tr>
+        <tr><td>throw</td><td>threw</td><td>thrown</td><td>otish</td></tr>
+        <tr><td>understand</td><td>understood</td><td>understood</td><td>tushunish</td></tr>
+        <tr><td>wake</td><td>woke</td><td>woken</td><td>uyg'onish</td></tr>
+        <tr><td>wear</td><td>wore</td><td>worn</td><td>kiymoq</td></tr>
+        <tr><td>win</td><td>won</td><td>won</td><td>yutish</td></tr>
+        <tr><td>write</td><td>wrote</td><td>written</td><td>yozish</td></tr>
+      </table>
+    </div>
+  `
+},
+};
+
+// ============================================================
+// RENDER HOME
+// ============================================================
+function renderHome() {
+  const container = document.getElementById('mainSections');
+  container.innerHTML = sections.map(sec => `
+    <div class="section-group">
+      <div class="section-title">${sec.icon} ${sec.title}</div>
+      <div class="topics-grid">
+        ${sec.topics.map(t => `
+          <div class="topic-card" style="--c1:${sec.color[0]};--c2:${sec.color[1]}" onclick="showTopic('${t.id}')">
+            <div class="topic-icon">${sec.icon}</div>
+            <div class="topic-name">${t.name}${t.badge ? '<span class="topic-badge">HOT</span>' : ''}</div>
+            <div class="topic-sub">${t.sub}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// SHOW TOPIC
+// ============================================================
+function showTopic(id) {
+  const data = topicData[id];
+  if (!data) return;
+  document.getElementById('detailBadge').textContent = data.section;
+  document.getElementById('detailTitle').textContent = data.title;
+  document.getElementById('detailDesc').textContent = data.desc;
+  document.getElementById('detailBody').innerHTML = data.content;
+  showView('detailView');
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+// VIEW MANAGEMENT
+// ============================================================
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const showBack = id !== 'homeView';
+  document.getElementById('backBtn').style.display = showBack ? 'block' : 'none';
+}
+
+function goHome() {
+  document.getElementById('searchInput').value = '';
+  showView('homeView');
+  window.scrollTo(0, 0);
+}
+
+function focusSearch() {
+  document.getElementById('searchInput').focus();
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+function handleSearch(query) {
+  if (!query.trim()) { showView('homeView'); return; }
+  showView('searchView');
+  document.getElementById('backBtn').style.display = 'block';
+  const q = query.toLowerCase();
+  const results = [];
+  for (const [id, data] of Object.entries(topicData)) {
+    const text = (data.title + ' ' + data.desc + ' ' + data.section + ' ' + data.content).toLowerCase();
+    if (text.includes(q)) {
+      results.push({ id, title: data.title, section: data.section, desc: data.desc });
+    }
+  }
+  const list = document.getElementById('searchResultsList');
+  document.getElementById('searchResultsTitle').textContent = `"${query}" uchun ${results.length} natija:`;
+  if (results.length === 0) {
+    list.innerHTML = '<div class="no-results">🔍 Natija topilmadi. Boshqacha so\'z bilan qidiring.</div>';
+  } else {
+    list.innerHTML = results.map(r => `
+      <div class="search-item" onclick="showTopic('${r.id}')">
+        <div class="search-item-section">${r.section}</div>
+        <div class="search-item-title">${r.title}</div>
+        <div class="search-item-preview">${r.desc}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ============================================================
+// CHECKLIST SHORTCUT
+// ============================================================
+function showChecklist() {
+  showTopic('t1001');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderHome();
+</script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>BilimBox - Zakovat</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:100vw;height:100vh;overflow:hidden;font-family:"Segoe UI",sans-serif;color:#eef4ff;background:#09111f;user-select:none}
+.bg{position:fixed;inset:0;background:
+linear-gradient(145deg,rgba(5,10,22,.82),rgba(9,20,38,.94)),
+radial-gradient(circle at 16% 20%,rgba(88,176,255,.18),transparent 28%),
+radial-gradient(circle at 82% 16%,rgba(255,205,98,.12),transparent 24%),
+radial-gradient(circle at 50% 85%,rgba(68,214,155,.1),transparent 30%),
+url('../../ui/assets/bg_kirish.jpg') center/cover no-repeat;z-index:0}
+.mesh{position:fixed;inset:0;z-index:1;pointer-events:none;background:
+linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+background-size:48px 48px;mask-image:linear-gradient(180deg,rgba(0,0,0,.55),transparent)}
+.particles{position:fixed;inset:0;pointer-events:none;z-index:2}.dot{position:absolute;border-radius:50%;background:rgba(255,255,255,.6);animation:tw 4s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.08;transform:scale(1)}50%{opacity:.68;transform:scale(1.22)}}
+.titlebar{position:fixed;top:0;left:0;right:0;height:42px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,9,19,.58);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(18px);-webkit-app-region:drag;z-index:20}
+.row{display:flex;align-items:center;gap:12px;-webkit-app-region:no-drag}.brand{font-size:15px;font-weight:800;background:linear-gradient(135deg,#75c1ff,#ffd66c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.back,.ghost,.next,.start,.choice,.topic{font-family:inherit;border-radius:16px;transition:.22s ease;cursor:pointer}
+.back,.ghost{padding:6px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#dbe8ff}
+.back:hover,.ghost:hover,.choice:hover,.topic:hover{transform:translateY(-1px);background:rgba(255,255,255,.14)}
+.win{width:14px;height:14px;border:none;border-radius:50%;cursor:pointer}.min{background:#febc2e}.max{background:#78c3ff}.close{background:#ff5f57}
+.shell{position:absolute;inset:42px 0 0 0;padding:18px;z-index:10}
+.screen{position:absolute;inset:18px;transition:.35s;overflow:auto}.hidden{opacity:0;pointer-events:none;transform:scale(.98)}
+.layout,.quiz,.summary{width:100%;height:100%;display:grid;gap:18px}.layout{grid-template-columns:minmax(320px,400px) minmax(0,1fr)}.quiz,.summary{grid-template-columns:minmax(260px,300px) minmax(0,1fr)}
+.stack{display:flex;flex-direction:column;gap:18px;min-height:0}
+.wizard-stack{height:100%}
+.wizard-stack .wizard{flex:1}
+.panel{background:rgba(8,16,32,.8);border:1px solid rgba(255,255,255,.09);border-radius:30px;backdrop-filter:blur(22px);box-shadow:0 20px 50px rgba(0,0,0,.28);padding:24px}
+.hero{background:
+linear-gradient(155deg,rgba(86,176,255,.16),rgba(255,214,108,.08)),
+radial-gradient(circle at top right,rgba(110,189,255,.16),transparent 30%),
+rgba(8,16,32,.9);
+position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%)}
+.kicker{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(232,240,255,.44);margin-bottom:12px}
+.hero h1{font-size:33px;line-height:1.1;margin-bottom:12px}
+h2{font-size:29px;margin-bottom:8px}
+.muted,.sub,.hint,.desc{color:rgba(224,235,255,.68);line-height:1.65}
+.badge-row{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}.badge{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.stat{padding:18px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}.stat strong{display:block;font-size:24px;margin-bottom:6px}.stat span{font-size:12px;color:rgba(224,235,255,.68)}
+.wizard{display:flex;flex-direction:column;min-height:0;padding:20px;background:
+linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015)),
+radial-gradient(circle at top left,rgba(109,189,255,.08),transparent 28%);
+border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 24px 44px rgba(0,0,0,.18)}
+.wizard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:16px;padding:0 2px}
+.wizard-copy{max-width:700px}
+.wizard-copy h2{margin-bottom:8px}
+.wizard-head-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wizard-stage{padding:11px 16px;border-radius:18px;background:linear-gradient(180deg,rgba(109,189,255,.18),rgba(109,189,255,.09));border:1px solid rgba(109,189,255,.2);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#dcecff;white-space:nowrap;box-shadow:0 10px 24px rgba(26,72,130,.18)}
+.stepbar{display:flex;gap:10px;margin:0 0 18px;padding:12px;border-radius:20px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06)}.stepdot{flex:1;height:9px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.05);position:relative;overflow:hidden}.stepdot.on{background:linear-gradient(90deg,#6fbfff,#80a2ff);box-shadow:0 0 18px rgba(111,191,255,.22)}
+.qbox{flex:1;min-height:0;border-radius:32px;padding:18px 18px 22px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px rgba(0,0,0,.18)}
+.qtop{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,270px);gap:16px;align-items:start}
+.stepcard{padding:14px 16px 16px;border-radius:24px;background:linear-gradient(180deg,rgba(8,18,36,.72),rgba(10,19,37,.92));border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);min-width:0;overflow:hidden}
+.sidecol{display:flex;flex-direction:column;gap:12px;min-width:0}
+.selectbox{padding:18px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+.selectbox .minihead{font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:rgba(224,235,255,.48);margin-bottom:10px}
+.pickline{display:flex;flex-direction:column;gap:8px}
+.pickline strong{font-size:16px;color:#f4f8ff}
+.pickline span{font-size:13px;line-height:1.6;color:rgba(224,235,255,.68)}
+.side-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.side-actions .ghost,.side-actions .next,.side-actions .start{width:100%;justify-content:center;padding:12px 14px}
+.side-actions .start{grid-column:1 / -1}
+.qlabel{font-size:10px;color:rgba(224,235,255,.42);letter-spacing:1.8px;text-transform:uppercase;margin-bottom:6px}.qtitle{font-size:18px;line-height:1.14;margin-bottom:6px}.qdesc{font-size:11px;color:rgba(224,235,255,.6);margin-bottom:10px;line-height:1.45;max-width:560px}
+.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:2px 0 0;align-content:start}
+.choice-grid.count-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-height:176px;overflow-y:auto;overflow-x:hidden;padding:2px 6px 18px 0;scroll-padding-bottom:18px;align-content:start}
+.choice-grid.count-grid::-webkit-scrollbar{width:5px}
+.choice-grid.count-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px}
+.choice{padding:14px 15px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));color:#f3f7ff;text-align:left;min-height:76px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);display:flex;flex-direction:column;justify-content:space-between;gap:6px;position:relative;overflow:hidden}
+.choice-grid.count-grid .choice{min-height:62px;padding:12px 13px;border-radius:18px}
+.choice-grid.count-grid .choice strong{font-size:17px}
+.choice-grid.count-grid .choice small{font-size:11px;line-height:1.25}
+.custom-count{display:none;margin-top:10px;padding:12px 14px;border-radius:18px;border:1px solid rgba(104,185,255,.18);background:linear-gradient(180deg,rgba(79,128,188,.12),rgba(255,255,255,.03))}
+.custom-count.active{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:10px;align-items:center}
+.custom-count .minihead{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:rgba(224,235,255,.52);margin-bottom:4px}
+.custom-count-copy{display:flex;flex-direction:column;gap:4px}
+.custom-count .inp{padding:12px 14px;height:46px}
+.custom-count .hint{font-size:11px}
+.custom-count-limit{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(228,238,255,.72);text-align:center}
+.choice::after{content:"";position:absolute;inset:auto -30% -55% auto;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(109,189,255,.18),transparent 70%);opacity:.55}
+.choice strong{position:relative;font-size:18px;font-weight:700;z-index:1}
+.choice small{display:block;margin-top:0;color:rgba(224,235,255,.56);line-height:1.35;position:relative;z-index:1;font-size:11px}
+.choice.sel{background:linear-gradient(180deg,rgba(99,181,255,.2),rgba(99,181,255,.1));border-color:rgba(99,181,255,.48);box-shadow:inset 0 0 0 1px rgba(99,181,255,.18),0 0 0 1px rgba(99,181,255,.09),0 14px 28px rgba(15,45,85,.22)}
+.choice.sel::before{content:"Tanlandi";position:absolute;top:12px;right:12px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);font-size:11px;font-weight:700;letter-spacing:.4px;color:#eef6ff;z-index:2}
+.choice-grid.count-grid .choice.sel::before{top:10px;right:10px;padding:5px 8px;font-size:10px}
+.topic-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:8px;height:190px;overflow-y:auto;overflow-x:hidden;padding:8px 8px 20px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));margin-top:4px;align-content:start;scroll-padding-bottom:20px}.topic-wrap::-webkit-scrollbar{width:5px}.topic-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px}
+.topic{padding:10px 12px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));color:#edf4ff;font-size:11px;font-weight:600;letter-spacing:.15px;min-width:0;width:100%;text-align:left}
+.topic.sel{background:linear-gradient(180deg,rgba(76,214,157,.18),rgba(76,214,157,.1));border-color:rgba(76,214,157,.46);color:#ebfff6;box-shadow:0 10px 20px rgba(17,67,51,.18)}
+.wizard-foot{margin-top:auto;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
+.wizard-foot .hint{max-width:620px;font-size:12px}
+.wizard-foot .row{display:none}
+.next,.start{padding:14px 22px;border:none;background:linear-gradient(135deg,#6dbdff,#809eff);color:#fff;font-size:14px;font-weight:800;box-shadow:0 12px 28px rgba(104,185,255,.3)}.next:hover:not(:disabled),.start:hover:not(:disabled){transform:translateY(-1px)}.next:disabled,.start:disabled,.ghost:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.sidegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.mini{padding:14px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}.mini strong{display:block;font-size:24px;margin-bottom:4px}.mini span{font-size:12px;color:rgba(224,235,255,.66)}
+.chiprow{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:12px}
+.main{display:flex;flex-direction:column;min-height:0}.head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.head h2{font-size:28px;margin-bottom:6px}
+.timer{text-align:right}.tv{font-size:34px;font-weight:800;line-height:1;margin-bottom:8px}.track{width:170px;height:10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.06);margin-left:auto}.fill{height:100%;width:100%;background:linear-gradient(90deg,#4ed59d,#ffd76c,#ff7987);transition:width 1s linear}
+.qcard{flex:1;display:flex;flex-direction:column;padding:24px;border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.08)}
+.ql{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(232,240,255,.42);margin-bottom:12px}.qt{font-size:26px;line-height:1.6;white-space:pre-wrap}
+.answers{margin-top:18px;display:grid;grid-template-columns:1fr;gap:12px}.ans{padding:16px 18px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#f0f7ff;text-align:left;font-size:15px;border-radius:18px}.ans .ltr{display:inline-flex;width:26px;color:#ffd76c;font-weight:800}.ans.ok{background:rgba(78,213,157,.16);border-color:rgba(78,213,157,.46)}.ans.bad{background:rgba(255,121,135,.16);border-color:rgba(255,121,135,.46)}
+.open{margin-top:18px;display:none;flex-direction:column;gap:12px}.open.active{display:flex}
+.inp{width:100%;padding:16px 18px;border-radius:18px;border:1px solid rgba(255,255,255,.12);outline:none;background:rgba(255,255,255,.05);color:#fff;font-size:15px;font-family:inherit}.inp:focus{background:rgba(255,255,255,.08);border-color:rgba(104,185,255,.48)}
+.fb{margin-top:18px;min-height:92px;padding:18px;border-radius:22px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);line-height:1.65}.fb.info{color:#edf6ff;background:rgba(104,185,255,.12);border-color:rgba(104,185,255,.3)}.fb.ok{color:#eafff5;background:rgba(78,213,157,.12);border-color:rgba(78,213,157,.32)}.fb.bad{color:#fff0f2;background:rgba(255,121,135,.12);border-color:rgba(255,121,135,.32)}
+.foot{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.sumgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}.sumbox{padding:18px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}.sumbox strong{display:block;font-size:28px;margin-bottom:6px}.sumbox span{font-size:12px;color:rgba(224,235,255,.66)}.summsg{margin-top:18px;padding:20px;border-radius:22px;background:linear-gradient(145deg,rgba(104,185,255,.12),rgba(255,215,108,.08));border:1px solid rgba(255,255,255,.08);line-height:1.7}.sumacts{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+@media (max-width:1180px){
+.layout,.quiz,.summary{grid-template-columns:1fr}
+.panel{padding:20px}
+.choice-grid,.stats,.sidegrid,.sumgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.qtop{grid-template-columns:1fr}
+.side-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+.head,.foot{flex-direction:column;align-items:stretch}
+.timer{text-align:left}.track{margin-left:0;width:100%}
+}
+@media (max-width:1320px){
+.qtop{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+.shell{padding:12px}
+.screen{inset:12px}
+.choice-grid,.choice-grid.count-grid,.stats,.sidegrid,.sumgrid,.side-actions{grid-template-columns:1fr}
+.topic-wrap{grid-template-columns:1fr}
+.custom-count.active{grid-template-columns:1fr}
+.hero h1,.qt{font-size:24px}
+h2,.head h2{font-size:24px}
+.wizard-top{flex-direction:column}
+.wizard-head-actions{width:100%;justify-content:flex-start}
+.wizard-stage{width:auto}
+.choice.sel::before{top:10px;right:10px}
+.choice strong{font-size:20px}
+}
+@media (max-height:680px){
+.screen{inset:10px}
+.panel,.qbox,.qcard{padding:18px}
+.hero h1{font-size:24px}
+.qt{font-size:22px}
+.stepcard,.selectbox{padding:16px}
+.custom-count.active{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="ov"></div><div class="mesh"></div><div class="particles" id="particles"></div>
+<div class="titlebar"><div class="row"><button class="back" onclick="goBack()">← Orqaga</button><div class="brand">BilimBox Zakovat</div></div><div class="row"><button class="win min" onclick="ipcRenderer.invoke('minimize-app')"></button><button class="win max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button><button class="win close" onclick="ipcRenderer.invoke('close-app')"></button></div></div>
+<div class="shell">
+  <section class="screen" id="setup-screen"><div class="layout">
+    <div class="stack">
+      <div class="panel hero"><div class="kicker">Zakovat</div><h1>Bir savol, keyin keyingisi</h1><p class="muted">Setup endi bosqichma-bosqich ishlaydi. Dastur sizdan avval rejimni, keyin savol ko'lamini, keyin mavzularni, oxirida savollar sonini so'raydi.</p><div class="badge-row"><div class="badge">To'liq offline</div><div class="badge">1 daqiqa taymer</div><div class="badge">Qayta urinish yo'q</div></div></div>
+      <div class="panel"><div class="kicker">Reyting va statistika</div><div class="stats"><div class="stat"><strong id="rank-name">Boshlovchi</strong><span>joriy daraja</span></div><div class="stat"><strong id="best-percent">0%</strong><span>eng yaxshi natija</span></div><div class="stat"><strong id="total-sessions">0</strong><span>sessiyalar</span></div><div class="stat"><strong id="total-correct">0</strong><span>jami to'g'ri</span></div></div></div>
+    </div>
+    <div class="stack wizard-stack">
+      <div class="panel wizard">
+        <div class="wizard-top">
+          <div class="wizard-copy">
+            <div class="kicker">Boshlashdan oldin</div>
+            <h2 id="wizard-title">Rejimni tanlang</h2>
+            <div class="sub" id="wizard-sub">Avval qanday savol formatida ishlashingizni tanlaysiz.</div>
+          </div>
+          <div class="wizard-head-actions">
+            <div class="wizard-stage" id="wizard-stage">1 / 4 bosqich</div>
+          </div>
+        </div>
+        <div class="stepbar"><div class="stepdot" id="step-0"></div><div class="stepdot" id="step-1"></div><div class="stepdot" id="step-2"></div><div class="stepdot" id="step-3"></div></div>
+        <div class="qbox">
+          <div class="qtop">
+            <div class="stepcard">
+              <div class="qlabel" id="wizard-label">1-qadam</div>
+              <div class="qtitle" id="step-question">Qanday rejimni xohlaysiz?</div>
+              <div class="qdesc" id="step-desc">Savollar turi tanlangach keyingi bosqichga o'tamiz.</div>
+              <div class="choice-grid" id="choice-grid"></div>
+              <div class="custom-count" id="custom-count-box">
+                <div class="custom-count-copy">
+                  <div class="minihead">Boshqa son</div>
+                  <div class="hint" id="custom-count-hint">Nechta savol ishlamoqchi bo'lsangiz, shu yerga kiriting.</div>
+                </div>
+                <input class="inp" id="custom-count-input" type="number" min="1" step="1" placeholder="12">
+                <div class="custom-count-limit" id="custom-count-limit">Limit: -</div>
+              </div>
+              <div class="topic-wrap" id="topic-wrap" style="display:none"></div>
+            </div>
+            <div class="sidecol">
+              <div class="selectbox">
+                <div class="minihead">Joriy tanlov</div>
+                <div class="pickline">
+                  <strong id="pick-mode">Rejim tanlanmagan</strong>
+                  <span id="pick-scope">Savollar ko'lami hali belgilanmagan.</span>
+                  <span id="pick-topics">Mavzular hali tanlanmagan.</span>
+                  <span id="pick-count">Savollar soni belgilanmagan.</span>
+                </div>
+              </div>
+              <div class="side-actions">
+                <button class="ghost" id="prev-btn" onclick="prevStep()">Orqaga</button>
+                <button class="next" id="next-btn-wizard" onclick="nextStep()">Keyingi</button>
+                <button class="start" id="start-btn" onclick="startGame()">Boshlash</button>
+              </div>
+            </div>
+          </div>
+          <div class="wizard-foot">
+            <div class="hint" id="wizard-hint">Savollar yuklanmoqda...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="screen hidden" id="quiz-screen"><div class="quiz">
+    <div class="stack">
+      <div class="panel"><div class="kicker">Jarayon</div><div class="sidegrid"><div class="mini"><strong id="st-progress">0/0</strong><span>savol</span></div><div class="mini"><strong id="st-mode">-</strong><span>rejim</span></div><div class="mini"><strong id="st-correct">0</strong><span>to'g'ri</span></div><div class="mini"><strong id="st-wrong">0</strong><span>xato</span></div></div></div>
+      <div class="panel"><div class="kicker">Joriy savol</div><div class="chiprow"><div class="pill" id="chip-id">ID</div><div class="pill" id="chip-topic">Mavzu</div></div><div class="desc" style="margin-top:12px">Javob tekshirilgach faqat keyingi savol tugmasi ishlaydi.</div></div>
+      <div class="panel"><div class="kicker">Boshqaruv</div><button class="ghost" onclick="goSetup()">Sozlashga qaytish</button></div>
+    </div>
+    <div class="panel main">
+      <div class="head"><div><h2 id="quiz-title">1-savol</h2><div class="sub" id="quiz-sub">Savol tayyorlanmoqda...</div></div><div class="timer"><div class="tv" id="timer-value">01:00</div><div class="track"><div class="fill" id="timer-fill"></div></div></div></div>
+      <div class="qcard"><div class="ql">Savol</div><div class="qt" id="question-text">Savol matni shu yerda chiqadi.</div><div class="answers" id="answers"></div><div class="open" id="open-box"><input class="inp" id="answer-input" placeholder="Javobingizni shu yerga yozing"><button class="ghost" id="check-btn" onclick="checkOpen()">Javobni tekshirish</button></div><div class="fb info" id="feedback">Savol chiqqach, natija shu yerda ko'rsatiladi.</div></div>
+      <div class="foot"><div class="hint" id="foot-note">Oson rejimda variant tanlanadi, qiyin rejimda esa javob yoziladi.</div><button class="next" id="quiz-next-btn" onclick="nextQuestion()" disabled>Keyingi savol</button></div>
+    </div>
+  </div></section>
+
+  <section class="screen hidden" id="summary-screen"><div class="summary">
+    <div class="panel"><div class="kicker">Natija</div><h2>Sessiya tugadi</h2><div class="desc">Natija, reyting va xato savollar bo'yicha mashq imkoniyatlari quyida turibdi.</div></div>
+    <div class="panel"><div class="kicker">Umumiy hisobot</div><h2 id="sum-title">Natija tayyor</h2><div class="sub">Quyida jami savollar, to'g'ri javoblar, xatolar va aniqlik ko'rsatiladi.</div><div class="sumgrid"><div class="sumbox"><strong id="sum-total">0</strong><span>jami savol</span></div><div class="sumbox"><strong id="sum-correct">0</strong><span>to'g'ri</span></div><div class="sumbox"><strong id="sum-wrong">0</strong><span>xato</span></div><div class="sumbox"><strong id="sum-percent">0%</strong><span>aniqlik</span></div></div><div class="summsg" id="sum-msg">Natija xabari shu yerda chiqadi.</div><div class="sumacts"><button class="start" onclick="goSetup()">Yangi sessiya</button><button class="ghost" onclick="startGame()">Shu rejimda qayta boshlash</button><button class="ghost" id="retry-wrong-btn" onclick="retryWrong()">Xato savollarni qayta ishlash</button></div></div>
+  </div></section>
+</div>
+
+<script>
+const { ipcRenderer } = require('electron');
+const fs = require('fs');
+const path = require('path');
+const MODES={oson:{title:"Oson",file:"zakovat_variant.json"},qiyin:{title:"Qiyin",file:"zakovat_ochiq.json"}};
+const STATS_KEY="bb_zakovat_stats_v3";
+const WIZARD=[
+  {id:"mode",title:"Rejimni tanlang",desc:"Avval qanday savol formatida ishlashingizni tanlaysiz."},
+  {id:"scope",title:"Savollar ko'lamini tanlang",desc:"Barcha savollarni aralash ishlaysizmi yoki mavzu tanlaysizmi."},
+  {id:"topics",title:"Mavzularni tanlang",desc:"Bir yoki bir nechta mavzuni tanlash mumkin."},
+  {id:"count",title:"Savollar sonini tanlang",desc:"Oxirida nechta savol ishlashingizni tanlaysiz."}
+];
+const S={mode:"oson",scope:"all",topics:[],count:10,customCount:false,pools:{oson:[],qiyin:[]},questions:[],i:0,ok:0,bad:0,left:60,timer:null,locked:false,wrongList:[],stats:null,step:0};
+
+function readJson(file){const fp=path.join(__dirname,file);if(!fs.existsSync(fp))return[];try{return JSON.parse(fs.readFileSync(fp,"utf8"))||[]}catch{return[]}}
+function norm(t){return String(t||"").toLowerCase().replace(/['`"]/g,"").replace(/[^\w\s-]/g," ").replace(/\s+/g," ").trim()}
+function sh(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function stars(){const c=document.getElementById("particles");for(let i=0;i<40;i++){const d=document.createElement("div");const s=Math.random()*2.2+.7;d.className="dot";d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*3}s;opacity:${Math.random()*0.5}`;c.appendChild(d)}}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));document.getElementById(id).classList.remove("hidden")}
+function loadStats(){try{return JSON.parse(localStorage.getItem(STATS_KEY)||"")}catch{return null}}
+function baseStats(){return{sessions:0,totalCorrect:0,totalWrong:0,bestAccuracy:0,currentStreak:0}}
+function saveStats(){localStorage.setItem(STATS_KEY,JSON.stringify(S.stats))}
+function rankName(){const a=S.stats.bestAccuracy,s=S.stats.sessions;if(a>=90&&s>=10)return"Ustoz";if(a>=80&&s>=6)return"Zo'r bilimdon";if(a>=65&&s>=3)return"Faol o'quvchi";return"Boshlovchi"}
+function drawStatsBox(){document.getElementById("rank-name").textContent=rankName();document.getElementById("best-percent").textContent=`${S.stats.bestAccuracy}%`;document.getElementById("total-sessions").textContent=S.stats.sessions;document.getElementById("total-correct").textContent=S.stats.totalCorrect}
+function topicsForMode(){return [...new Set((S.pools[S.mode]||[]).map(x=>x.mavzu).filter(Boolean))].sort((a,b)=>a.localeCompare(b))}
+function filteredPool(){const base=S.pools[S.mode]||[];if(S.scope==="all"||!S.topics.length)return base;return base.filter(x=>S.topics.includes(x.mavzu))}
+function fitCount(){const a=filteredPool().length;if(!a){S.count=0;return}if(S.count>a)S.count=a;if(S.count===0)S.count=Math.min(10,a)}
+function canGoNext(){if(WIZARD[S.step].id==="mode")return!!S.mode;if(WIZARD[S.step].id==="scope")return!!S.scope;if(WIZARD[S.step].id==="topics")return S.scope==="all"||S.topics.length>0;if(WIZARD[S.step].id==="count")return S.count>0;return false}
+function makeChoice(label,sub,selected,onClick){const b=document.createElement("button");b.className="choice"+(selected?" sel":"");b.innerHTML=`<strong>${label}</strong><small>${sub}</small>`;b.onclick=onClick;return b}
+function syncCustomCount(){const max=filteredPool().length||0;const input=document.getElementById("custom-count-input");let v=parseInt(input.value,10);if(!Number.isFinite(v))v=0;if(v<1)v=0;if(max&&v>max)v=max;S.count=v;renderWizard()}
+function drawSelectionCard(){document.getElementById("pick-mode").textContent=`Rejim: ${MODES[S.mode].title}`;document.getElementById("pick-scope").textContent=S.scope==="all"?"Ko'lam: umumiy aralash savollar":"Ko'lam: mavzu bo'yicha saralash";document.getElementById("pick-topics").textContent=S.scope==="all"?"Mavzular: barcha mavzular avtomatik ishlatiladi":S.topics.length?`Mavzular: ${S.topics.slice(0,3).join(", ")}${S.topics.length>3?` va yana ${S.topics.length-3} ta`:``}`:"Mavzular: hali tanlanmagan";document.getElementById("pick-count").textContent=`Savollar soni: ${S.count||0} ta`}
+function renderWizard(){fitCount();const step=WIZARD[S.step],poolLen=filteredPool().length;document.getElementById("wizard-title").textContent=step.title;document.getElementById("wizard-sub").textContent=step.desc;document.getElementById("wizard-stage").textContent=`${S.step+1} / ${WIZARD.length} bosqich`;document.getElementById("wizard-label").textContent=`${S.step+1}-qadam`;document.getElementById("step-question").textContent=step.title;document.getElementById("step-desc").textContent=step.desc;document.getElementById("choice-grid").innerHTML="";document.getElementById("choice-grid").classList.toggle("count-grid",step.id==="count");document.getElementById("topic-wrap").innerHTML="";document.getElementById("topic-wrap").style.display="none";const ccBox=document.getElementById("custom-count-box");const ccInput=document.getElementById("custom-count-input");ccBox.classList.remove("active");document.getElementById("custom-count-limit").textContent=poolLen?`Limit: ${poolLen} ta`:"Limit: 0";WIZARD.forEach((_,i)=>document.getElementById(`step-${i}`).classList.toggle("on",i<=S.step));const grid=document.getElementById("choice-grid");if(step.id==="mode"){grid.appendChild(makeChoice("Oson","Savol va 4 ta variant beriladi.",S.mode==="oson",()=>{S.mode="oson";S.topics=[];renderWizard()}));grid.appendChild(makeChoice("Qiyin","Savol beriladi, javobni o'zingiz yozasiz.",S.mode==="qiyin",()=>{S.mode="qiyin";S.topics=[];renderWizard()}))}else if(step.id==="scope"){grid.appendChild(makeChoice("Umumiy savollar","Barcha mavzulardan aralash savollar ishlanadi.",S.scope==="all",()=>{S.scope="all";S.topics=[];renderWizard()}));grid.appendChild(makeChoice("Mavzu bo'yicha","Bir yoki bir nechta mavzu tanlaysiz.",S.scope==="topic",()=>{S.scope="topic";renderWizard()}))}else if(step.id==="topics"){const wrap=document.getElementById("topic-wrap");wrap.style.display="grid";topicsForMode().forEach(t=>{const b=document.createElement("button");b.className="topic"+(S.topics.includes(t)?" sel":"");b.textContent=t;b.onclick=()=>{if(S.scope==="all")return;S.topics=S.topics.includes(t)?S.topics.filter(x=>x!==t):S.topics.concat(t);renderWizard()};wrap.appendChild(b)});if(S.scope==="all"){wrap.innerHTML='<div class="hint">Umumiy savollar tanlangan, shu sabab barcha mavzular avtomatik olinadi.</div>'}}else if(step.id==="count"){[5,10,15,20,poolLen].filter((v,i,a)=>v>0&&a.indexOf(v)===i).sort((a,b)=>a-b).forEach(n=>grid.appendChild(makeChoice(`${n} ta`,`Sessiya uchun ${n} savol`,!S.customCount&&S.count===n,()=>{S.customCount=false;S.count=n;renderWizard()})));grid.appendChild(makeChoice("Boshqa","Savol sonini o'zingiz kiriting.",S.customCount,()=>{S.customCount=true;if(!S.count)S.count=Math.min(10,poolLen||10);renderWizard()}));if(S.customCount){ccBox.classList.add("active");ccInput.value=S.count||"";ccInput.max=poolLen||"";document.getElementById("custom-count-hint").textContent=poolLen?`1 dan ${poolLen} gacha son kiriting.`:"Hozircha savol topilmadi."}}drawSelectionCard();document.getElementById("wizard-hint").textContent=poolLen?`${MODES[S.mode].title} rejimida hozir ${poolLen} ta mos savol bor.`:"Tanlangan parametrlar bo'yicha savol topilmadi.";document.getElementById("prev-btn").disabled=S.step===0;document.getElementById("next-btn-wizard").textContent=S.step===WIZARD.length-2?"Yakuniy bosqich":"Keyingi";document.getElementById("start-btn").textContent="Boshlash";document.getElementById("next-btn-wizard").style.display=S.step===WIZARD.length-1?"none":"inline-block";document.getElementById("start-btn").style.display=S.step===WIZARD.length-1?"inline-block":"none";document.getElementById("next-btn-wizard").disabled=!canGoNext();document.getElementById("start-btn").disabled=!canGoNext()||!poolLen}
+function nextStep(){if(!canGoNext())return;if(S.step===1&&S.scope==="all"){S.step=3;renderWizard();return}if(S.step<WIZARD.length-1){S.step+=1;renderWizard()}}
+function prevStep(){if(S.step===3&&S.scope==="all"){S.step=1;renderWizard();return}if(S.step>0){S.step-=1;renderWizard()}}
+function init(){S.pools.oson=readJson(MODES.oson.file);S.pools.qiyin=readJson(MODES.qiyin.file);S.stats=loadStats()||baseStats();drawStatsBox();renderWizard();show("setup-screen")}
+function cur(){return S.questions[S.i]||null}
+function stopTimer(){if(S.timer){clearInterval(S.timer);S.timer=null}}
+function drawTimer(){const m=String(Math.floor(S.left/60)).padStart(2,"0"),s=String(S.left%60).padStart(2,"0");document.getElementById("timer-value").textContent=`${m}:${s}`;document.getElementById("timer-fill").style.width=`${(S.left/60)*100}%`}
+function startTimer(){stopTimer();S.left=60;drawTimer();S.timer=setInterval(()=>{S.left-=1;drawTimer();if(S.left<=0){stopTimer();timeOut()}},1000)}
+function refresh(){document.getElementById("st-progress").textContent=`${S.i+1}/${S.questions.length}`;document.getElementById("st-mode").textContent=MODES[S.mode].title;document.getElementById("st-correct").textContent=S.ok;document.getElementById("st-wrong").textContent=S.bad}
+function fb(text,cls){const e=document.getElementById("feedback");e.className=`fb ${cls}`;e.textContent=text}
+function lockUi(){document.getElementById("quiz-next-btn").disabled=!S.locked;document.getElementById("check-btn").disabled=S.locked;document.getElementById("answer-input").disabled=S.locked;document.querySelectorAll(".ans").forEach(b=>b.disabled=S.locked)}
+function startGame(){const pool=filteredPool();if(!pool.length)return;fitCount();S.questions=sh(pool).slice(0,Math.min(S.count,pool.length));S.i=0;S.ok=0;S.bad=0;S.wrongList=[];show("quiz-screen");drawQuestion()}
+function drawQuestion(){const q=cur();if(!q){drawSummary();return}S.locked=false;refresh();lockUi();startTimer();document.getElementById("chip-id").textContent=`ID ${q.id}`;document.getElementById("chip-topic").textContent=q.mavzu||"Mavzu yo'q";document.getElementById("quiz-title").textContent=`${S.i+1}-savol`;document.getElementById("quiz-sub").textContent=S.mode==="oson"?"To'g'ri variantni tanlang.":"Javobni yozing va tekshiruvga yuboring.";document.getElementById("foot-note").textContent=S.mode==="oson"?"Bu savolda 4 ta variantdan birini tanlaysiz.":"Bu savolda variant yo'q. Javobni o'zingiz yozasiz.";document.getElementById("question-text").textContent=q.savol||"Savol topilmadi.";document.getElementById("answers").innerHTML="";document.getElementById("answer-input").value="";document.getElementById("open-box").classList.toggle("active",S.mode==="qiyin");fb("Savol tayyor. Javobingizni bering.","info");if(S.mode==="oson"){const lets=["A","B","C","D","E"];(q.variantlar||[]).forEach((v,i)=>{const b=document.createElement("button");b.className="ans";b.innerHTML=`<span class="ltr">${lets[i]||i+1}.</span> ${v}`;b.onclick=()=>checkVariant(i);document.getElementById("answers").appendChild(b)})}}
+function correctText(q){return S.mode==="oson"?(Array.isArray(q.togri)?q.togri.map(i=>q.variantlar[i]).join(", "):"Noma'lum"):(q.javob||"Noma'lum")}
+function finalLock(){S.locked=true;lockUi();stopTimer()}
+function addWrong(q){S.bad+=1;S.wrongList.push(q)}
+function checkVariant(index){if(S.locked)return;const q=cur(),arr=Array.isArray(q.togri)?q.togri:[],ok=arr.includes(index);finalLock();if(ok)S.ok+=1;else addWrong(q);refresh();[...document.querySelectorAll(".ans")].forEach((b,i)=>{if(arr.includes(i))b.classList.add("ok");if(!ok&&i===index)b.classList.add("bad");b.disabled=true});fb(ok?`Ajoyib. To'g'ri topdingiz. Tabriklayman. To'g'ri javob: ${correctText(q)}`:`Bu safar xato bo'ldi. To'g'ri javob bu edi: ${correctText(q)}`,ok?"ok":"bad")}
+function checkOpen(){if(S.locked)return;const input=document.getElementById("answer-input"),val=input.value.trim();if(!val){fb("Avval javob yozing, keyin tekshiramiz.","info");return}const q=cur(),u=norm(val),keys=[q.javob].concat(Array.isArray(q.kalit_sozlar)?q.kalit_sozlar:[]).map(norm).filter(Boolean),ok=keys.some(k=>u===k||u.includes(k)||k.includes(u));finalLock();if(ok)S.ok+=1;else addWrong(q);refresh();fb(ok?`Zo'r. Javobingiz mos keldi. Tabriklayman. To'g'ri javob: ${q.javob}`:`Javob qabul qilinmadi. To'g'ri javob bu edi: ${q.javob}`,ok?"ok":"bad")}
+function timeOut(){if(S.locked)return;const q=cur();finalLock();addWrong(q);refresh();if(S.mode==="oson"){const arr=Array.isArray(q.togri)?q.togri:[];document.querySelectorAll(".ans").forEach((b,i)=>{if(arr.includes(i))b.classList.add("ok")})}fb(`Vaqt tugadi. To'g'ri javob bu edi: ${correctText(q)}`,"bad")}
+function nextQuestion(){if(!S.locked)return;if(S.i<S.questions.length-1){S.i+=1;drawQuestion()}else drawSummary()}
+function updateSessionStats(percent){S.stats.sessions+=1;S.stats.totalCorrect+=S.ok;S.stats.totalWrong+=S.bad;S.stats.bestAccuracy=Math.max(S.stats.bestAccuracy,percent);if(percent>=70)S.stats.currentStreak+=1;else S.stats.currentStreak=0;saveStats();drawStatsBox()}
+function drawSummary(){stopTimer();const total=S.questions.length,percent=Math.round(total?(S.ok/total)*100:0);updateSessionStats(percent);ipcRenderer.invoke("save-app-stats",{bolim:`zakovat_${S.mode}`,togri:S.ok,xato:S.bad}).catch(()=>{});document.getElementById("sum-total").textContent=total;document.getElementById("sum-correct").textContent=S.ok;document.getElementById("sum-wrong").textContent=S.bad;document.getElementById("sum-percent").textContent=`${percent}%`;document.getElementById("sum-title").textContent=percent>=80?"Zo'r natija":percent>=50?"Yaxshi urinish":"Mashq davom etadi";document.getElementById("sum-msg").textContent=(percent>=80?`Siz ${total} ta savoldan ${S.ok} tasini to'g'ri topdingiz. Juda kuchli natija ko'rsatdingiz.`:percent>=50?`Siz ${total} ta savoldan ${S.ok} tasini to'g'ri topdingiz, ${S.bad} tasida xato bo'ldi.`:`Bu safar ${total} ta savoldan ${S.ok} tasi to'g'ri, ${S.bad} tasi xato bo'ldi. Yana urinib ko'rsangiz natija yanada yaxshilanadi.`)+` Eng yaxshi natija: ${S.stats.bestAccuracy}%. Ketma-ket yaxshi sessiyalar: ${S.stats.currentStreak}.`;document.getElementById("retry-wrong-btn").disabled=!S.wrongList.length;show("summary-screen")}
+function retryWrong(){if(!S.wrongList.length)return;S.questions=sh(S.wrongList);S.i=0;S.ok=0;S.bad=0;S.wrongList=[];show("quiz-screen");drawQuestion()}
+function goSetup(){stopTimer();renderWizard();drawStatsBox();show("setup-screen")}
+function goBack(){stopTimer();ipcRenderer.invoke("goto","menu")}
+window.onload=()=>{stars();init();document.getElementById("answer-input").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();checkOpen()}});document.getElementById("custom-count-input").addEventListener("input",syncCustomCount);document.getElementById("custom-count-input").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();syncCustomCount()}})}
+</script>
+</body>
+</html>

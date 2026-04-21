@@ -15,7 +15,23 @@ class RoleFilter(Filter):
     async def __call__(self, event: Message | CallbackQuery, db_user: dict | None = None) -> bool:
         if not db_user:
             return False
-        return db_user.get("role", "user") in self.roles
+            
+        user_role = db_user.get("role", "user")
+        if user_role in self.roles:
+            return True
+            
+        # Fallback to config IDs if db role is missing
+        user = getattr(event, "from_user", None)
+        if user:
+            from src.config import settings
+            if "owner" in self.roles and user.id == settings.OWNER_ID:
+                return True
+            if "admin" in self.roles:
+                admin_ids = [int(i.strip()) for i in settings.ADMIN_IDS.split(",") if i.strip().isdigit()]
+                if user.id in admin_ids or user.id == settings.OWNER_ID:
+                    return True
+                    
+        return False
 
 
 class PlanFilter(Filter):

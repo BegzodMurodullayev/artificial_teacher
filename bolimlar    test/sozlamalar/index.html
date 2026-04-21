@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BilimBox - Sozlamalar</title>
+<style>
+:root{--bg:#07101c;--panel:rgba(10,18,35,.84);--line:rgba(255,255,255,.09);--text:#eef4ff;--muted:rgba(226,235,255,.7);--muted-2:rgba(226,235,255,.48);--radius-xl:30px;--radius-lg:24px;--shadow:0 22px 48px rgba(0,0,0,.3)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%}
+body{overflow:hidden;font-family:"Segoe UI",sans-serif;color:var(--text);background:var(--bg);user-select:none}
+.bg{position:fixed;inset:0;background:linear-gradient(160deg,rgba(6,12,24,.88),rgba(8,18,34,.96)),radial-gradient(circle at 12% 16%,rgba(86,176,255,.18),transparent 24%),radial-gradient(circle at 84% 20%,rgba(255,202,107,.12),transparent 18%),radial-gradient(circle at 54% 82%,rgba(108,238,182,.08),transparent 26%),url('../../ui/assets/bg_kirish.jpg') center/cover no-repeat;z-index:0}
+.mesh{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(180deg,rgba(0,0,0,.55),transparent)}
+.particles{position:fixed;inset:0;z-index:2;pointer-events:none}
+.dot{position:absolute;border-radius:50%;background:rgba(255,255,255,.56);animation:tw 4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.08;transform:scale(1)}50%{opacity:.72;transform:scale(1.24)}}
+.titlebar{position:fixed;top:0;left:0;right:0;height:44px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;background:rgba(4,8,18,.58);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(16px);-webkit-app-region:drag;z-index:30}
+.row{display:flex;align-items:center;gap:10px;-webkit-app-region:no-drag}
+.brand{font-size:15px;font-weight:800;letter-spacing:.3px;background:linear-gradient(135deg,#7cc6ff,#ffcf7e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.navbtn,.ghost,.cta,.danger,.toggle,.win{transition:.22s ease;font-family:inherit}
+.navbtn,.ghost,.cta,.danger,.toggle{border:none;cursor:pointer}
+.navbtn,.ghost,.toggle{padding:8px 14px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--text)}
+.navbtn:hover,.ghost:hover,.toggle:hover,.danger:hover{transform:translateY(-1px);background:rgba(255,255,255,.13)}
+.cta{padding:12px 18px;border-radius:16px;background:linear-gradient(135deg,#73c1ff,#83e7bc);color:#092138;font-weight:800;box-shadow:0 12px 24px rgba(93,191,255,.22)}
+.danger{padding:12px 18px;border-radius:16px;background:linear-gradient(135deg,#ff8f9d,#ffb47f);color:#341218;font-weight:800;box-shadow:0 12px 24px rgba(255,120,140,.22)}
+.toggle.active{background:linear-gradient(180deg,rgba(109,189,255,.18),rgba(109,189,255,.08));border-color:rgba(109,189,255,.3)}
+.win{width:14px;height:14px;border:none;border-radius:50%;cursor:pointer}.min{background:#febc2e}.max{background:#78c3ff}.close{background:#ff5f57}
+.shell{position:absolute;inset:44px 0 0 0;padding:16px;z-index:10}
+.layout{height:100%;display:grid;grid-template-columns:minmax(320px,390px) minmax(0,1fr);gap:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow);backdrop-filter:blur(22px)}
+.left,.main{min-height:0}
+.left{display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:16px}
+.hero{position:relative;overflow:hidden;padding:24px;background:linear-gradient(155deg,rgba(86,176,255,.18),rgba(255,214,108,.08)),radial-gradient(circle at top right,rgba(255,255,255,.08),transparent 28%),rgba(8,16,32,.94)}
+.hero::after{content:"";position:absolute;right:-55px;top:-55px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.12),transparent 70%)}
+.kicker{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted-2);margin-bottom:12px}
+.hero h1{font-size:34px;line-height:1.06;max-width:280px;margin-bottom:12px}
+.muted,.desc,.small{color:var(--muted);line-height:1.62}
+.badge-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.badge{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);font-size:12px}
+.panel-pad{padding:20px}
+.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mini{padding:16px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}.mini strong{display:block;font-size:24px;margin-bottom:4px}.mini span{font-size:12px;color:var(--muted)}
+.left-scroll{min-height:0;overflow:auto;padding-right:4px;display:flex;flex-direction:column;gap:12px}
+.tip{padding:14px 15px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04)}.tip strong{display:block;margin-bottom:6px;font-size:15px}
+.main{display:grid;grid-template-rows:auto minmax(0,1fr);gap:16px;padding:20px}
+.header h2{font-size:30px;line-height:1.08}
+.workspace{min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{min-height:0;padding:18px;border-radius:28px;background:rgba(8,16,32,.58);border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column}
+.card h3{font-size:22px;margin-bottom:8px}.card-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+.form,.stack,.list{display:flex;flex-direction:column;gap:12px}
+.label{font-size:12px;color:var(--muted-2);text-transform:uppercase;letter-spacing:1.4px}
+.input{width:100%;padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;outline:none;font:inherit}
+.input:focus{border-color:rgba(124,195,255,.5);background:rgba(255,255,255,.08)}
+.option,.item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 15px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04)}
+.option strong,.item strong{display:block;font-size:15px;margin-bottom:4px}.option span,.item span{font-size:12px;color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.status{margin-top:10px;padding:13px 14px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);min-height:48px;color:var(--muted)}
+.status.ok{background:rgba(83,216,157,.12);border-color:rgba(83,216,157,.28);color:#e8fff4}
+.status.warn{background:rgba(255,157,120,.12);border-color:rgba(255,157,120,.28);color:#fff0ea}
+@media (max-width:1240px){.layout,.workspace{grid-template-columns:1fr}}
+@media (max-width:860px){.shell{padding:12px}.hero h1,.header h2{font-size:25px}.mini-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="mesh"></div><div class="particles" id="particles"></div>
+<div class="titlebar"><div class="row"><button class="navbtn" onclick="goBack()">Orqaga</button><div class="brand">BilimBox Sozlamalar</div></div><div class="row"><button class="win min" onclick="ipcRenderer.invoke('minimize-app')"></button><button class="win max" onclick="ipcRenderer.invoke('toggle-maximize-app')"></button><button class="win close" onclick="ipcRenderer.invoke('close-app')"></button></div></div>
+<div class="shell">
+  <div class="layout">
+    <aside class="left">
+      <section class="panel hero"><div class="kicker">Boshqaruv markazi</div><h1>Dastur sozlamalari</h1><p class="muted">Bu bo'lim foydalanuvchi ma'lumoti, lokal statistika, ko'rinish xatti-harakati va tozalash funksiyalarini xavfsiz boshqaradi.</p><div class="badge-row"><div class="badge">Offline</div><div class="badge">Xavfsiz reset</div><div class="badge">Profil boshqaruvi</div></div></section>
+      <section class="panel panel-pad"><div class="kicker">Holat</div><div class="mini-grid"><div class="mini"><strong id="mini-name">-</strong><span>joriy foydalanuvchi</span></div><div class="mini"><strong id="mini-db">0</strong><span>db yozuvlari</span></div><div class="mini"><strong id="mini-zakovat">0</strong><span>zakovat sessiyasi</span></div><div class="mini"><strong id="mini-evrika">0</strong><span>evrika ko'rilganlari</span></div></div></section>
+      <section class="panel panel-pad" style="min-height:0"><div class="kicker">Yordamchi eslatmalar</div><div class="left-scroll"><div class="tip"><strong>Ismni yangilash</strong><div class="desc">Menyu va reyting bo'limida ko'rinadigan ism shu yerdan o'zgaradi.</div></div><div class="tip"><strong>Statistikani tozalash</strong><div class="desc">Faqat markaziy statistika jadvali tozalanadi. Kitob va JSON fayllar o'chmaydi.</div></div><div class="tip"><strong>To'liq reset</strong><div class="desc">Foydalanuvchi nomi va umumiy statistika tozalanib, kirish oynasiga qaytadi.</div></div></div></section>
+    </aside>
+    <main class="panel main">
+      <div class="header"><div><div class="kicker">Sozlamalar paneli</div><h2>Profil, lokal ma'lumot va xavfsiz tozalash</h2><div class="small">Bu joy boshqa bo'limlarni buzmaydigan tarzda faqat foydali boshqaruvlarni beradi.</div></div></div>
+      <div class="workspace">
+        <section class="card"><h3>Profil</h3><div class="card-sub">Foydalanuvchi ma'lumotini yangilash va oyna holatini boshqarish.</div><div class="form"><div><div class="label">Ism</div><input class="input" id="name-input" type="text" placeholder="Ismingiz"></div><div class="actions"><button class="cta" onclick="saveName()">Ismni saqlash</button><button class="ghost" onclick="reloadData()">Qayta yuklash</button></div></div><div class="status" id="profile-status">Profil holati shu yerda ko'rinadi.</div></section>
+        <section class="card"><h3>Ko'rinish</h3><div class="card-sub">Mahalliy vizual xatti-harakatlar. Bu sozlamalar localStorage orqali saqlanadi.</div><div class="stack"><div class="option"><div><strong>Harakat effektlari</strong><span>Yulduzlar va yumshoq animatsiyalar ishlashi.</span></div><button class="toggle" id="toggle-motion" onclick="toggleSetting('motion')">Yoniq</button></div><div class="option"><div><strong>Katta UI o'lchami</strong><span>Kattaroq elementlar va osonroq o'qish uchun.</span></div><button class="toggle" id="toggle-scale" onclick="toggleSetting('largeUi')">O'chiq</button></div></div><div class="status" id="view-status">Ko'rinish sozlamalari saqlanmoqda.</div></section>
+        <section class="card"><h3>Ma'lumotlarni tozalash</h3><div class="card-sub">Xavfsiz va nazoratli reset funksiyalari.</div><div class="list"><div class="item"><div><strong>Markaziy statistika</strong><span>Reyting uchun ishlatiladigan statistika jadvalini tozalaydi.</span></div></div><div class="actions"><button class="danger" onclick="clearStats()">Statistikani tozalash</button><button class="ghost" onclick="clearLocalData()">Local ma'lumotni tozalash</button></div></div><div class="status" id="data-status">Hech qanday xavfli amal bajarilmadi.</div></section>
+        <section class="card"><h3>To'liq reset</h3><div class="card-sub">Foydalanuvchi nomi va umumiy statistika tozalanadi, keyin kirish oynasiga qaytiladi.</div><div class="list"><div class="item"><div><strong>Qachon ishlatish kerak?</strong><span>Agar dastur yangi foydalanuvchi uchun qaytadan boshlanishi kerak bo'lsa.</span></div></div><div class="actions"><button class="danger" onclick="resetAll()">To'liq reset</button><button class="ghost" onclick="goBack()">Bekor qilish</button></div></div><div class="status" id="reset-status">Reset hali ishga tushirilmagan.</div></section>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+const { ipcRenderer } = require('electron');
+const SETTINGS_KEY='bb_app_settings_v1';
+function stars(){const c=document.getElementById('particles');for(let i=0;i<38;i++){const d=document.createElement('div');const s=Math.random()*2.2+.7;d.className='dot';d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s`;c.appendChild(d)}}
+function loadLocal(key,fallback){try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):fallback}catch{return fallback}}
+function saveLocal(key,value){localStorage.setItem(key,JSON.stringify(value))}
+function appSettings(){return loadLocal(SETTINGS_KEY,{motion:true,largeUi:false})}
+function setStatus(id,text,cls='ok'){const el=document.getElementById(id);el.className=`status ${cls}`;el.textContent=text}
+function applySettings(){const settings=appSettings();document.getElementById('toggle-motion').classList.toggle('active',!!settings.motion);document.getElementById('toggle-motion').textContent=settings.motion?'Yoniq':"O'chiq";document.getElementById('toggle-scale').classList.toggle('active',!!settings.largeUi);document.getElementById('toggle-scale').textContent=settings.largeUi?'Yoniq':"O'chiq";document.body.style.zoom=settings.largeUi?'1.03':'1';setStatus('view-status','Ko\'rinish sozlamalari localStorage ichida saqlangan.','ok')}
+async function reloadData(){const payload=await ipcRenderer.invoke('get-app-stats');const zakovat=loadLocal('bb_zakovat_stats_v3',{sessions:0});const evrikaSeen=loadLocal('bb_evrika_seen_v3',[]);const ism=payload&&payload.ism?payload.ism:'';const dbRows=payload&&payload.statistika?payload.statistika.length:0;document.getElementById('name-input').value=ism;document.getElementById('mini-name').textContent=ism||'-';document.getElementById('mini-db').textContent=dbRows;document.getElementById('mini-zakovat').textContent=zakovat.sessions||0;document.getElementById('mini-evrika').textContent=evrikaSeen.length||0;setStatus('profile-status',ism?`Joriy foydalanuvchi: ${ism}`:'Foydalanuvchi nomi hali saqlanmagan.','ok')}
+async function saveName(){const input=document.getElementById('name-input');const value=input.value.trim();if(!value){setStatus('profile-status','Avval ism kiriting.','warn');return}await ipcRenderer.invoke('update-ism',value);await reloadData();setStatus('profile-status','Ism muvaffaqiyatli yangilandi.','ok')}
+function toggleSetting(key){const settings=appSettings();settings[key]=!settings[key];saveLocal(SETTINGS_KEY,settings);applySettings()}
+async function clearStats(){await ipcRenderer.invoke('clear-app-stats');setStatus('data-status','Markaziy statistika tozalandi.','ok');await reloadData()}
+function clearLocalData(){['bb_zakovat_stats_v3','bb_evrika_favs_v3','bb_evrika_seen_v3','bb_evrika_history_v3',SETTINGS_KEY].forEach(key=>localStorage.removeItem(key));applySettings();setStatus('data-status','Local ma\'lumotlar tozalandi.','ok');reloadData()}
+async function resetAll(){setStatus('reset-status','Reset bajarilmoqda...','warn');['bb_zakovat_stats_v3','bb_evrika_favs_v3','bb_evrika_seen_v3','bb_evrika_history_v3',SETTINGS_KEY].forEach(key=>localStorage.removeItem(key));await ipcRenderer.invoke('reset-user')}
+function goBack(){ipcRenderer.invoke('goto','menu')}
+window.onload=async()=>{stars();applySettings();await reloadData()}
+</script>
+</body>
+</html>

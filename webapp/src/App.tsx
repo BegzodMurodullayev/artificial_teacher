@@ -14,7 +14,18 @@ import { userApi } from '@/lib/api'
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
 const AdminBroadcast = lazy(() => import('@/pages/admin/AdminBroadcast'))
 
+// Lazy game pages
+const GamesPage = lazy(() => import('@/pages/GamesPage'))
+const XOGamePage = lazy(() => import('@/pages/XOGamePage'))
+const MemoryGamePage = lazy(() => import('@/pages/MemoryGamePage'))
+const NumberGamePage = lazy(() => import('@/pages/NumberGamePage'))
+const MathGamePage = lazy(() => import('@/pages/MathGamePage'))
+
 function AdminPageSuspense({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<Loader size="full" text="Yuklanmoqda..." />}>{children}</Suspense>
+}
+
+function GamePageSuspense({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<Loader size="full" text="Yuklanmoqda..." />}>{children}</Suspense>
 }
 
@@ -51,6 +62,23 @@ export default function App() {
       <Routes>
         {/* ── User WebApp ── */}
         <Route path="/" element={<MainLayout />} />
+
+        {/* ── Games (Standalone inside WebApp context) ── */}
+        <Route path="/games/*" element={
+          <div className="flex flex-col min-h-screen bg-space-black no-overscroll">
+            <div className="starfield" aria-hidden />
+            <div className="bg-grid fixed inset-0 z-0 opacity-50 pointer-events-none" aria-hidden />
+            <main className="relative z-10 flex-1 p-safe" style={{ paddingBottom: '90px' }}>
+              <Routes>
+                <Route path="" element={<GamePageSuspense><GamesPage /></GamePageSuspense>} />
+                <Route path="xo" element={<GamePageSuspense><XOGamePage /></GamePageSuspense>} />
+                <Route path="memory" element={<GamePageSuspense><MemoryGamePage /></GamePageSuspense>} />
+                <Route path="number" element={<GamePageSuspense><NumberGamePage /></GamePageSuspense>} />
+                <Route path="math" element={<GamePageSuspense><MathGamePage /></GamePageSuspense>} />
+              </Routes>
+            </main>
+          </div>
+        } />
 
         {/* ── Admin Panel ── */}
         <Route path="/admin" element={<AdminLayout />}>

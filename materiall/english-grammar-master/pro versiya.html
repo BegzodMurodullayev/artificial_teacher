@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 English Grammar Master - 4-Etap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        dark: '#1e293b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .formula-box { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .example-card { border-left: 4px solid #6366f1; }
+        .keyword-tag { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); }
+        .rule-box { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); }
+        .danger-box { background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); }
+        .tip-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); }
+        .chat-message { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .topic-item:hover { background: linear-gradient(90deg, #f8fafc 0%, #e0e7ff 100%); }
+        .topic-item.active { background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%); color: white; }
+        .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .gradient-text { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Mobile Header -->
+    <header class="lg:hidden fixed top-0 left-0 right-0 z-50 glass-effect border-b border-gray-200">
+        <div class="flex items-center justify-between p-4">
+            <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-100 rounded-lg">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h1 class="text-lg font-bold gradient-text">📚 Grammar Master</h1>
+            <button onclick="toggleChat()" class="p-2 hover:bg-gray-100 rounded-lg text-primary">
+                <i class="fas fa-robot text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex min-h-screen pt-16 lg:pt-0">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-80 bg-white border-r border-gray-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 overflow-hidden flex flex-col">
+            <!-- Logo Area -->
+            <div class="p-5 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-secondary/5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl formula-box flex items-center justify-center text-white font-bold text-xl">📚</div>
+                    <div>
+                        <h2 class="font-bold text-gray-800">Grammar Master</h2>
+                        <p class="text-xs text-gray-500">4-Etap Imtihon</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="p-4 border-b border-gray-100">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" placeholder="Mavzu qidirish..." 
+                        class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                        oninput="searchTopics(this.value)">
+                </div>
+            </div>
+
+            <!-- Navigation List -->
+            <nav id="topicList" class="flex-1 overflow-y-auto p-2 space-y-1">
+                <!-- Topics will be generated by JS -->
+            </nav>
+
+            <!-- AI Chat Button (Desktop) -->
+            <div class="p-4 border-t border-gray-100 hidden lg:block">
+                <button onclick="toggleChat()" class="w-full py-3 px-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Yordamchi</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col min-h-screen">
+            <!-- Desktop Header -->
+            <header class="hidden lg:flex items-center justify-between p-6 bg-white border-b border-gray-200">
+                <div class="flex items-center gap-4">
+                    <button id="backButton" onclick="goBack()" class="hidden items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Orqaga</span>
+                    </button>
+                    <h1 id="pageTitle" class="text-2xl font-bold text-gray-800">🏠 Bosh sahifa</h1>
+                </div>
+                <button onclick="toggleChat()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-primary/5 rounded-xl transition-colors">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Yordamchi</span>
+                </button>
+            </header>
+
+            <!-- Content -->
+            <div id="contentArea" class="flex-1 p-4 lg:p-8 overflow-y-auto">
+                <!-- Home View -->
+                <div id="homeView" class="max-w-4xl mx-auto">
+                    <div class="text-center mb-10">
+                        <h1 class="text-4xl lg:text-5xl font-bold gradient-text mb-4">🎓 English Grammar Master</h1>
+                        <p class="text-lg text-gray-600">4-Etap imtihon uchun to'liq grammatika qo'llanmasi</p>
+                        <div class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                            <i class="fas fa-check-circle"></i>
+                            <span>9 ta bo'lim • 30+ mavzu • 100+ formula</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+                            <div class="text-3xl mb-2">⏰</div>
+                            <div class="text-2xl font-bold text-primary">10</div>
+                            <div class="text-sm text-gray-500">Zamonlar</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+                            <div class="text-3xl mb-2">🔮</div>
+                            <div class="text-2xl font-bold text-secondary">15</div>
+                            <div class="text-sm text-gray-500">Modal fe'llar</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+                            <div class="text-3xl mb-2">📝</div>
+                            <div class="text-2xl font-bold text-accent">50+</div>
+                            <div class="text-sm text-gray-500">Formula</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+                            <div class="text-3xl mb-2">🎯</div>
+                            <div class="text-2xl font-bold text-success">100%</div>
+                            <div class="text-sm text-gray-500">Imtihonga tayyor</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Access Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div onclick="showTopic('present-perfect')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Present Perfect</h3>
+                                    <p class="text-sm text-gray-500 mt-1">have/has + V3</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div onclick="showTopic('modal-perfects')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-colors">
+                                    <i class="fas fa-gem"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Modal Perfects</h3>
+                                    <p class="text-sm text-gray-500 mt-1">must have + V3</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div onclick="showTopic('inversion')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-colors">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Inversion</h3>
+                                    <p class="text-sm text-gray-500 mt-1">Never have I...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exam Tips -->
+                    <div class="mt-8 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 p-6 rounded-2xl border border-primary/10">
+                        <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                            <i class="fas fa-lightbulb text-warning"></i>
+                            🎯 Imtihon uchun kalit so'zlar
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary"></span> for/since → Perfect</div>
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-secondary"></span> by the time → Past Perfect</div>
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-accent"></span> never/seldom → Inversion</div>
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-success"></span> eng/the most → Superlative</div>
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-warning"></span> dalolatidir → It is adj of...</div>
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-danger"></span> bo'lsa kerak → must have</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Content View -->
+                <div id="topicView" class="hidden max-w-4xl mx-auto">
+                    <div id="topicContent"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- AI Chat Sidebar -->
+        <aside id="chatSidebar" class="fixed inset-y-0 right-0 z-50 w-full lg:w-96 bg-white border-l border-gray-200 transform translate-x-full transition-transform duration-300 flex flex-col">
+            <!-- Chat Header -->
+            <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-primary to-secondary">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white">
+                            <i class="fas fa-robot text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white">AI Grammar Helper</h3>
+                            <p class="text-xs text-white/80">OpenRouter AI</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleChat()" class="p-2 hover:bg-white/20 rounded-lg text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                <div class="chat-message flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white text-sm flex-shrink-0">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 max-w-[85%]">
+                        <p class="text-sm text-gray-700">Salom! 👋 Men ingliz tili grammatikasi bo'yicha yordamchingizman.</p>
+                        <p class="text-sm text-gray-700 mt-2">Savollaringizga javob beraman, misollar keltiraman va imtihon uchun maslahatlar beraman.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <div class="flex gap-2">
+                    <input type="text" id="chatInput" placeholder="Savol yozing..." 
+                        class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                        onkeypress="if(event.key==='Enter')sendMessage()">
+                    <button onclick="sendMessage()" class="px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-all">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mt-2 text-center">OpenRouter API orqali ishlaydi</p>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden" onclick="closeAll()"></div>
+
+    <script>
+        // ============================================
+        // GRAMMAR DATA - All topics
+        // ============================================
+        const grammarData = {
+            // SECTION 1: TENSES
+            'present-simple': {
+                title: '1.1 Present Simple',
+                icon: 'fa-clock',
+                section: 'TENSES',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-flask text-2xl"></i>
+                                <h3 class="text-xl font-bold">Formula</h3>
+                            </div>
+                            <p class="text-lg font-mono">V1 (base form) / V1 + s/es (3-shaxs)</p>
+                            <p class="text-white/80 mt-2">Salbiy: don't / doesn't + V1</p>
+                        </div>
+
+                        <div class="keyword-tag p-4 rounded-xl">
+                            <h4 class="font-bold text-amber-800 mb-2"><i class="fas fa-key mr-2"></i>Kalit so'zlar</h4>
+                            <p class="text-amber-900">always, usually, often, sometimes, never, every day/week/month, on Mondays, in the morning</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-check-circle mr-2"></i>Qo'llanish</h4>
+                            <ul class="space-y-2 text-gray-700">
+                                <li>• Doimiy harakatlar (odatlar)</li>
+                                <li>• Umumiy haqiqatlar</li>
+                                <li>• Jadval, dastur, reja</li>
+                            </ul>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800"><span class="text-success font-semibold">✅</span> Men har kuni ertalabki voqealarni o'qiyman</p>
+                                <p class="text-primary font-medium mt-1">I <strong>read</strong> newspapers every morning.</p>
+                            </div>
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800"><span class="text-success font-semibold">✅</span> Quyosh sharqdan chiqadi</p>
+                                <p class="text-primary font-medium mt-1">The sun <strong>rises</strong> in the east.</p>
+                            </div>
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800"><span class="text-success font-semibold">✅</span> Poyezd soat 5 da ketadi</p>
+                                <p class="text-primary font-medium mt-1">The train <strong>leaves</strong> at 5 o'clock.</p>
+                            </div>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>Tez-tez xatolar</h4>
+                            <div class="space-y-2">
+                                <p class="text-red-800"><span class="text-red-600 font-bold">❌</span> I am go to school every day.</p>
+                                <p class="text-green-800"><span class="text-green-600 font-bold">✅</span> I go to school every day.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'past-simple': {
+                title: '1.2 Past Simple',
+                icon: 'fa-history',
+                section: 'TENSES',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-flask text-2xl"></i>
+                                <h3 class="text-xl font-bold">Formula</h3>
+                            </div>
+                            <p class="text-lg font-mono">V2 (2-shakl)</p>
+                            <p class="text-white/80 mt-2">Salbiy: didn't + V1</p>
+                        </div>
+
+                        <div class="keyword-tag p-4 rounded-xl">
+                            <h4 class="font-bold text-amber-800 mb-2"><i class="fas fa-key mr-2"></i>Kalit so'zlar</h4>
+                            <p class="text-amber-900">yesterday, last week/month/year, ago, in 2020, when I was young</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800"><span class="text-success font-semibold">✅</span> Kecha kino ko'rdim</p>
+                                <p class="text-primary font-medium mt-1">I <strong>watched</strong> a movie yesterday.</p>
+                            </div>
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800"><span class="text-success font-semibold">✅</span> U 2 yil oldin Parijga bordi</p>
+                                <p class="text-primary font-medium mt-1">She <strong>went</strong> to Paris 2 years ago.</p>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-lightbulb mr-2"></i>Istisnolar (V2)</h4>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <p>go → <strong>went</strong></p>
+                                <p>see → <strong>saw</strong></p>
+                                <p>eat → <strong>ate</strong></p>
+                                <p>take → <strong>took</strong></p>
+                                <p>write → <strong>wrote</strong></p>
+                                <p>come → <strong>came</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'present-perfect': {
+                title: '1.6 Present Perfect ⭐',
+                icon: 'fa-star',
+                section: 'TENSES',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-star text-2xl"></i>
+                                <h3 class="text-xl font-bold">Formula</h3>
+                            </div>
+                            <p class="text-lg font-mono">have/has + V3 (3-shakl)</p>
+                            <p class="text-white/80 mt-2">Salbiy: haven't/hasn't + V3</p>
+                        </div>
+
+                        <div class="keyword-tag p-4 rounded-xl">
+                            <h4 class="font-bold text-amber-800 mb-2"><i class="fas fa-key mr-2"></i>Kalit so'zlar (YODLA!)</h4>
+                            <div class="grid grid-cols-2 gap-2 text-amber-900">
+                                <span>✓ already (allaqachon)</span>
+                                <span>✓ just (hozirgina)</span>
+                                <span>✓ yet (hali - salbiy/savol)</span>
+                                <span>✓ ever (hech qachon)</span>
+                                <span>✓ never (hech qachon)</span>
+                                <span>✓ for (davomiylik)</span>
+                                <span>✓ since (boshlanish)</span>
+                                <span>✓ recently (yaqinda)</span>
+                            </div>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Ma'no</h4>
+                            <p class="text-gray-700">Ish <strong>tugagan</strong>, natijasi <strong>hozir ko'rinadi</strong> yoki tajriba ifodalanadi</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">already</span>
+                                </div>
+                                <p class="text-gray-800">Men bu kitobni o'qidim</p>
+                                <p class="text-primary font-medium mt-1">I <strong>have already read</strong> this book.</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">never</span>
+                                </div>
+                                <p class="text-gray-800">U hech qachon Parijga bormagan</p>
+                                <p class="text-primary font-medium mt-1">He <strong>has never been</strong> to Paris.</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-secondary/10 text-secondary text-xs rounded-full">for</span>
+                                </div>
+                                <p class="text-gray-800">Biz 3 yildan beri shu yerda ishlaymiz</p>
+                                <p class="text-primary font-medium mt-1">We <strong>have worked</strong> here <strong>for</strong> 3 years.</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">since</span>
+                                </div>
+                                <p class="text-gray-800">Men 2020-yildan beri bu yerda</p>
+                                <p class="text-primary font-medium mt-1">I <strong>have been</strong> here <strong>since</strong> 2020.</p>
+                            </div>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>⚠️ XATOLAR</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-red-800"><span class="text-red-600 font-bold">❌</span> I have <strong>see</strong> this movie.</p>
+                                    <p class="text-green-800"><span class="text-green-600 font-bold">✅</span> I have <strong>seen</strong> this movie. (V3!)</p>
+                                </div>
+                                <div>
+                                    <p class="text-red-800"><span class="text-red-600 font-bold">❌</span> I <strong>saw</strong> this movie yesterday. (already bilan)</p>
+                                    <p class="text-green-800"><span class="text-green-600 font-bold">✅</span> I <strong>have seen</strong> this movie already.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-2">🔥 Imtihon formulasi</h4>
+                            <p class="text-gray-700">Savolda <strong>for</strong>, <strong>since</strong>, <strong>already</strong>, <strong>just</strong>, <strong>never</strong>, <strong>yet</strong> ko'rsang → <strong>have/has + V3</strong></p>
+                        </div>
+                    </div>
+                `
+            },
+            'present-perfect-continuous': {
+                title: '1.7 Present Perfect Continuous ⭐',
+                icon: 'fa-spinner',
+                section: 'TENSES',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-spinner text-2xl"></i>
+                                <h3 class="text-xl font-bold">Formula</h3>
+                            </div>
+                            <p class="text-lg font-mono">have/has + been + V-ing</p>
+                        </div>
+
+                        <div class="keyword-tag p-4 rounded-xl">
+                            <h4 class="font-bold text-amber-800 mb-2"><i class="fas fa-key mr-2"></i>Kalit so'zlar</h4>
+                            <p class="text-amber-900">for, since, all day, how long, lately, recently</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Ma'no</h4>
+                            <p class="text-gray-700">Ish <strong>boshlangan</strong>, <strong>hali ham davom etyapti</strong> yoki yangi tugadi. <strong>Jarayon</strong> muhim!</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Men 2 soatdan beri kutayapman</p>
+                                <p class="text-primary font-medium mt-1">I <strong>have been waiting</strong> for 2 hours.</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">U yig'layapti (ko'zi qizargan - natija ko'rinib turibdi)</p>
+                                <p class="text-primary font-medium mt-1">She <strong>has been crying</strong>. Her eyes are red.</p>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-bolt mr-2"></i>Present Perfect vs Present Perfect Continuous</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-primary font-semibold">Present Perfect</p>
+                                    <p class="text-gray-600 text-sm">Natija muhim</p>
+                                    <p class="text-gray-800 mt-1">I have written 3 letters.</p>
+                                    <p class="text-xs text-gray-500">(3 ta yozdim - natija)</p>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-secondary font-semibold">Perfect Continuous</p>
+                                    <p class="text-gray-600 text-sm">Jarayon muhim</p>
+                                    <p class="text-gray-800 mt-1">I have been writing for 2 hours.</p>
+                                    <p class="text-xs text-gray-500">(2 soatdan beri yozayapman - jarayon)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>⚠️ STATIVE VERBS</h4>
+                            <p class="text-gray-700">Bu fe'llar <strong>Continuous</strong> shaklida <strong>KELMAYDI</strong>:</p>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded">know (bilmoq)</span>
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded">love (sevmoq)</span>
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded">believe (ishonmoq)</span>
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded">want (xohlamoq)</span>
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded">have (ega bo'lmoq)</span>
+                            </div>
+                            <p class="text-red-800 mt-2"><span class="text-red-600 font-bold">❌</span> I have been knowing him. → <span class="text-green-600 font-bold">✅</span> I have known him.</p>
+                        </div>
+                    </div>
+                `
+            },
+            'past-perfect': {
+                title: '1.8 Past Perfect ⭐',
+                icon: 'fa-history',
+                section: 'TENSES',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-history text-2xl"></i>
+                                <h3 class="text-xl font-bold">Formula</h3>
+                            </div>
+                            <p class="text-lg font-mono">had + V3 (3-shakl)</p>
+                        </div>
+
+                        <div class="keyword-tag p-4 rounded-xl">
+                            <h4 class="font-bold text-amber-800 mb-2"><i class="fas fa-key mr-2"></i>Kalit so'zlar</h4>
+                            <p class="text-amber-900">by the time, before, after, when, already</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Ma'no</h4>
+                            <p class="text-gray-700">O'tmishdagi ikki voqeadan <strong>ENG BIRINCHISI</strong></p>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-2">🔥 Pattern (Namuna)</h4>
+                            <div class="font-mono text-center py-3 bg-white rounded-lg">
+                                <p class="text-primary"><strong>Past Perfect</strong> (birinchi ish)</p>
+                                <p class="text-gray-400">+</p>
+                                <p class="text-secondary"><strong>Past Simple</strong> (ikkinchi ish)</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">by the time</span>
+                                </div>
+                                <p class="text-gray-800">Men yetib borgunimcha, u ketgan edi</p>
+                                <p class="text-primary font-medium mt-1">By the time I arrived, he <strong>had already left</strong>.</p>
+                                <p class="text-xs text-gray-500 mt-1">U ketdi → Men yetib keldim (ketish birinchi)</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-secondary/10 text-secondary text-xs rounded-full">when</span>
+                                </div>
+                                <p class="text-gray-800">U kechki ovqatni yeb bo'lgan edi, men qo'ng'iroq qilganimda</p>
+                                <p class="text-primary font-medium mt-1">He <strong>had already had</strong> dinner when I called.</p>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-lightbulb mr-2"></i>Taqiba qo'shilish</h4>
+                            <p class="text-gray-700">Eng ko'p ishlatiladigan: <strong>by the time</strong></p>
+                            <p class="text-gray-600 text-sm mt-1">"-guncha, -gunimcha" degan ma'no beradi</p>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>⚠️ Farq</h4>
+                            <div class="space-y-2">
+                                <p class="text-gray-700"><strong>Before/After</strong> bilan Past Perfect majburiy emas:</p>
+                                <p class="text-gray-800">After he (had) left, I came. ✓</p>
+                                <p class="text-gray-500 text-sm">Agar zamon aniq bo'lsa, Past Simple ham bo'laveradi</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+
+            // SECTION 2: MODALS
+            'basic-modals': {
+                title: '2.1 Basic Modals',
+                icon: 'fa-magic',
+                section: 'MODALS',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-magic text-2xl"></i>
+                                <h3 class="text-xl font-bold">Formula</h3>
+                            </div>
+                            <p class="text-lg font-mono">Modal + V1 (asosiy shakl)</p>
+                            <p class="text-white/80 mt-2">Hech qachon "to" KELMAYDI!</p>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full bg-white rounded-xl shadow-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Modal</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Ma'no</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Misol</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3"><span class="font-bold text-primary">can</span></td>
+                                        <td class="px-4 py-3 text-sm">ola olmoq (hozir)</td>
+                                        <td class="px-4 py-3 text-sm font-mono">I <strong>can</strong> swim</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3"><span class="font-bold text-primary">could</span></td>
+                                        <td class="px-4 py-3 text-sm">ola olmoq (o'tgan) / muloyim so'rov</td>
+                                        <td class="px-4 py-3 text-sm font-mono">I <strong>could</strong> run fast when young</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3"><span class="font-bold text-secondary">may</span></td>
+                                        <td class="px-4 py-3 text-sm">ehtimol / ruxsat</td>
+                                        <td class="px-4 py-3 text-sm font-mono">It <strong>may</strong> rain</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3"><span class="font-bold text-secondary">might</span></td>
+                                        <td class="px-4 py-3 text-sm">kuchsiz ehtimol</td>
+                                        <td class="px-4 py-3 text-sm font-mono">He <strong>might</strong> come</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3"><span class="font-bold text-danger">must</span></td>
+                                        <td class="px-4 py-3 text-sm">kuchli majburiyat / ishonchli taxmin</td>
+                                        <td class="px-4 py-3 text-sm font-mono">You <strong>must</strong> study / He <strong>must</strong> be home</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3"><span class="font-bold text-danger">mustn't</span></td>
+                                        <td class="px-4 py-3 text-sm">taqiq</td>
+                                        <td class="px-4 py-3 text-sm font-mono">You <strong>mustn't</strong> smoke here</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3"><span class="font-bold text-success">should</span></td>
+                                        <td class="px-4 py-3 text-sm">maslahat</td>
+                                        <td class="px-4 py-3 text-sm font-mono">You <strong>should</strong> rest</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3"><span class="font-bold text-accent">would</span></td>
+                                        <td class="px-4 py-3 text-sm">taklif / o'tgan odat</td>
+                                        <td class="px-4 py-3 text-sm font-mono"><strong>Would</strong> you like tea?</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>⚠️ MUHIM: "to" ISHLATILMAYDI!</h4>
+                            <div class="space-y-2">
+                                <p class="text-red-800"><span class="text-red-600 font-bold">❌</span> can <strong>to</strong> go</p>
+                                <p class="text-red-800"><span class="text-red-600 font-bold">❌</span> must <strong>to</strong> study</p>
+                                <p class="text-green-800"><span class="text-green-600 font-bold">✅</span> can go</p>
+                                <p class="text-green-800"><span class="text-green-600 font-bold">✅</span> must study</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'modal-perfects': {
+                title: '2.3 Modal Perfects ⭐⭐⭐',
+                icon: 'fa-gem',
+                section: 'MODALS',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-danger to-warning p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-star text-2xl"></i>
+                                <i class="fas fa-star text-2xl"></i>
+                                <i class="fas fa-star text-2xl"></i>
+                                <h3 class="text-xl font-bold">IMTIHONDA KO'P KELADI!</h3>
+                            </div>
+                            <p class="text-lg font-mono">Modal + have + V3</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-danger">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="px-3 py-1 bg-danger/10 text-danger rounded-full font-bold text-sm">must have + V3</span>
+                                    <span class="text-sm text-gray-500">90-100% ishonch</span>
+                                </div>
+                                <p class="text-gray-700 mb-2">"albatta shunday bo'lgan"</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-600 text-sm">U ketgan bo'lsa kerak (men 90% ishonchliman)</p>
+                                    <p class="text-primary font-medium">He <strong>must have left</strong>.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full font-bold text-sm">might/could have + V3</span>
+                                    <span class="text-sm text-gray-500">50% ehtimol</span>
+                                </div>
+                                <p class="text-gray-700 mb-2">"balki shunday bo'lgan"</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-600 text-sm">U kelgan bo'lishi mumkin</p>
+                                    <p class="text-primary font-medium">He <strong>might have come</strong>.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-warning">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="px-3 py-1 bg-warning/10 text-warning rounded-full font-bold text-sm">should have + V3</span>
+                                </div>
+                                <p class="text-gray-700 mb-2">"qilish kerak edi (lekin qilmadi)" — <strong>afsun</strong></p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-600 text-sm">Sen o'qishing kerak edi</p>
+                                    <p class="text-primary font-medium">You <strong>should have studied</strong>.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-danger">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="px-3 py-1 bg-danger/10 text-danger rounded-full font-bold text-sm">shouldn't have + V3</span>
+                                </div>
+                                <p class="text-gray-700 mb-2">"qilmaslik kerak edi (lekin qildi)"</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-600 text-sm">Sen shuncha pul sarflamasliging kerak edi</p>
+                                    <p class="text-primary font-medium">You <strong>shouldn't have spent</strong> so much money.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-accent">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="px-3 py-1 bg-accent/10 text-accent rounded-full font-bold text-sm">needn't have + V3</span>
+                                </div>
+                                <p class="text-gray-700 mb-2">"bekor qilding (kerak emas edi)"</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-600 text-sm">Bekorga kelibsiz</p>
+                                    <p class="text-primary font-medium">You <strong>needn't have come</strong>.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="px-3 py-1 bg-primary/10 text-primary rounded-full font-bold text-sm">could have + V3</span>
+                                </div>
+                                <p class="text-gray-700 mb-2">"qila olardi edi (lekin qilmadi)"</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-600 text-sm">U yuta olardi edi</p>
+                                    <p class="text-primary font-medium">He <strong>could have won</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-2">🔥 Imtihon kaliti</h4>
+                            <p class="text-gray-700">Savolda <strong>"bo'lsa kerak"</strong> bo'lsa → <strong>must/might have V3</strong></p>
+                            <p class="text-gray-700">Savolda <strong>"kerak edi"</strong> bo'lsa → <strong>should have V3</strong></p>
+                            <p class="text-gray-700">Savolda <strong>"bekorga"</strong> bo'lsa → <strong>needn't have V3</strong></p>
+                        </div>
+                    </div>
+                `
+            },
+            'need-forms': {
+                title: "2.4 NEED: 4 ta holat ⭐",
+                icon: 'fa-clipboard-list',
+                section: 'MODALS',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-clipboard-list text-2xl"></i>
+                                <h3 class="text-xl font-bold">NEED shakllari</h3>
+                            </div>
+                            <p class="text-white/80">4 ta asosiy holat</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <h4 class="font-bold text-primary mb-2">1. need + noun (asosiy fe'l)</h4>
+                                <p class="text-gray-600 text-sm mb-2">Menga ... kerak</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Menga yordam kerak</p>
+                                    <p class="text-primary font-medium">I <strong>need</strong> help.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-2">2. need to + V1 (asosiy fe'l)</h4>
+                                <p class="text-gray-600 text-sm mb-2">Menga qilishim kerak</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Menga borishim kerak</p>
+                                    <p class="text-primary font-medium">I <strong>need to</strong> go.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-success">
+                                <h4 class="font-bold text-success mb-2">3. needn't + V1 (modal - rasmiy)</h4>
+                                <p class="text-gray-600 text-sm mb-2">Shart emas (hozir)</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Sen borishing shart emas</p>
+                                    <p class="text-primary font-medium">You <strong>needn't</strong> go.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-warning">
+                                <h4 class="font-bold text-warning mb-2">4. didn't need to + V1 (o'tgan zamon)</h4>
+                                <p class="text-gray-600 text-sm mb-2">Kerak emas edi (bormadim)</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Menga borishim shart emas edi (va bormadim)</p>
+                                    <p class="text-primary font-medium">I <strong>didn't need to</strong> go.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-danger">
+                                <h4 class="font-bold text-danger mb-2">5. needn't have + V3 (bekor qilingan ish)</h4>
+                                <p class="text-gray-600 text-sm mb-2">Bordim, lekin kerak emas edi</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Bekorga keldim</p>
+                                    <p class="text-primary font-medium">I <strong>needn't have come</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>⚠️ ASOSIY FARQ (Imtihonda ko'p keladi!)</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-warning font-semibold">didn't need to go</p>
+                                    <p class="text-gray-600 text-sm">Kerak emas edi, shuning uchun <strong>bormadim</strong></p>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-danger font-semibold">needn't have gone</p>
+                                    <p class="text-gray-600 text-sm"><strong>Bordim</strong>, lekin kerak emas ekan (bekor)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+
+            // SECTION 3: COMPLEX STRUCTURES
+            'inversion': {
+                title: '3.1 Inversion ⭐⭐⭐',
+                icon: 'fa-exchange-alt',
+                section: 'COMPLEX',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-danger to-warning p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-star text-2xl"></i>
+                                <i class="fas fa-star text-2xl"></i>
+                                <i class="fas fa-star text-2xl"></i>
+                                <h3 class="text-xl font-bold">MUHIM MAVZU!</h3>
+                            </div>
+                            <p class="text-lg font-mono">Negative word + auxiliary + subject + V1</p>
+                        </div>
+
+                        <div class="keyword-tag p-4 rounded-xl">
+                            <h4 class="font-bold text-amber-800 mb-2"><i class="fas fa-key mr-2"></i>Kalit so'zlar (Gap boshida!)</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-amber-100 rounded">Never (hech qachon)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">Rarely (kamdan-kam)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">Seldom (kam)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">Hardly (zortib)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">Nowhere (hech qayerda)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">Not only (nafaqat)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">Only after (faqat undan keyin)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">No sooner (borgach)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">Under no circumstances</span>
+                            </div>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Qoida</h4>
+                            <p class="text-gray-700">Gap <strong>salbiy yoki cheklash</strong> so'z bilan boshlanganda, <strong>yordamchi fe'l</strong> subjectdan oldin keladi</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            
+                            <div class="bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">Never</span>
+                                </div>
+                                <p class="text-gray-800">Hech qachon kech qolmayman</p>
+                                <p class="text-red-600"><span class="font-bold">❌</span> Never I will be late.</p>
+                                <p class="text-green-600"><span class="font-bold">✅</span> Never <strong>will I</strong> be late.</p>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-secondary/10 text-secondary text-xs rounded-full">Nowhere</span>
+                                </div>
+                                <p class="text-gray-800">Hech qayerda bunday ko'rmaganman</p>
+                                <p class="text-green-600"><span class="font-bold">✅</span> Nowhere <strong>have I</strong> seen such a thing.</p>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">Not only</span>
+                                </div>
+                                <p class="text-gray-800">Nafaqat u keldi, balki sovg'a ham keltirdi</p>
+                                <p class="text-green-600"><span class="font-bold">✅</span> Not only <strong>did</strong> he come, but he also brought a gift.</p>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-xl shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 bg-warning/10 text-warning text-xs rounded-full">Only after</span>
+                                </div>
+                                <p class="text-gray-800">Faqat undan keyin tushundim</p>
+                                <p class="text-green-600"><span class="font-bold">✅</span> Only after that <strong>did</strong> I understand.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/10 to-secondary/10 p-5 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-bolt mr-2 text-warning"></i>No sooner... than / Hardly... when</h4>
+                            <p class="text-gray-700 mb-3">"Zahoti, ... borgach"</p>
+                            
+                            <div class="bg-white p-4 rounded-lg">
+                                <p class="text-gray-800">U yetib borgach zahoti yomg'ir boshlandi</p>
+                                <div class="mt-2 space-y-1 font-mono text-sm">
+                                    <p class="text-primary">No sooner <strong>had</strong> he arrived <strong>than</strong> it started raining.</p>
+                                    <p class="text-secondary">Hardly <strong>had</strong> he arrived <strong>when</strong> it started raining.</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">⚡ <strong>had</strong> doimo subjectdan oldin keladi!</p>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-lightbulb mr-2"></i>Yodlab olish formulasi</h4>
+                            <p class="text-gray-700">Salbiy so'z + <strong>auxiliary (yordamchi)</strong> + <strong>subject</strong> + V1</p>
+                            <p class="text-gray-500 text-sm mt-1">Auxiliary: will, have, has, did, had...</p>
+                        </div>
+                    </div>
+                `
+            },
+            'conditionals': {
+                title: '3.2 Conditionals',
+                icon: 'fa-code-branch',
+                section: 'COMPLEX',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-code-branch text-2xl"></i>
+                                <h3 class="text-xl font-bold">Conditionals (Shart gaplar)</h3>
+                            </div>
+                            <p class="text-white/80">If + shart, natija</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-primary">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-bold text-primary">Type 0 (Fact)</h4>
+                                    <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded">Haqiqat</span>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg font-mono text-sm mb-2">If + Present, Present</div>
+                                <p class="text-gray-700">Muzni qizdirsang, eriydi</p>
+                                <p class="text-primary font-medium">If you <strong>heat</strong> ice, it <strong>melts</strong>.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-success">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-bold text-success">Type 1 (Real Future)</h4>
+                                    <span class="text-xs bg-success/10 text-success px-2 py-1 rounded">Real kelajak</span>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg font-mono text-sm mb-2">If + Present, Will + V1</div>
+                                <p class="text-gray-700">Agar yomg'ir yog'sa, uyda qolaman</p>
+                                <p class="text-primary font-medium">If it <strong>rains</strong>, I <strong>will stay</strong> home.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-warning">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-bold text-warning">Type 2 (Unreal Present)</h4>
+                                    <span class="text-xs bg-warning/10 text-warning px-2 py-1 rounded">Xayoliy hozir</span>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg font-mono text-sm mb-2">If + Past, Would + V1</div>
+                                <p class="text-gray-700">Agar boy bo'lsam, mashina olardim</p>
+                                <p class="text-primary font-medium">If I <strong>were</strong> rich, I <strong>would buy</strong> a car.</p>
+                                <p class="text-red-600 text-sm mt-1">⚠️ "I were" — barcha shaxslar uchun!</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-danger">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-bold text-danger">Type 3 (Unreal Past)</h4>
+                                    <span class="text-xs bg-danger/10 text-danger px-2 py-1 rounded">Xayoliy o'tgan</span>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg font-mono text-sm mb-2">If + Past Perfect, Would have + V3</div>
+                                <p class="text-gray-700">Agar o'qiganimda, imtihondan o'tardim</p>
+                                <p class="text-primary font-medium">If I <strong>had studied</strong>, I <strong>would have passed</strong> the exam.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-secondary">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-bold text-secondary">Mixed Conditional</h4>
+                                    <span class="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded">Aralash</span>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg font-mono text-sm mb-2">If + Past Perfect, Would + V1</div>
+                                <p class="text-gray-700">Agar o'qiganimda (o'tgan), hozir bilardim (hozirgi)</p>
+                                <p class="text-primary font-medium">If I <strong>had studied</strong>, I <strong>would know</strong> the answer now.</p>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-lightbulb mr-2"></i>Unless (= if not)</h4>
+                            <div class="space-y-2">
+                                <p class="text-gray-700">Unless you study, you will fail.</p>
+                                <p class="text-gray-500 text-sm">= If you don't study, you will fail.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'passive-voice': {
+                title: '3.3 Passive Voice',
+                icon: 'fa-sync-alt',
+                section: 'COMPLEX',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-sync-alt text-2xl"></i>
+                                <h3 class="text-xl font-bold">Passive Voice (Majhul nida)</h3>
+                            </div>
+                            <p class="text-lg font-mono">be (zamoniga qarab) + V3 (+ by someone)</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Qachon ishlatiladi?</h4>
+                            <p class="text-gray-700">Kim qilgani muhim emas, ishning o'zi muhim bo'lganda</p>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full bg-white rounded-xl shadow-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Zamon</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Formula</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Misol</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-medium text-primary">Present Simple</td>
+                                        <td class="px-4 py-3 font-mono text-sm">am/is/are + V3</td>
+                                        <td class="px-4 py-3 text-sm">The room <strong>is cleaned</strong> every day.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-medium text-secondary">Past Simple</td>
+                                        <td class="px-4 py-3 font-mono text-sm">was/were + V3</td>
+                                        <td class="px-4 py-3 text-sm">The window <strong>was broken</strong> yesterday.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-medium text-success">Present Perfect</td>
+                                        <td class="px-4 py-3 font-mono text-sm">has/have been + V3</td>
+                                        <td class="px-4 py-3 text-sm">The work <strong>has been done</strong>.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-medium text-warning">Future Simple</td>
+                                        <td class="px-4 py-3 font-mono text-sm">will be + V3</td>
+                                        <td class="px-4 py-3 text-sm">He <strong>will be called</strong> tomorrow.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-medium text-danger">With Modals</td>
+                                        <td class="px-4 py-3 font-mono text-sm">modal + be + V3</td>
+                                        <td class="px-4 py-3 text-sm">This <strong>must be done</strong>.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                            <h4 class="font-bold text-gray-800 mb-2">Modal bilan</h4>
+                            <p class="text-gray-700">Bu bajarilishi kerak</p>
+                            <p class="text-primary font-medium">This <strong>must be done</strong>.</p>
+                            <p class="text-gray-700 mt-2">Bu qilinishi mumkin</p>
+                            <p class="text-primary font-medium">This <strong>can be done</strong>.</p>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>⚠️ Ogohlantirish</h4>
+                            <p class="text-gray-700">Faqat <strong>o'tkaziladigan fe'llar</strong> (transitive) Passive-da ishlatiladi!</p>
+                            <p class="text-gray-500 text-sm mt-1">Intransitive: sleep, happen, arrive, die...</p>
+                        </div>
+                    </div>
+                `
+            },
+            'reported-speech': {
+                title: '3.4 Reported Speech',
+                icon: 'fa-comments',
+                section: 'COMPLEX',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-comments text-2xl"></i>
+                                <h3 class="text-xl font-bold">Reported Speech (Bilvosita nutq)</h3>
+                            </div>
+                            <p class="text-white/80">"... dedi" → He said (that)...</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Asosiy qoida</h4>
+                            <p class="text-gray-700">Zamon bir <strong>qadam orqaga siljiydi</strong> (Backshift)</p>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full bg-white rounded-xl shadow-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Direct</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">→ Reported</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-mono text-sm">"I <strong>like</strong> it"</td>
+                                        <td class="px-4 py-3 text-sm">He said he <strong>liked</strong> it.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-mono text-sm">"I <strong>am working</strong>"</td>
+                                        <td class="px-4 py-3 text-sm">He said he <strong>was working</strong>.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-mono text-sm">"I <strong>have finished</strong>"</td>
+                                        <td class="px-4 py-3 text-sm">He said he <strong>had finished</strong>.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-mono text-sm">"I <strong>saw</strong> him"</td>
+                                        <td class="px-4 py-3 text-sm">He said he <strong>had seen</strong> him.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-mono text-sm">"I <strong>will</strong> go"</td>
+                                        <td class="px-4 py-3 text-sm">He said he <strong>would</strong> go.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-mono text-sm">"I <strong>can</strong> swim"</td>
+                                        <td class="px-4 py-3 text-sm">He said he <strong>could</strong> swim.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-clock mr-2"></i>Vaqt so'zlari o'zgaradi</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                                <p>now → <strong>then</strong></p>
+                                <p>today → <strong>that day</strong></p>
+                                <p>tomorrow → <strong>the next day</strong></p>
+                                <p>yesterday → <strong>the day before</strong></p>
+                                <p>here → <strong>there</strong></p>
+                                <p>this → <strong>that</strong></p>
+                            </div>
+                        </div>
+
+                        <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                            <h4 class="font-bold text-gray-800 mb-2"><i class="fas fa-exclamation-circle mr-2 text-danger"></i>Buyruq gaplar</h4>
+                            <p class="text-gray-600 mb-2">told/asked + smb + <strong>TO</strong> + V1</p>
+                            <div class="space-y-2">
+                                <p class="text-gray-700">"O'tir" dedi</p>
+                                <p class="text-primary">He <strong>told</strong> me <strong>to sit</strong> down.</p>
+                                <p class="text-gray-700">"Borma" dedi</p>
+                                <p class="text-primary">He <strong>asked</strong> me <strong>not to go</strong>.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'causative': {
+                title: '3.5 Causative (have/get)',
+                icon: 'fa-hands-helping',
+                section: 'COMPLEX',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-hands-helping text-2xl"></i>
+                                <h3 class="text-xl font-bold">Causative (Birovga qildirmoq)</h3>
+                            </div>
+                            <div class="space-y-1 text-lg font-mono">
+                                <p>have + object + V3 (rasmiy)</p>
+                                <p>get + object + TO + V3 (norasmiy)</p>
+                            </div>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Ma'no</h4>
+                            <p class="text-gray-700">O'zing qilmay, <strong>birovga qildirish</strong></p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Men sochimni oldirdim (sartaroshga)</p>
+                                <p class="text-primary font-medium mt-1">I <strong>had my hair cut</strong>.</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">U mashinasini yuvdirdi</p>
+                                <p class="text-primary font-medium mt-1">He <strong>got his car washed</strong>.</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Biz uyimizni bo'yatmoqchimiz</p>
+                                <p class="text-primary font-medium mt-1">We are going to <strong>have our house painted</strong>.</p>
+                            </div>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>⚠️ Fe'l DOIM V3!</h4>
+                            <div class="space-y-2">
+                                <p class="text-gray-700">have my hair <strong>cut</strong> (cut-cut-cut)</p>
+                                <p class="text-gray-700">got his car <strong>washed</strong></p>
+                                <p class="text-gray-700">have the house <strong>painted</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+
+            // SECTION 4: PARTICIPLES & GERUNDS
+            'present-participle': {
+                title: '4.1 Present Participle (V-ing)',
+                icon: 'fa-running',
+                section: 'PARTICIPLES',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-running text-2xl"></i>
+                                <h3 class="text-xl font-bold">Present Participle</h3>
+                            </div>
+                            <p class="text-lg font-mono">V-ing (sifat sifatida)</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Ma'no</h4>
+                            <p class="text-gray-700">"<strong>... qilayotgan</strong>" — faol ma'no</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Yugurayotgan bola</p>
+                                <p class="text-primary font-medium mt-1">The <strong>running</strong> boy</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Meni hayratga solgan yangilik</p>
+                                <p class="text-primary font-medium mt-1">The <strong>surprising</strong> news</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Ko'chada yugurayotgan, u...</p>
+                                <p class="text-primary font-medium mt-1"><strong>Running</strong> in the street, he...</p>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-lightbulb mr-2"></i>-ed vs -ing sifatlar</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-primary font-semibold">surprising</p>
+                                    <p class="text-gray-600 text-sm">hayratlanarli (narsa)</p>
+                                    <p class="text-gray-700 mt-1">The news is surprising.</p>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-secondary font-semibold">surprised</p>
+                                    <p class="text-gray-600 text-sm">hayratlangan (inson)</p>
+                                    <p class="text-gray-700 mt-1">I am surprised.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'past-participle': {
+                title: '4.2 Past Participle (V3)',
+                icon: 'fa-check-double',
+                section: 'PARTICIPLES',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-check-double text-2xl"></i>
+                                <h3 class="text-xl font-bold">Past Participle</h3>
+                            </div>
+                            <p class="text-lg font-mono">V3 (sifat sifatida)</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Ma'no</h4>
+                            <p class="text-gray-700">"<strong>... qilingan</strong>" — passiv ma'no</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Yozilgan kitob</p>
+                                <p class="text-primary font-medium mt-1">The <strong>written</strong> book</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Sindirilgan deraza</p>
+                                <p class="text-primary font-medium mt-1">The <strong>broken</strong> window</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">O'qituvchi tomonidan tanqid qilingan, u...</p>
+                                <p class="text-primary font-medium mt-1"><strong>Criticized</strong> by the teacher, he...</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'gerund-infinitive': {
+                title: '4.4 Gerund vs Infinitive ⭐',
+                icon: 'fa-random',
+                section: 'PARTICIPLES',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-random text-2xl"></i>
+                                <h3 class="text-xl font-bold">Gerund vs Infinitive</h3>
+                            </div>
+                            <p class="text-lg font-mono">V-ing vs to V1</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <h4 class="font-bold text-primary mb-3">Faqat V-ing dan keyin:</h4>
+                                <div class="flex flex-wrap gap-1 text-sm">
+                                    <span class="px-2 py-1 bg-primary/10 rounded">enjoy</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">mind</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">suggest</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">avoid</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">finish</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">practice</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">miss</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">consider</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">imagine</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">deny</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">admit</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">risk</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">keep</span>
+                                    <span class="px-2 py-1 bg-primary/10 rounded">delay</span>
+                                </div>
+                                <div class="mt-3 bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Men suzishni yaxshi ko'raman</p>
+                                    <p class="text-primary font-medium">I enjoy <strong>swimming</strong>.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-3">Faqat TO + V1 dan keyin:</h4>
+                                <div class="flex flex-wrap gap-1 text-sm">
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">want</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">decide</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">hope</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">plan</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">promise</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">agree</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">refuse</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">offer</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">afford</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">manage</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">fail</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">learn</span>
+                                    <span class="px-2 py-1 bg-secondary/10 rounded">pretend</span>
+                                </div>
+                                <div class="mt-3 bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Men borishga qaror qildim</p>
+                                    <p class="text-primary font-medium">I decided <strong>to go</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-warning/10 to-danger/10 p-5 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-exclamation-circle mr-2 text-warning"></i>Ma'no farq qiladiganlar</h4>
+                            
+                            <div class="grid grid-cols-1 gap-3">
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="font-semibold text-primary">stop smoking</p>
+                                    <p class="text-gray-600 text-sm">chekishni tashladi (tamom)</p>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="font-semibold text-secondary">stop to smoke</p>
+                                    <p class="text-gray-600 text-sm">chekish uchun to'xtadi (maqsad)</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-3 mt-3">
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="font-semibold text-primary">remember doing</p>
+                                    <p class="text-gray-600 text-sm">qilganini eslayapti (o'tgan)</p>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="font-semibold text-secondary">remember to do</p>
+                                    <p class="text-gray-600 text-sm">qilishni eslab qoldi (kelajak)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-info-circle mr-2"></i>Farq yo'q</h4>
+                            <p class="text-gray-700">like / love / hate / start / begin + V-ing yoki to V1</p>
+                            <p class="text-gray-500 text-sm">I like swimming. = I like to swim.</p>
+                        </div>
+                    </div>
+                `
+            },
+
+            // SECTION 5: QUESTIONS
+            'tag-questions': {
+                title: '5.1 Tag Questions ⭐⭐⭐',
+                icon: 'fa-question-circle',
+                section: 'QUESTIONS',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-danger to-warning p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-star text-2xl"></i>
+                                <i class="fas fa-star text-2xl"></i>
+                                <i class="fas fa-star text-2xl"></i>
+                                <h3 class="text-xl font-bold">IMTIHONDA KO'P KELADI!</h3>
+                            </div>
+                            <p class="text-lg font-mono">Gap ijobiy → tag salbiy | Gap salbiy → tag ijobiy</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Asosiy qoida</h4>
+                            <p class="text-gray-700">Gapning <strong>zamoni</strong> va <strong>subject</strong> tagga o'tadi</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Asosiy misollar</h4>
+                            
+                            <div class="bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">You are a student, ...?</p>
+                                <p class="text-green-600 font-medium">You are a student, <strong>aren't you</strong>?</p>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">She doesn't like tea, ...?</p>
+                                <p class="text-green-600 font-medium">She doesn't like tea, <strong>does she</strong>?</p>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">They have come, ...?</p>
+                                <p class="text-green-600 font-medium">They have come, <strong>haven't they</strong>?</p>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">He will come, ...?</p>
+                                <p class="text-green-600 font-medium">He will come, <strong>won't he</strong>?</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/10 to-secondary/10 p-5 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-exclamation-triangle mr-2 text-danger"></i>ISTISNOLAR (Yodlab ol!)</h4>
+                            
+                            <div class="space-y-3">
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-gray-800">Let's go, ...?</p>
+                                    <p class="text-primary font-medium">Let's go, <strong>shall we</strong>?</p>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-gray-800">I am right, ...?</p>
+                                    <p class="text-primary font-medium">I am right, <strong>aren't I</strong>? (NOT: amn't I)</p>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-gray-800">Open the door, ...? (imperative)</p>
+                                    <p class="text-primary font-medium">Open the door, <strong>will you</strong>? / <strong>won't you</strong>?</p>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-gray-800">There is a problem, ...?</p>
+                                    <p class="text-primary font-medium">There is a problem, <strong>isn't there</strong>?</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>Negativ subjectlar</h4>
+                            <p class="text-gray-700 mb-2">Nobody/No one/Nothing → <strong>they/it</strong> + ijobiy</p>
+                            <div class="space-y-2">
+                                <p class="text-gray-800">Nobody came, ...?</p>
+                                <p class="text-primary">Nobody came, <strong>did they</strong>?</p>
+                                <p class="text-gray-800">Nothing happened, ...?</p>
+                                <p class="text-primary">Nothing happened, <strong>did it</strong>?</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl shadow-sm">
+                            <h4 class="font-bold text-gray-800 mb-2">Modal bilan</h4>
+                            <div class="space-y-2">
+                                <p class="text-gray-800">You can swim, ...?</p>
+                                <p class="text-primary">You can swim, <strong>can't you</strong>?</p>
+                                <p class="text-gray-800">He must go, ...?</p>
+                                <p class="text-primary">He must go, <strong>mustn't he</strong>? (yoki <strong>doesn't he</strong>?)</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+
+            // SECTION 6: ARTICLES & PREPOSITIONS
+            'articles': {
+                title: '6.1 Articles (a/an/the/zero)',
+                icon: 'fa-language',
+                section: 'ARTICLES & PREPOSITIONS',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-language text-2xl"></i>
+                                <h3 class="text-xl font-bold">Articles (Artikl)</h3>
+                            </div>
+                            <p class="text-lg">a / an / the / zero (hech narsa)</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <h4 class="font-bold text-primary mb-3">A / AN</h4>
+                                <p class="text-gray-600 mb-3">Noaniq, bitta, birinchi marta</p>
+                                <div class="space-y-2">
+                                    <p class="text-gray-700">Kasb: He is <strong>a</strong> teacher.</p>
+                                    <p class="text-gray-700">Birinchi marta: I saw <strong>a</strong> dog.</p>
+                                    <p class="text-gray-700">Umumiy: <strong>A</strong> cat is a good pet.</p>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-2">an + unli (a, e, i, o, u): <strong>an</strong> apple</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-3">THE</h4>
+                                <p class="text-gray-600 mb-3">Aniq, ma'lum</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                    <p>• Oldin eslatilgan</p>
+                                    <p>• Yagona: <strong>the</strong> sun</p>
+                                    <p>• Superlative: <strong>the</strong> best</p>
+                                    <p>• Tartib sonlar: <strong>the</strong> first</p>
+                                    <p>• Musiqa: play <strong>the</strong> piano</p>
+                                    <p>• Mamlakatlar: <strong>the</strong> USA</p>
+                                    <p>• Daryo: <strong>the</strong> Nile</p>
+                                    <p>• Ocean: <strong>the</strong> Pacific</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-success">
+                                <h4 class="font-bold text-success mb-3">ZERO ARTICLE (∅)</h4>
+                                <p class="text-gray-600 mb-3">Hech narsa yo'q</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                    <p>• Ismlar: Oybek, Dilsoz</p>
+                                    <p>• Mamlakatlar: Uzbekistan</p>
+                                    <p>• Shahar: Tashkent</p>
+                                    <p>• Til: English</p>
+                                    <p>• Sport: football</p>
+                                    <p>• Ovqat: I love coffee.</p>
+                                    <p>• Maktab: go to school</p>
+                                    <p>• Ko'cha: Broadway</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-lightbulb mr-2"></i>Muhim farq</h4>
+                            <div class="space-y-2">
+                                <p class="text-gray-700">go to <strong>the</strong> school (bino)</p>
+                                <p class="text-gray-700">go to school (ta'lim olish)</p>
+                                <p class="text-gray-500 text-sm">in <strong>the</strong> hospital (bino sifatida)</p>
+                                <p class="text-gray-500 text-sm">in hospital (bemor sifatida)</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'prepositions': {
+                title: '6.2-6.4 Prepositions',
+                icon: 'fa-map-marker-alt',
+                section: 'ARTICLES & PREPOSITIONS',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-map-marker-alt text-2xl"></i>
+                                <h3 class="text-xl font-bold">Prepositions</h3>
+                            </div>
+                            <p class="text-lg">in / on / at / for / since / by...</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-primary">
+                                <h4 class="font-bold text-primary mb-3">JOY (Place)</h4>
+                                <div class="space-y-3">
+                                    <div class="bg-primary/5 p-3 rounded-lg">
+                                        <p class="font-semibold text-primary">IN — katta/ichida</p>
+                                        <p class="text-gray-700 text-sm">in Uzbekistan, in Tashkent, in the room</p>
+                                    </div>
+                                    <div class="bg-secondary/5 p-3 rounded-lg">
+                                        <p class="font-semibold text-secondary">ON — sirtida</p>
+                                        <p class="text-gray-700 text-sm">on the table, on the wall, on the bus</p>
+                                    </div>
+                                    <div class="bg-accent/5 p-3 rounded-lg">
+                                        <p class="font-semibold text-accent">AT — aniq nuqta</p>
+                                        <p class="text-gray-700 text-sm">at the door, at school, at home, at CTC</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-3">VAQT (Time)</h4>
+                                <div class="space-y-3">
+                                    <div class="bg-primary/5 p-3 rounded-lg">
+                                        <p class="font-semibold text-primary">IN — uzoq</p>
+                                        <p class="text-gray-700 text-sm">in January, in 2024, in winter, in the morning</p>
+                                    </div>
+                                    <div class="bg-secondary/5 p-3 rounded-lg">
+                                        <p class="font-semibold text-secondary">ON — kun</p>
+                                        <p class="text-gray-700 text-sm">on Monday, on April 11th, on my birthday</p>
+                                    </div>
+                                    <div class="bg-accent/5 p-3 rounded-lg">
+                                        <p class="font-semibold text-accent">AT — aniq</p>
+                                        <p class="text-gray-700 text-sm">at 3 PM, at noon, at night, at Christmas</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-success">
+                                <h4 class="font-bold text-success mb-3">BOSHQA MUHIMLAR</h4>
+                                <div class="space-y-2 text-sm">
+                                    <p><strong>for</strong> + davomiylik: for 2 hours, for 3 years</p>
+                                    <p><strong>since</strong> + boshlanish: since Monday, since 2020</p>
+                                    <p><strong>during</strong> + davr: during the lesson, during summer</p>
+                                    <p><strong>by</strong> + muddat/tomonidan: by 5 PM, written by Oybek</p>
+                                    <p><strong>until</strong> + muddat: wait until Monday</p>
+                                    <p><strong>about/of</strong> + haqida: think about him, a cup of tea</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-clock mr-2"></i>For vs Since (⭐⭐⭐)</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-primary font-semibold">FOR + davomiylik</p>
+                                    <p class="text-gray-700">for 2 hours, for 3 days, for a week</p>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg">
+                                    <p class="text-secondary font-semibold">SINCE + boshlanish</p>
+                                    <p class="text-gray-700">since Monday, since 2020, since morning</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mt-2">I have lived here <strong>for</strong> 3 years.</p>
+                            <p class="text-gray-600">I have lived here <strong>since</strong> 2020.</p>
+                        </div>
+                    </div>
+                `
+            },
+
+            // SECTION 7: COMPARATIVES
+            'comparatives': {
+                title: '7.1-7.3 Comparatives & Superlatives',
+                icon: 'fa-balance-scale',
+                section: 'COMPARATIVES',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-balance-scale text-2xl"></i>
+                                <h3 class="text-xl font-bold">Comparatives & Superlatives</h3>
+                            </div>
+                            <p class="text-lg">-er / more... / the -est / the most...</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <h4 class="font-bold text-primary mb-3">Short adjectives (1-2 bo'g'in)</h4>
+                                <div class="space-y-2 font-mono">
+                                    <p>big → <strong>bigger</strong> → <strong>the biggest</strong></p>
+                                    <p>fast → <strong>faster</strong> → <strong>the fastest</strong></p>
+                                    <p>hot → <strong>hotter</strong> → <strong>the hottest</strong></p>
+                                    <p>easy → <strong>easier</strong> → <strong>the easiest</strong></p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-3">Long adjectives (3+ bo'g'in)</h4>
+                                <div class="space-y-2 font-mono">
+                                    <p>interesting → <strong>more interesting</strong></p>
+                                    <p>→ <strong>the most interesting</strong></p>
+                                    <p>experienced → <strong>more experienced</strong></p>
+                                    <p>→ <strong>the most experienced</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl shadow-sm">
+                            <h4 class="font-bold text-gray-800 mb-3">Istisnolar (Yodla!)</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 font-mono text-sm">
+                                <div class="bg-gray-50 p-2 rounded">good → <strong>better</strong> → <strong>the best</strong></div>
+                                <div class="bg-gray-50 p-2 rounded">bad → <strong>worse</strong> → <strong>the worst</strong></div>
+                                <div class="bg-gray-50 p-2 rounded">far → <strong>farther</strong> → <strong>the farthest</strong></div>
+                                <div class="bg-gray-50 p-2 rounded">little → <strong>less</strong> → <strong>the least</strong></div>
+                                <div class="bg-gray-50 p-2 rounded">much/many → <strong>more</strong> → <strong>the most</strong></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/10 to-secondary/10 p-5 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-star mr-2 text-warning"></i>Double Comparative ⭐</h4>
+                            <div class="bg-white p-3 rounded-lg font-mono text-center mb-3">
+                                The + comparative..., the + comparative...
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-gray-700">Qanchalik tez yursang, shunchalik tez yetasan</p>
+                                <p class="text-primary font-medium">The faster you walk, the sooner you arrive.</p>
+                                <p class="text-gray-700">Qanchalik ko'p o'qisang, shunchalik ko'p bilasan</p>
+                                <p class="text-primary font-medium">The more you study, the more you know.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+
+            // SECTION 8: CONNECTORS
+            'connectors': {
+                title: '8.1-8.4 Connectors',
+                icon: 'fa-link',
+                section: 'CONNECTORS',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-link text-2xl"></i>
+                                <h3 class="text-xl font-bold">Connectors (Aloqa so'zlari)</h3>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <h4 class="font-bold text-primary mb-3">Contrast (Qarama-qarshilik)</h4>
+                                <div class="space-y-2">
+                                    <p class="text-gray-700"><strong>Although/Even though</strong> + gap:</p>
+                                    <p class="text-gray-500 text-sm">Although it rained, we went out.</p>
+                                    <p class="text-gray-700 mt-2"><strong>Despite/In spite of</strong> + noun/V-ing:</p>
+                                    <p class="text-gray-500 text-sm">Despite the rain, we went out.</p>
+                                    <p class="text-gray-700 mt-2"><strong>However</strong> + ,:</p>
+                                    <p class="text-gray-500 text-sm">It was expensive. However, I bought it.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-3">Reason (Sabab)</h4>
+                                <div class="space-y-2">
+                                    <p class="text-gray-700"><strong>Because/Since/As</strong> + gap:</p>
+                                    <p class="text-gray-500 text-sm">I stayed home because it rained.</p>
+                                    <p class="text-gray-500 text-sm">Since it rained, I stayed home.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-success">
+                                <h4 class="font-bold text-success mb-3">Purpose (Maqsad)</h4>
+                                <div class="space-y-2">
+                                    <p class="text-gray-700"><strong>So that</strong> + can/could:</p>
+                                    <p class="text-gray-500 text-sm">I study hard so that I can pass.</p>
+                                    <p class="text-gray-700 mt-2"><strong>In order to</strong> + V1:</p>
+                                    <p class="text-gray-500 text-sm">I study hard in order to pass.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-warning">
+                                <h4 class="font-bold text-warning mb-3">Time Clauses ⭐</h4>
+                                <div class="space-y-2 text-sm">
+                                    <p><strong>When</strong> + Past Simple, Past Continuous:</p>
+                                    <p class="text-gray-500">When I entered, he was studying.</p>
+                                    <p class="mt-2"><strong>While</strong> + Past Continuous, Past Simple:</p>
+                                    <p class="text-gray-500">While he was studying, the phone rang.</p>
+                                    <p class="mt-2"><strong>Until</strong> + Present/Past:</p>
+                                    <p class="text-gray-500">Wait until he comes.</p>
+                                    <p class="mt-2"><strong>By the time</strong> + Past Simple, Past Perfect:</p>
+                                    <p class="text-gray-500">By the time I arrived, he had left.</p>
+                                    <p class="mt-2"><strong>As soon as</strong> = zahoti:</p>
+                                    <p class="text-gray-500">As soon as he came, we started.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>Although vs Despite</h4>
+                            <div class="space-y-2">
+                                <p class="text-red-800"><span class="text-red-600 font-bold">❌</span> Despite <strong>it rained</strong>...</p>
+                                <p class="text-green-800"><span class="text-green-600 font-bold">✅</span> Despite <strong>the rain</strong>...</p>
+                                <p class="text-green-800"><span class="text-green-600 font-bold">✅</span> Although <strong>it rained</strong>...</p>
+                            </div>
+                            <p class="text-gray-500 text-sm mt-2">Despite + <strong>noun</strong> | Although + <strong>gap</strong></p>
+                        </div>
+                    </div>
+                `
+            },
+
+            // SECTION 9: SPECIAL PATTERNS
+            'it-is-adj': {
+                title: '9.1 "It is adj of smb to V1" ⭐',
+                icon: 'fa-user-check',
+                section: 'SPECIAL PATTERNS',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-primary to-secondary p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-star text-2xl"></i>
+                                <h3 class="text-xl font-bold">"Dalolatidir" ifodalash</h3>
+                            </div>
+                            <p class="text-lg font-mono">It + is/was + adjective + of + somebody + to + V1</p>
+                        </div>
+
+                        <div class="rule-box p-4 rounded-xl border-l-4 border-success">
+                            <h4 class="font-bold text-success mb-2"><i class="fas fa-brain mr-2"></i>Ma'no</h4>
+                            <p class="text-gray-700">Insonning xarakteriga baho berish orqali <strong>"dalolat"</strong> ifodalash</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-800"><i class="fas fa-comment-dots mr-2 text-primary"></i>Misollar</h4>
+                            
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Dilsozning testlarda yiqilishi — uning ahmoqligini dalolatidir</p>
+                                <p class="text-primary font-medium mt-1">It was <strong>stupid of</strong> Dilsoz <strong>to fail</strong> the quizzes.</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Uning buni yechishi — aqlliligini ko'rsatadi</p>
+                                <p class="text-primary font-medium mt-1">It was <strong>clever of</strong> him <strong>to solve</strong> it.</p>
+                            </div>
+
+                            <div class="example-card bg-white p-4 rounded-xl shadow-sm">
+                                <p class="text-gray-800">Uning unutishi — e'tiborsizligining alomatidir</p>
+                                <p class="text-primary font-medium mt-1">It was <strong>careless of</strong> her <strong>to forget</strong>.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-2">Boshqa "dalolatidir" ifodalari</h4>
+                            <div class="space-y-2">
+                                <p class="text-gray-700"><strong>X is evidence of Y</strong></p>
+                                <p class="text-gray-500 text-sm">His failure is evidence of his lack of preparation.</p>
+                                <p class="text-gray-700 mt-2"><strong>X indicates/shows that...</strong></p>
+                                <p class="text-gray-500 text-sm">This indicates that he didn't study.</p>
+                                <p class="text-gray-700 mt-2"><strong>X is a sign of Y</strong></p>
+                                <p class="text-gray-500 text-sm">This is a sign of progress.</p>
+                            </div>
+                        </div>
+
+                        <div class="keyword-tag p-4 rounded-xl">
+                            <h4 class="font-bold text-amber-800 mb-2">Tez-tez ishlatiladigan sifatlar</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-amber-100 rounded">stupid (ahmoqona)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">clever (aqlli)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">careless (e'tiborsiz)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">kind (mehribon)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">nice (yaxshi)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">rude (qo'pol)</span>
+                                <span class="px-2 py-1 bg-amber-100 rounded">wise (donishmand)</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'used-to': {
+                title: '9.2 Used to / Be used to / Get used to ⭐',
+                icon: 'fa-history',
+                section: 'SPECIAL PATTERNS',
+                starred: true,
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-history text-2xl"></i>
+                                <h3 class="text-xl font-bold">USED TO / BE USED TO / GET USED TO</h3>
+                            </div>
+                            <p class="text-white/80">3 ta shakl — 3 ta farqli ma'no!</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <h4 class="font-bold text-primary mb-2">1. Used to + V1</h4>
+                                <p class="text-gray-600 mb-2">Avval qilar edi (endi yo'q)</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Avval chekar edim</p>
+                                    <p class="text-primary font-medium">I <strong>used to smoke</strong>.</p>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-2">Salbiy: didn't use to / did use to?</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-2">2. Be used to + V-ing/Noun</h4>
+                                <p class="text-gray-600 mb-2">Ko'nikkanman (holat)</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Ert turishga ko'nikkanman</p>
+                                    <p class="text-primary font-medium">I <strong>am used to waking</strong> up early.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-success">
+                                <h4 class="font-bold text-success mb-2">3. Get used to + V-ing/Noun</h4>
+                                <p class="text-gray-600 mb-2">Ko'nikyapman (jarayon)</p>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-gray-700">Haydashga ko'nikyapman</p>
+                                    <p class="text-primary font-medium">I <strong>am getting used to driving</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="danger-box p-4 rounded-xl border-l-4 border-danger">
+                            <h4 class="font-bold text-danger mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>⚠️ ENG KATTA XATO!</h4>
+                            <div class="space-y-2">
+                                <p class="text-red-800"><span class="text-red-600 font-bold">❌</span> I am used to <strong>wake</strong> up early.</p>
+                                <p class="text-green-800"><span class="text-green-600 font-bold">✅</span> I am used to <strong>waking</strong> up early.</p>
+                            </div>
+                            <p class="text-gray-600 mt-2">"to" dan keyin <strong>V-ing</strong> keladi (be/get used to da)!</p>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-2">Farqlar jadvali</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left">Shakl</th>
+                                            <th class="px-3 py-2 text-left">"to" dan keyin</th>
+                                            <th class="px-3 py-2 text-left">Ma'no</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bg-white">
+                                            <td class="px-3 py-2 font-medium text-primary">used to</td>
+                                            <td class="px-3 py-2">V1</td>
+                                            <td class="px-3 py-2">Avval qilar edi</td>
+                                        </tr>
+                                        <tr class="bg-gray-50">
+                                            <td class="px-3 py-2 font-medium text-secondary">be used to</td>
+                                            <td class="px-3 py-2">V-ing</td>
+                                            <td class="px-3 py-2">Ko'nikkan</td>
+                                        </tr>
+                                        <tr class="bg-white">
+                                            <td class="px-3 py-2 font-medium text-success">get used to</td>
+                                            <td class="px-3 py-2">V-ing</td>
+                                            <td class="px-3 py-2">Ko'nikyapman</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'wish-if-only': {
+                title: '9.3 Wish / If only',
+                icon: 'fa-magic',
+                section: 'SPECIAL PATTERNS',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-magic text-2xl"></i>
+                                <h3 class="text-xl font-bold">Wish / If only</h3>
+                            </div>
+                            <p class="text-white/80">"Kashki..." / "Afsus..."</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <h4 class="font-bold text-primary mb-2">Hozirgi holatga afsus</h4>
+                                <div class="bg-primary/10 p-2 rounded-lg font-mono text-sm mb-2">Wish + Past Simple</div>
+                                <p class="text-gray-700">Hozir boy bo'lsam edi</p>
+                                <p class="text-primary font-medium">I wish I <strong>were</strong> rich.</p>
+                                <p class="text-gray-500 text-sm mt-1">⚠️ "I were" — barcha shaxslar uchun!</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-2">O'tmishdagi holatga afsus</h4>
+                                <div class="bg-secondary/10 p-2 rounded-lg font-mono text-sm mb-2">Wish + Past Perfect</div>
+                                <p class="text-gray-700">O'tgan haftada o'qiganimda edi</p>
+                                <p class="text-primary font-medium">I wish I <strong>had studied</strong> last week.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-success">
+                                <h4 class="font-bold text-success mb-2">Kelajakdagi istak</h4>
+                                <div class="bg-success/10 p-2 rounded-lg font-mono text-sm mb-2">Wish + Would + V1</div>
+                                <p class="text-gray-700">U tezroq kelsa edi</p>
+                                <p class="text-primary font-medium">I wish he <strong>would come</strong> soon.</p>
+                            </div>
+                        </div>
+
+                        <div class="tip-box p-4 rounded-xl border-l-4 border-primary">
+                            <h4 class="font-bold text-primary mb-2"><i class="fas fa-info-circle mr-2"></i>If only = kuchli wish</h4>
+                            <p class="text-gray-700">Xuddi shu qoidalar:</p>
+                            <p class="text-gray-600">If only I knew! (Kashki bilganimda edi!)</p>
+                            <p class="text-gray-600">If only I had studied! (Kashki o'qiganimda edi!)</p>
+                        </div>
+                    </div>
+                `
+            },
+            'too-enough': {
+                title: '9.4-9.5 So/Such/Too/Enough',
+                icon: 'fa-balance-scale-right',
+                section: 'SPECIAL PATTERNS',
+                content: `
+                    <div class="space-y-6">
+                        <div class="formula-box p-6 rounded-2xl text-white">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-balance-scale-right text-2xl"></i>
+                                <h3 class="text-xl font-bold">So / Such / Too / Enough</h3>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-primary">
+                                <h4 class="font-bold text-primary mb-2">So... that</h4>
+                                <div class="bg-primary/10 p-2 rounded-lg font-mono text-sm mb-2">So + adj/adv + that</div>
+                                <p class="text-gray-700">U juda tez yugurdiki, men unga yetolmadim</p>
+                                <p class="text-primary font-medium">He ran <strong>so fast that</strong> I couldn't catch him.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-secondary">
+                                <h4 class="font-bold text-secondary mb-2">Such... that</h4>
+                                <div class="bg-secondary/10 p-2 rounded-lg font-mono text-sm mb-2">Such + (a/an) + adj + noun + that</div>
+                                <p class="text-gray-700">U shunday aqlli o'quvchiki, hamma hayron</p>
+                                <p class="text-primary font-medium">He is <strong>such a clever student that</strong> everyone is surprised.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-danger">
+                                <h4 class="font-bold text-danger mb-2">Too... to</h4>
+                                <div class="bg-danger/10 p-2 rounded-lg font-mono text-sm mb-2">Too + adj + to + V1</div>
+                                <p class="text-gray-600 mb-2">"juda ..., shuning uchun ... qila olmaydi"</p>
+                                <p class="text-gray-700">U juda yoshki, mashina hayday olmaydi</p>
+                                <p class="text-primary font-medium">He is <strong>too young to</strong> drive.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-success">
+                                <h4 class="font-bold text-success mb-2">Enough... to</h4>
+                                <div class="bg-success/10 p-2 rounded-lg font-mono text-sm mb-2">Adj + enough + to + V1</div>
+                                <p class="text-gray-600 mb-2">"yetarli darajada ..., shuning uchun ... qila oladi"</p>
+                                <p class="text-gray-700">U yetarli darajada kuchliki, ko'tara oladi</p>
+                                <p class="text-primary font-medium">He is <strong>strong enough to</strong> lift it.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-warning">
+                                <h4 class="font-bold text-warning mb-2">Not... enough to</h4>
+                                <div class="bg-warning/10 p-2 rounded-lg font-mono text-sm mb-2">Not + adj + enough + to + V1</div>
+                                <p class="text-gray-600 mb-2">"yetarli emas, shuning uchun ... qila olmaydi"</p>
+                                <p class="text-gray-700">U yetarli darajada aqlli emas, tushunmaydi</p>
+                                <p class="text-primary font-medium">He <strong>isn't clever enough to</strong> understand.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-xl">
+                            <h4 class="font-bold text-gray-800 mb-2">Farqlar jadvali</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm bg-white rounded-lg">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left">Struktura</th>
+                                            <th class="px-3 py-2 text-left">Ma'no</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="px-3 py-2 font-medium text-primary">so + adj</td>
+                                            <td class="px-3 py-2">shunchalik... (natija)</td>
+                                        </tr>
+                                        <tr class="bg-gray-50">
+                                            <td class="px-3 py-2 font-medium text-secondary">such + noun</td>
+                                            <td class="px-3 py-2">shunday... (natija)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-3 py-2 font-medium text-danger">too + adj</td>
+                                            <td class="px-3 py-2">juda... (salbiy, qila olmaydi)</td>
+                                        </tr>
+                                        <tr class="bg-gray-50">
+                                            <td class="px-3 py-2 font-medium text-success">adj + enough</td>
+                                            <td class="px-3 py-2">yetarli... (musbat, qila oladi)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        // Navigation structure
+        const navigation = [
+            { section: 'TENSES', title: '🔹 SECTION 1: Zamonlar', items: [
+                { id: 'present-simple', title: '1.1 Present Simple' },
+                { id: 'past-simple', title: '1.2 Past Simple' },
+                { id: 'present-perfect', title: '1.6 Present Perfect ⭐' },
+                { id: 'present-perfect-continuous', title: '1.7 Present Perfect Continuous ⭐' },
+                { id: 'past-perfect', title: '1.8 Past Perfect ⭐' }
+            ]},
+            { section: 'MODALS', title: '🔹 SECTION 2: Modals', items: [
+                { id: 'basic-modals', title: '2.1 Basic Modals' },
+                { id: 'modal-perfects', title: '2.3 Modal Perfects ⭐⭐⭐' },
+                { id: 'need-forms', title: '2.4 NEED: 4 ta holat ⭐' }
+            ]},
+            { section: 'COMPLEX', title: '🔹 SECTION 3: Complex', items: [
+                { id: 'inversion', title: '3.1 Inversion ⭐⭐⭐' },
+                { id: 'conditionals', title: '3.2 Conditionals' },
+                { id: 'passive-voice', title: '3.3 Passive Voice' },
+                { id: 'reported-speech', title: '3.4 Reported Speech' },
+                { id: 'causative', title: '3.5 Causative' }
+            ]},
+            { section: 'PARTICIPLES', title: '🔹 SECTION 4: Participles', items: [
+                { id: 'present-participle', title: '4.1 Present Participle' },
+                { id: 'past-participle', title: '4.2 Past Participle' },
+                { id: 'gerund-infinitive', title: '4.4 Gerund vs Infinitive ⭐' }
+            ]},
+            { section: 'QUESTIONS', title: '🔹 SECTION 5: Questions', items: [
+                { id: 'tag-questions', title: '5.1 Tag Questions ⭐⭐⭐' }
+            ]},
+            { section: 'ARTICLES & PREPOSITIONS', title: '🔹 SECTION 6: Articles & Prep.', items: [
+                { id: 'articles', title: '6.1 Articles' },
+                { id: 'prepositions', title: '6.2-6.4 Prepositions' }
+            ]},
+            { section: 'COMPARATIVES', title: '🔹 SECTION 7: Comparatives', items: [
+                { id: 'comparatives', title: '7.1-7.3 Comparatives' }
+            ]},
+            { section: 'CONNECTORS', title: '🔹 SECTION 8: Connectors', items: [
+                { id: 'connectors', title: '8.1-8.4 Connectors' }
+            ]},
+            { section: 'SPECIAL PATTERNS', title: '🔹 SECTION 9: Special Patterns', items: [
+                { id: 'it-is-adj', title: '9.1 "It is adj of" ⭐' },
+                { id: 'used-to', title: '9.2 Used to / Be used to ⭐' },
+                { id: 'wish-if-only', title: '9.3 Wish / If only' },
+                { id: 'too-enough', title: '9.4-9.5 So/Such/Too/Enough' }
+            ]}
+        ];
+
+        // State
+        let currentTopic = null;
+        let topicHistory = [];
+
+        // Initialize navigation
+        function renderNavigation(filter = '') {
+            const navContainer = document.getElementById('topicList');
+            navContainer.innerHTML = '';
+
+            navigation.forEach(section => {
+                const filteredItems = section.items.filter(item => 
+                    item.title.toLowerCase().includes(filter.toLowerCase())
+                );
+
+                if (filteredItems.length === 0 && filter) return;
+
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'mb-4';
+
+                if (!filter) {
+                    const sectionHeader = document.createElement('div');
+                    sectionHeader.className = 'px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider';
+                    sectionHeader.textContent = section.title;
+                    sectionDiv.appendChild(sectionHeader);
+                }
+
+                filteredItems.forEach(item => {
+                    const topic = grammarData[item.id];
+                    const btn = document.createElement('button');
+                    btn.className = `topic-item w-full text-left px-3 py-2 rounded-xl text-sm transition-all flex items-center gap-2 ${currentTopic === item.id ? 'active' : ''}`;
+                    btn.innerHTML = `
+                        <i class="fas ${topic.icon}"></i>
+                        <span class="flex-1">${item.title}</span>
+                        ${topic.starred ? '<i class="fas fa-star text-yellow-400"></i>' : ''}
+                    `;
+                    btn.onclick = () => showTopic(item.id);
+                    sectionDiv.appendChild(btn);
+                });
+
+                navContainer.appendChild(sectionDiv);
+            });
+        }
+
+        // Show topic
+        function showTopic(topicId) {
+            if (currentTopic) {
+                topicHistory.push(currentTopic);
+            }
+            currentTopic = topicId;
+
+            const topic = grammarData[topicId];
+            
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('topicView').classList.remove('hidden');
+            document.getElementById('backButton').classList.remove('hidden');
+            document.getElementById('pageTitle').textContent = topic.title;
+            document.getElementById('topicContent').innerHTML = topic.content;
+
+            // Update active state in nav
+            renderNavigation(document.getElementById('searchInput').value);
+
+            // Close mobile sidebar
+            if (window.innerWidth < 1024) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('overlay').classList.add('hidden');
+            }
+
+            // Scroll to top
+            document.getElementById('contentArea').scrollTop = 0;
+        }
+
+        // Go back
+        function goBack() {
+            if (topicHistory.length > 0) {
+                currentTopic = topicHistory.pop();
+                const topic = grammarData[currentTopic];
+                document.getElementById('topicView').classList.remove('hidden');
+                document.getElementById('homeView').classList.add('hidden');
+                document.getElementById('pageTitle').textContent = topic.title;
+                document.getElementById('topicContent').innerHTML = topic.content;
+                renderNavigation(document.getElementById('searchInput').value);
+            } else {
+                currentTopic = null;
+                document.getElementById('homeView').classList.remove('hidden');
+                document.getElementById('topicView').classList.add('hidden');
+                document.getElementById('backButton').classList.add('hidden');
+                document.getElementById('pageTitle').textContent = '🏠 Bosh sahifa';
+                renderNavigation(document.getElementById('searchInput').value);
+            }
+        }
+
+        // Search topics
+        function searchTopics(query) {
+            renderNavigation(query);
+        }
+
+        // Toggle sidebar (mobile)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Toggle chat
+        function toggleChat() {
+            const chat = document.getElementById('chatSidebar');
+            const overlay = document.getElementById('overlay');
+            chat.classList.toggle('translate-x-full');
+            
+            if (window.innerWidth < 1024) {
+                overlay.classList.toggle('hidden');
+            }
+        }
+
+        // Close all overlays
+        function closeAll() {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('chatSidebar').classList.add('translate-x-full');
+            document.getElementById('overlay').classList.add('hidden');
+        }
+
+        // Chat functionality
+        const API_KEY = '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';
+        
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            const typingId = addTypingIndicator();
+
+            try {
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'English Grammar Master'
+                    },
+                    body: JSON.stringify({
+                        model: 'anthropic/claude-3.5-sonnet',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `You are an expert English grammar teacher helping a student prepare for an exam (4-Etap). 
+                                You explain in Uzbek language with English examples.
+                                You have access to these grammar topics: Present Perfect, Past Perfect, Modal Perfects, 
+                                Inversion, Conditionals, Passive Voice, Gerund vs Infinitive, Tag Questions, Used to, etc.
+                                
+                                Always provide:
+                                1. Clear formula/structure
+                                2. Keywords to look for
+                                3. Examples in both Uzbek and English
+                                4. Common mistakes to avoid
+                                
+                                Keep answers concise but comprehensive.`
+                            },
+                            {
+                                role: 'user',
+                                content: message
+                            }
+                        ],
+                        max_tokens: 1000
+                    })
+                });
+
+                removeTypingIndicator(typingId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const aiResponse = data.choices[0].message.content;
+                    addMessage(aiResponse, 'ai');
+                } else {
+                    addMessage('Kechirasiz, xatolik yuz berdi. Iltimos, keyinroq urinib ko\'ring.', 'ai');
+                }
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                addMessage('Kechirasiz, ulanishda xatolik. Internetni tekshiring.', 'ai');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-message flex gap-3';
+            
+            if (sender === 'user') {
+                div.innerHTML = `
+                    <div class="flex-1 bg-primary text-white p-3 rounded-2xl rounded-tr-sm shadow-sm ml-auto max-w-[85%]">
+                        <p class="text-sm">${escapeHtml(text)}</p>
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white text-sm flex-shrink-0">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 max-w-[85%]">
+                        <p class="text-sm text-gray-700 whitespace-pre-line">${text}</p>
+                    </div>
+                `;
+            }
+            
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const container = document.getElementById('chatMessages');
+            const id = 'typing-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'chat-message flex gap-3';
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white text-sm flex-shrink-0">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="bg-white p-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100">
+                    <div class="flex gap-1">
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return id;
+        }
+
+        function removeTypingIndicator(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize
+        renderNavigation();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                document.getElementById('overlay').classList.add('hidden');
+                document.getElementById('sidebar').classList.remove('-translate-x-full');
+            }
+        });
+    </script>
+</body>
+</html>
