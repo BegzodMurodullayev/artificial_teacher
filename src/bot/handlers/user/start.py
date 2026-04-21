@@ -52,13 +52,14 @@ async def cmd_start(message: Message, db_user: dict | None = None):
         "• 🌐 <b>Tarjimon</b> — O'zbekcha-Inglizcha erkin ta'limiy tarjima.\n"
         "• 🔊 <b>Talaffuz</b> — So'zning to'g'ri o'qilishini (audio bilan) tashlab beraman.\n"
         "• 🧠 <b>Quiz testi</b> — Ingliz tilidan bilimingizni bellashuv orqali sinang!\n"
-        "• 🎮 <b>O'yinlar (Mafiya)</b> — Guruhda do'stlaringiz bilan qiziqarli o'yinlar (\mafia).\n"
+        "• 🎮 <b>O'yinlar (Mafiya)</b> — Guruhda do'stlaringiz bilan qiziqarli o'yinlar (/mafia).\n"
         "• 📚 <b>Darslar</b> — Men orqali xohlagan qoida va mavzularingizni yodlang.\n\n"
         "💡 <i>Menga shunchaki o'zbek yoki ingliz tilida matn (yoki ovozli xabar) yuboring! O'rganishni hoziroq boshlaymiz!</i>\n"
         "Barcha menyular pastki tugmalarda joylashgan 👇"
     )
 
-    await safe_reply(message, welcome, reply_markup=user_main_menu(plan_name))
+    role = db_user.get("role", "user") if db_user else "user"
+    await safe_reply(message, welcome, reply_markup=user_main_menu(plan_name, role=role))
 
 
 @router.message(Command("help"))

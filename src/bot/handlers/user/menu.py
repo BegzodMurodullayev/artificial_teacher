@@ -17,16 +17,17 @@ router = Router(name="menu_dispatch")
 
 
 @router.message(F.text.in_([
-    "✅ Check", "✅ Tekshirish",
-    "🌐 Translate", "🌐 Tarjima",
-    "🔊 Pronunciation", "🔊 Talaffuz",
+    "✅ Tekshirish", "✅ Check",
+    "🌐 Tarjima", "🌐 Translate",
+    "🔊 Talaffuz", "🔊 Pronunciation",
     "🧠 Quiz",
-    "📚 Lessons", "📚 Darslar",
-    "📖 Grammar", "📖 Grammatika",
-    "📊 My Stats", "📊 Statistika",
-    "⭐ Subscribe", "⭐ Obuna",
-    "⚙️ Settings", "⚙️ Sozlamalar",
-    "ℹ️ Help", "ℹ️ Yordam",
+    "📚 Darslar", "📚 Lessons",
+    "📖 Grammatika", "📖 Grammar",
+    "📊 Statistika", "📊 My Stats",
+    "⭐ Obuna", "⭐ Subscribe",
+    "⚙️ Sozlamalar", "⚙️ Settings",
+    "ℹ️ Yordam", "ℹ️ Help",
+    "🛡 Admin Panel",
 ]))
 async def menu_button_handler(message: Message, db_user: dict | None = None):
     """Route menu button presses to the appropriate handler."""
@@ -107,3 +108,11 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
     elif action == "help":
         from src.bot.handlers.user.start import cmd_help
         await cmd_help(message, db_user)
+
+    elif action == "admin":
+        role = (db_user or {}).get("role", "user")
+        if role in ("admin", "owner"):
+            from src.bot.handlers.admin.dashboard import cmd_admin
+            await cmd_admin(message, db_user)
+        else:
+            await safe_reply(message, "⚠️ Sizda admin huquqi yo'q.")

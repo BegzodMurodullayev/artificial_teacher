@@ -14,25 +14,29 @@ from src.config import settings
 # USER REPLY KEYBOARD
 # ══════════════════════════════════════════════════════════
 
-def user_main_menu(plan_name: str = "free") -> ReplyKeyboardMarkup:
-    """Build the main user reply keyboard based on plan."""
+def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboardMarkup:
+    """Build the main user reply keyboard based on plan and role."""
     rows = [
-        [KeyboardButton(text="✅ Check"), KeyboardButton(text="🌐 Translate")],
-        [KeyboardButton(text="🔊 Pronunciation"), KeyboardButton(text="🧠 Quiz")],
-        [KeyboardButton(text="📚 Lessons"), KeyboardButton(text="📖 Grammar")],
-        [KeyboardButton(text="📊 My Stats"), KeyboardButton(text="⭐ Subscribe")],
+        [KeyboardButton(text="✅ Tekshirish"), KeyboardButton(text="🌐 Tarjima")],
+        [KeyboardButton(text="🔊 Talaffuz"), KeyboardButton(text="🧠 Quiz")],
+        [KeyboardButton(text="📚 Darslar"), KeyboardButton(text="📖 Grammatika")],
+        [KeyboardButton(text="📊 Statistika"), KeyboardButton(text="⭐ Obuna")],
     ]
 
     # Add WebApp button if URL is configured
     if settings.WEB_APP_URL:
         rows.append([
             KeyboardButton(
-                text="📱 Open App",
+                text="📱 Ilovani ochish",
                 web_app=WebAppInfo(url=settings.WEB_APP_URL),
             )
         ])
 
-    rows.append([KeyboardButton(text="⚙️ Settings"), KeyboardButton(text="ℹ️ Help")])
+    rows.append([KeyboardButton(text="⚙️ Sozlamalar"), KeyboardButton(text="ℹ️ Yordam")])
+
+    # Show admin button only for admins/owners
+    if role in ("admin", "owner"):
+        rows.append([KeyboardButton(text="🛡 Admin Panel")])
 
     return ReplyKeyboardMarkup(
         keyboard=rows,
@@ -57,16 +61,17 @@ def admin_main_menu() -> ReplyKeyboardMarkup:
 # ══════════════════════════════════════════════════════════
 
 USER_MENU_ALIASES = {
-    "check":         ["✅ Check", "✅ Tekshirish", "check", "tekshirish"],
-    "translate":     ["🌐 Translate", "🌐 Tarjima", "translate", "tarjima"],
-    "pronunciation": ["🔊 Pronunciation", "🔊 Talaffuz", "pronunciation", "talaffuz"],
+    "check":         ["✅ Tekshirish", "✅ Check", "check", "tekshirish"],
+    "translate":     ["🌐 Tarjima", "🌐 Translate", "translate", "tarjima"],
+    "pronunciation": ["🔊 Talaffuz", "🔊 Pronunciation", "pronunciation", "talaffuz"],
     "quiz":          ["🧠 Quiz", "quiz"],
-    "lessons":       ["📚 Lessons", "📚 Darslar", "lessons", "darslar"],
-    "grammar":       ["📖 Grammar", "📖 Grammatika", "grammar", "grammatika"],
-    "stats":         ["📊 My Stats", "📊 Statistika", "stats", "statistika"],
-    "subscribe":     ["⭐ Subscribe", "⭐ Obuna", "subscribe", "obuna"],
-    "settings":      ["⚙️ Settings", "⚙️ Sozlamalar", "settings", "sozlamalar"],
-    "help":          ["ℹ️ Help", "ℹ️ Yordam", "help", "yordam"],
+    "lessons":       ["📚 Darslar", "📚 Lessons", "lessons", "darslar"],
+    "grammar":       ["📖 Grammatika", "📖 Grammar", "grammar", "grammatika"],
+    "stats":         ["📊 Statistika", "📊 My Stats", "stats", "statistika"],
+    "subscribe":     ["⭐ Obuna", "⭐ Subscribe", "subscribe", "obuna"],
+    "settings":      ["⚙️ Sozlamalar", "⚙️ Settings", "settings", "sozlamalar"],
+    "help":          ["ℹ️ Yordam", "ℹ️ Help", "help", "yordam"],
+    "admin":         ["🛡 Admin Panel", "admin panel"],
 }
 
 

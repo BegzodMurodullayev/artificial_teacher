@@ -37,6 +37,14 @@ class AuthMiddleware(BaseMiddleware):
             )
             data["db_user"] = db_user
 
+            # Auto-promote OWNER_ID to owner role
+            from src.config import settings
+            if db_user and user.id == settings.OWNER_ID and db_user.get("role") != "owner":
+                from src.database.dao.user_dao import set_role
+                await set_role(user.id, "owner")
+                db_user["role"] = "owner"
+                logger.info("Auto-promoted user %s to owner", user.id)
+
             # Block banned users
             if db_user and db_user.get("is_banned"):
                 logger.info("Blocked banned user %s", user.id)
