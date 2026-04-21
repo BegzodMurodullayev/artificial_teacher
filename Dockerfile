@@ -1,21 +1,27 @@
-﻿FROM python:3.11-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+FROM python:3.12-slim
 
 WORKDIR /app
 
+# System dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    tzdata \
-    && rm -rf /var/lib/apt/lists/*
+    gcc libc-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
+# Python deps
+COPY requirements_v2.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# App source
+COPY src/ ./src/
+COPY .env .env
 
-# Render persistent disk tavsiyasi: /var/data
-RUN mkdir -p /var/data
+# Data directory
+RUN mkdir -p /app/data
 
-CMD ["python", "bot/bot.py"]
+# Environment
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+EXPOSE 8080
+
+CMD ["python", "-m", "src.main"]
