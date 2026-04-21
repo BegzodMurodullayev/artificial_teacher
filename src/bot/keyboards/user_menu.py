@@ -17,8 +17,9 @@ from src.config import settings
 def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboardMarkup:
     """Build the main user reply keyboard based on plan and role."""
     rows = [
-        [KeyboardButton(text="🎓 Ta'lim"), KeyboardButton(text="🧩 Mashg'ulotlar")],
-        [KeyboardButton(text="👤 Kabinetim"), KeyboardButton(text="⚙️ Qo'shimcha")],
+        [KeyboardButton(text="🎓 Ta'lim"), KeyboardButton(text="🎯 Sinovlar")],
+        [KeyboardButton(text="🎮 Guruh O'yinlari"), KeyboardButton(text="👤 Kabinetim")],
+        [KeyboardButton(text="⚙️ Qo'shimcha")],
     ]
 
     # Add WebApp button if URL is configured
@@ -48,10 +49,16 @@ def edu_menu() -> ReplyKeyboardMarkup:
         [KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
-def games_menu() -> ReplyKeyboardMarkup:
+def test_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
         [KeyboardButton(text="🧠 Quiz"), KeyboardButton(text="🧠 IQ Test")],
-        [KeyboardButton(text="🎮 Mafiya"), KeyboardButton(text="🔙 Asosiy Menyu")]
+        [KeyboardButton(text="🔙 Asosiy Menyu")]
+    ], resize_keyboard=True)
+
+def games_menu() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="🕵️ Mafiya")],
+        [KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
 def cabinet_menu() -> ReplyKeyboardMarkup:

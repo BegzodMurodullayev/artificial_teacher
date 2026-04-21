@@ -21,10 +21,15 @@ async def _cat_edu(message: Message, db_user: dict | None = None):
     from src.bot.keyboards.user_menu import edu_menu
     await safe_reply(message, "🎓 <b>Ta'lim bo'limi</b>\nNima o'rganamiz?", reply_markup=edu_menu())
 
-@router.message(F.text == "🧩 Mashg'ulotlar")
+@router.message(F.text == "🎯 Sinovlar")
+async def _cat_test(message: Message, db_user: dict | None = None):
+    from src.bot.keyboards.user_menu import test_menu
+    await safe_reply(message, "🎯 <b>Sinovlar</b>\nSizni testlar kutmoqda!", reply_markup=test_menu())
+
+@router.message(F.text == "🎮 Guruh O'yinlari")
 async def _cat_games(message: Message, db_user: dict | None = None):
     from src.bot.keyboards.user_menu import games_menu
-    await safe_reply(message, "🧩 <b>Mashg'ulotlar va O'yinlar</b>\nSizni testlar kutmoqda!", reply_markup=games_menu())
+    await safe_reply(message, "🎮 <b>Guruh O'yinlari</b>\nDo'stlar bilan qiziqarli vaqt o'tkazing!", reply_markup=games_menu())
 
 @router.message(F.text == "👤 Kabinetim")
 async def _cat_cabinet(message: Message, db_user: dict | None = None):
@@ -79,6 +84,9 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
             return
         if message.text == "🎁 Bonuslar":
             await safe_reply(message, "🎁 <b>Bonuslar</b>\n\nDo'stlaringizni taklif qiling va bonus ballarga ega bo'ling! (Link tayyorlanmoqda...)")
+            return
+        if message.text == "🕵️ Mafiya" or message.text == "🎮 Mafiya":
+            await safe_reply(message, "🕵️ <b>Mafiya O'yini</b>\n\nGuruhda o'ynash uchun botni guruhga qo'shing va <code>/mafia</code> buyrug'ini yozing!")
             return
         return
 
