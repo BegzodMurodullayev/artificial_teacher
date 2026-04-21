@@ -44,24 +44,25 @@ def edu_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
         [KeyboardButton(text="✅ Tekshirish"), KeyboardButton(text="🌐 Tarjima")],
         [KeyboardButton(text="🔊 Talaffuz"), KeyboardButton(text="📚 Darslar")],
-        [KeyboardButton(text="📖 Grammatika"), KeyboardButton(text="🔙 Asosiy Menyu")]
+        [KeyboardButton(text="📖 Grammatika"), KeyboardButton(text="📅 Kunlik so'z")],
+        [KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
 def games_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton(text="🧠 Quiz"), KeyboardButton(text="🎮 Mafiya")],
-        [KeyboardButton(text="🔙 Asosiy Menyu")]
+        [KeyboardButton(text="🧠 Quiz"), KeyboardButton(text="🧠 IQ Test")],
+        [KeyboardButton(text="🎮 Mafiya"), KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
 def cabinet_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton(text="📊 Statistika"), KeyboardButton(text="⭐ Obuna")],
-        [KeyboardButton(text="🔙 Asosiy Menyu")]
+        [KeyboardButton(text="📈 Darajam"), KeyboardButton(text="⭐ Obuna")],
+        [KeyboardButton(text="🎁 Bonuslar"), KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
 def extra_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton(text="⚙️ Sozlamalar"), KeyboardButton(text="ℹ️ Yordam")],
+        [KeyboardButton(text="⚙️ Sozlamalar"), KeyboardButton(text="ℹ️ Aloqa")],
         [KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
 
@@ -87,10 +88,10 @@ USER_MENU_ALIASES = {
     "quiz":          ["🧠 Quiz", "quiz"],
     "lessons":       ["📚 Darslar", "📚 Lessons", "lessons", "darslar"],
     "grammar":       ["📖 Grammatika", "📖 Grammar", "grammar", "grammatika"],
-    "stats":         ["📊 Statistika", "📊 My Stats", "stats", "statistika"],
+    "stats":         ["📊 Statistika", "📈 Darajam", "stats", "statistika", "darajam"],
     "subscribe":     ["⭐ Obuna", "⭐ Subscribe", "subscribe", "obuna"],
     "settings":      ["⚙️ Sozlamalar", "⚙️ Settings", "settings", "sozlamalar"],
-    "help":          ["ℹ️ Yordam", "ℹ️ Help", "help", "yordam"],
+    "help":          ["ℹ️ Yordam", "ℹ️ Aloqa", "help", "yordam", "aloqa"],
     "admin":         ["🛡 Admin Panel", "admin panel"],
 }
 

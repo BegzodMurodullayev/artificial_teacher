@@ -51,22 +51,35 @@ async def _cat_back(message: Message, db_user: dict | None = None):
     "✅ Tekshirish", "✅ Check",
     "🌐 Tarjima", "🌐 Translate",
     "🔊 Talaffuz", "🔊 Pronunciation",
-    "🧠 Quiz",
+    "🧠 Quiz", "🧠 IQ Test",
     "📚 Darslar", "📚 Lessons",
     "📖 Grammatika", "📖 Grammar",
-    "📊 Statistika", "📊 My Stats",
+    "📈 Darajam", "📊 Statistika",
     "⭐ Obuna", "⭐ Subscribe",
     "⚙️ Sozlamalar", "⚙️ Settings",
-    "ℹ️ Yordam", "ℹ️ Help",
+    "ℹ️ Aloqa", "ℹ️ Yordam",
     "🛡 Admin Panel",
+    "📅 Kunlik so'z", "🎁 Bonuslar"
 ]))
 async def menu_button_handler(message: Message, db_user: dict | None = None):
     """Route menu button presses to the appropriate handler."""
     if not db_user or not message.text:
         return
 
+    from src.bot.keyboards.user_menu import resolve_menu_action
     action = resolve_menu_action(message.text)
+    
+    # Check for direct matches if not in aliases
     if not action:
+        if message.text == "🧠 IQ Test":
+            await safe_reply(message, "🧠 <b>IQ Test</b>\n\nSizning mantiqiy fikrlash darajangizni aniqlaydigan testlar. (Tez kunda...)")
+            return
+        if message.text == "📅 Kunlik so'z":
+            await safe_reply(message, "📅 <b>Kunlik so'z</b>\n\nBugungi so'z: <b>Enhance</b> - Yaxshilamoq\n<i>Misol: Reading helps to enhance your vocabulary.</i>")
+            return
+        if message.text == "🎁 Bonuslar":
+            await safe_reply(message, "🎁 <b>Bonuslar</b>\n\nDo'stlaringizni taklif qiling va bonus ballarga ega bo'ling! (Link tayyorlanmoqda...)")
+            return
         return
 
     user_id = db_user["user_id"]
