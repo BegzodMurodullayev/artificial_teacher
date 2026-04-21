@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 async def safe_reply(
     message: Message,
     text: str,
-    parse_mode: Optional[str] = None,
+    parse_mode: Optional[str] = "HTML",
     reply_markup=None,
     disable_web_page_preview: bool = True,
 ) -> Optional[Message]:
@@ -53,7 +53,7 @@ async def safe_reply(
 async def safe_edit(
     target: Message | CallbackQuery,
     text: str,
-    parse_mode: Optional[str] = None,
+    parse_mode: Optional[str] = "HTML",
     reply_markup=None,
 ) -> Optional[Message]:
     """Safely edit a message, handling 'message is not modified' and other errors."""
