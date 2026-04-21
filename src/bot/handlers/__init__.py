@@ -11,6 +11,11 @@ logger = logging.getLogger(__name__)
 def register_all_handlers(dp: Dispatcher) -> None:
     """Register all bot handler routers with the dispatcher."""
 
+    # Inline query handlers (highest priority — fast responses)
+    from src.bot.handlers.inline import get_inline_router
+    dp.include_router(get_inline_router())
+    logger.info("  ✓ Inline handlers registered")
+
     # Admin handlers (highest priority — checked first)
     from src.bot.handlers.admin import get_admin_router
     dp.include_router(get_admin_router())
