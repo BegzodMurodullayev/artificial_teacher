@@ -17,10 +17,8 @@ from src.config import settings
 def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboardMarkup:
     """Build the main user reply keyboard based on plan and role."""
     rows = [
-        [KeyboardButton(text="✅ Tekshirish"), KeyboardButton(text="🌐 Tarjima")],
-        [KeyboardButton(text="🔊 Talaffuz"), KeyboardButton(text="🧠 Quiz")],
-        [KeyboardButton(text="📚 Darslar"), KeyboardButton(text="📖 Grammatika")],
-        [KeyboardButton(text="📊 Statistika"), KeyboardButton(text="⭐ Obuna")],
+        [KeyboardButton(text="🎓 Ta'lim"), KeyboardButton(text="🧩 Mashg'ulotlar")],
+        [KeyboardButton(text="👤 Kabinetim"), KeyboardButton(text="⚙️ Qo'shimcha")],
     ]
 
     # Add WebApp button if URL is configured
@@ -32,8 +30,6 @@ def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboard
             )
         ])
 
-    rows.append([KeyboardButton(text="⚙️ Sozlamalar"), KeyboardButton(text="ℹ️ Yordam")])
-
     # Show admin button only for admins/owners
     if role in ("admin", "owner"):
         rows.append([KeyboardButton(text="🛡 Admin Panel")])
@@ -41,8 +37,33 @@ def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboard
     return ReplyKeyboardMarkup(
         keyboard=rows,
         resize_keyboard=True,
-        input_field_placeholder="Ingliz tilida yozing yoki menyu tanlang...",
+        input_field_placeholder="Yo'nalishni tanlang...",
     )
+
+def edu_menu() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="✅ Tekshirish"), KeyboardButton(text="🌐 Tarjima")],
+        [KeyboardButton(text="🔊 Talaffuz"), KeyboardButton(text="📚 Darslar")],
+        [KeyboardButton(text="📖 Grammatika"), KeyboardButton(text="🔙 Asosiy Menyu")]
+    ], resize_keyboard=True)
+
+def games_menu() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="🧠 Quiz"), KeyboardButton(text="🎮 Mafiya")],
+        [KeyboardButton(text="🔙 Asosiy Menyu")]
+    ], resize_keyboard=True)
+
+def cabinet_menu() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="📊 Statistika"), KeyboardButton(text="⭐ Obuna")],
+        [KeyboardButton(text="🔙 Asosiy Menyu")]
+    ], resize_keyboard=True)
+
+def extra_menu() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="⚙️ Sozlamalar"), KeyboardButton(text="ℹ️ Yordam")],
+        [KeyboardButton(text="🔙 Asosiy Menyu")]
+    ], resize_keyboard=True)
 
 def admin_main_menu() -> ReplyKeyboardMarkup:
     """Build the admin dashboard reply keyboard."""

@@ -16,6 +16,37 @@ logger = logging.getLogger(__name__)
 router = Router(name="menu_dispatch")
 
 
+@router.message(F.text == "🎓 Ta'lim")
+async def _cat_edu(message: Message, db_user: dict | None = None):
+    from src.bot.keyboards.user_menu import edu_menu
+    await safe_reply(message, "🎓 <b>Ta'lim bo'limi</b>\nNima o'rganamiz?", reply_markup=edu_menu())
+
+@router.message(F.text == "🧩 Mashg'ulotlar")
+async def _cat_games(message: Message, db_user: dict | None = None):
+    from src.bot.keyboards.user_menu import games_menu
+    await safe_reply(message, "🧩 <b>Mashg'ulotlar va O'yinlar</b>\nSizni testlar kutmoqda!", reply_markup=games_menu())
+
+@router.message(F.text == "👤 Kabinetim")
+async def _cat_cabinet(message: Message, db_user: dict | None = None):
+    from src.bot.keyboards.user_menu import cabinet_menu
+    await safe_reply(message, "👤 <b>Shaxsiy Kabinet</b>\nStatistikangiz va tariflar.", reply_markup=cabinet_menu())
+
+@router.message(F.text == "⚙️ Qo'shimcha")
+async def _cat_extra(message: Message, db_user: dict | None = None):
+    from src.bot.keyboards.user_menu import extra_menu
+    await safe_reply(message, "⚙️ <b>Qo'shimcha sozlamalar</b>", reply_markup=extra_menu())
+
+@router.message(F.text == "🔙 Asosiy Menyu")
+async def _cat_back(message: Message, db_user: dict | None = None):
+    from src.bot.keyboards.user_menu import user_main_menu
+    from src.database.dao import subscription_dao
+    plan_name = "free"
+    if db_user:
+        plan_name = await subscription_dao.get_active_plan_name(db_user["user_id"])
+    role = db_user.get("role", "user") if db_user else "user"
+    await safe_reply(message, "🏠 <b>Bosh menyu</b>", reply_markup=user_main_menu(plan_name, role))
+
+
 @router.message(F.text.in_([
     "✅ Tekshirish", "✅ Check",
     "🌐 Tarjima", "🌐 Translate",
