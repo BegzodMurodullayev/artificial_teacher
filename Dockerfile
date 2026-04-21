@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # App source
 COPY src/ ./src/
-COPY .env .env
+
 
 # Data directory
 RUN mkdir -p /app/data
