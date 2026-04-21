@@ -26,6 +26,11 @@ def register_all_handlers(dp: Dispatcher) -> None:
     dp.include_router(get_quiz_router())
     logger.info("  ✓ Quiz handlers registered")
 
+    # Game handlers (Mafia, Word games)
+    from src.bot.handlers.game import get_game_router
+    dp.include_router(get_game_router())
+    logger.info("  ✓ Game handlers registered")
+
     # Group handlers
     from src.bot.handlers.group import get_group_router
     dp.include_router(get_group_router())

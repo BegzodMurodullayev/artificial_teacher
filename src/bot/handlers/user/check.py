@@ -103,26 +103,4 @@ async def process_grammar_check(
     await safe_reply(message, response)
 
 
-@router.message(F.text & ~F.text.startswith("/"))
-async def private_check_handler(message: Message, db_user: dict | None = None):
-    """
-    Handle text messages in private chat — default mode is grammar check.
-    This is a catch-all handler with LOW priority.
-    It should be registered LAST in the user router.
-    """
-    if not db_user or not message.text:
-        return
-
-    # Skip menu button texts
-    from src.bot.keyboards.user_menu import resolve_menu_action
-    if resolve_menu_action(message.text):
-        return  # Will be handled by menu dispatcher
-
-    user_id = db_user["user_id"]
-    level = db_user.get("level", "A1")
-
-    # Increment message counter
-    await stats_dao.inc_stat(user_id, "messages_total")
-
-    # Default mode: grammar check
-    await process_grammar_check(message, message.text, user_id, level)
+# private_check_handler moved to message_handler.py

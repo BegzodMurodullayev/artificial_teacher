@@ -1,0 +1,277 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════
+   DARK SPACE — Base Styles
+   ═══════════════════════════════════════════════ */
+
+@layer base {
+  :root {
+    --neon-cyan:   #00f3ff;
+    --neon-purple: #bc13fe;
+    --neon-pink:   #ff2d78;
+    --space-black: #05050a;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #05050a;
+    color: #e8eaf0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    /* Telegram safe areas */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  #root {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Selection accent */
+  ::selection {
+    background: rgba(0, 243, 255, 0.25);
+    color: #00f3ff;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   CUSTOM SCROLLBAR — Dark Space style
+   ═══════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080b14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00f3ff, #bc13fe);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00f3ff;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #00f3ff #080b14;
+}
+
+/* ═══════════════════════════════════════════════
+   GLASSMORPHISM UTILITIES
+   ═══════════════════════════════════════════════ */
+
+@layer utilities {
+  .glass {
+    background: rgba(15, 20, 32, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 243, 255, 0.1);
+  }
+
+  .glass-dark {
+    background: rgba(8, 11, 20, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .glass-card {
+    background: linear-gradient(
+      145deg,
+      rgba(15, 20, 32, 0.9) 0%,
+      rgba(8, 11, 20, 0.95) 100%
+    );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(26, 32, 53, 0.8);
+  }
+
+  /* ─── Neon Text ────────────────────────────── */
+  .text-neon-cyan {
+    color: #00f3ff;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+  }
+
+  .text-neon-purple {
+    color: #bc13fe;
+    text-shadow: 0 0 10px rgba(188, 19, 254, 0.6);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #00f3ff 0%, #bc13fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-purple-pink {
+    background: linear-gradient(135deg, #bc13fe 0%, #ff2d78 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ─── Neon Borders ─────────────────────────── */
+  .border-neon-cyan {
+    border-color: rgba(0, 243, 255, 0.4);
+  }
+
+  .border-glow-cyan {
+    border: 1px solid rgba(0, 243, 255, 0.4);
+    box-shadow: 0 0 8px rgba(0, 243, 255, 0.2), inset 0 0 8px rgba(0, 243, 255, 0.05);
+  }
+
+  .border-glow-purple {
+    border: 1px solid rgba(188, 19, 254, 0.4);
+    box-shadow: 0 0 8px rgba(188, 19, 254, 0.2), inset 0 0 8px rgba(188, 19, 254, 0.05);
+  }
+
+  /* ─── Backgrounds ──────────────────────────── */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(
+      rgba(0, 243, 255, 0.15) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+  }
+
+  /* ─── Glow Effects ─────────────────────────── */
+  .glow-cyan {
+    filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.6));
+  }
+
+  .glow-purple {
+    filter: drop-shadow(0 0 8px rgba(188, 19, 254, 0.6));
+  }
+
+  /* ─── Shimmer Loading ──────────────────────── */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.0) 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* ─── Progress Bars ────────────────────────── */
+  .progress-neon {
+    background: rgba(0, 243, 255, 0.1);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-neon-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00f3ff, #bc13fe);
+    border-radius: 999px;
+    box-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ─── Mobile Touch ─────────────────────────── */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* ─── Tab Bar ──────────────────────────────── */
+  .tab-active {
+    color: #00f3ff;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+    position: relative;
+  }
+
+  .tab-active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #00f3ff;
+    box-shadow: 0 0 6px #00f3ff;
+  }
+
+  /* ─── Star Field Background ────────────────── */
+  .starfield {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(0, 243, 255, 0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(188, 19, 254, 0.04) 0%, transparent 50%),
+      #05050a;
+  }
+
+  /* Prevent overscroll bounce on iOS */
+  .no-overscroll {
+    overscroll-behavior: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   COMPONENT LAYER
+   ═══════════════════════════════════════════════ */
+
+@layer components {
+  /* XP Level Badge */
+  .xp-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold;
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(188, 19, 254, 0.15));
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    color: #00f3ff;
+  }
+
+  /* Neon divider */
+  .neon-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.3), transparent);
+  }
+
+  /* Metric tile */
+  .metric-tile {
+    @apply glass-card rounded-2xl p-4 flex flex-col gap-1;
+  }
+
+  /* Page container */
+  .page {
+    @apply flex flex-col gap-4 px-4 pt-4 pb-24 min-h-screen;
+  }
+}

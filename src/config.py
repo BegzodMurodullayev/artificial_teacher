@@ -23,6 +23,7 @@ class Settings(BaseSettings):
 
     # ── AI ─────────────────────────────────────────────────
     OPENROUTER_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
     AI_MODEL: str = "openai/gpt-4o-mini"
     AI_CONCURRENCY: int = 6
     AI_TIMEOUT: int = 30

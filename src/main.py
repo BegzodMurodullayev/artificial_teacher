@@ -116,9 +116,11 @@ async def main():
     register_all_handlers()
     logger.info("✅ Handlers registered")
 
-    # 4. Start scheduler
+    # 4. Register scheduled jobs & start scheduler
+    from src.bot.jobs.daily_word import send_daily_word
+    scheduler.add_job(send_daily_word, "cron", hour=8, minute=0, id="daily_word")
     scheduler.start()
-    logger.info("✅ Scheduler started")
+    logger.info("✅ Scheduler started (daily_word at 08:00 UTC)")
 
     # 5. Start FastAPI in background
     api_app = create_api_app()
