@@ -47,8 +47,8 @@ class Settings(BaseSettings):
     INSTAGRAM_URL: str = ""
 
     # ── Telegram Channels (for inline caching) ─────────────
-    INLINE_HTML_CHANNEL: int = 0
-    INLINE_AUDIO_CHANNEL: int = 0
+    INLINE_HTML_CHANNEL: str | int = 0
+    INLINE_AUDIO_CHANNEL: str | int = 0
 
     # ── Performance ────────────────────────────────────────
     UPDATE_CONCURRENCY: int = 12
