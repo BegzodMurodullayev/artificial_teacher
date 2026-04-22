@@ -381,7 +381,7 @@ CREATE TABLE IF NOT EXISTS webapp_game_results (
     game_name TEXT NOT NULL,
     difficulty TEXT,
     score INTEGER NOT NULL,
-    won BOOLEAN NOT NULL DEFAULT 0,
+    won BOOLEAN NOT NULL DEFAULT FALSE,
     xp_earned INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES users(id)
