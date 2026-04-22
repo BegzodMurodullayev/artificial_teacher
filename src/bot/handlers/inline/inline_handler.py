@@ -566,13 +566,18 @@ async def callback_audio_private(callback: CallbackQuery):
 
 @router.callback_query(F.data.startswith("aud_pub:"))
 async def callback_audio_public(callback: CallbackQuery):
-    """Post cached audio to INLINE_AUDIO_CHANNEL."""
+    """Post cached audio to INLINE_AUDIO_CHANNEL with user ID label."""
     key = callback.data.split(":")[1]
     entry = _AUDIO_CACHE.get(key)
     if not entry:
         await callback.answer("⚠️ Audio muddati o'tdi, qayta so'rang.", show_alert=True)
         return
     audio_bytes, filename, caption = entry
+
+    user = callback.from_user
+    uid = user.id if user else 0
+    uname = f"@{user.username}" if user and user.username else (user.first_name if user else "")
+
     try:
         from src.config import settings
         from src.bot.loader import bot as _bot
@@ -583,17 +588,27 @@ async def callback_audio_public(callback: CallbackQuery):
             await callback.answer("⚠️ Audio kanal sozlanmagan.", show_alert=True)
             return
 
+        pub_caption = (
+            f"🔊 <b>Audio</b>\n"
+            f"{caption}\n"
+            f"🆔 <code>#{uid}</code> | {uname}"
+        )
+
         voice = BufferedInputFile(audio_bytes, filename=filename)
         msg = await _bot.send_voice(
             chat_id=channel,
             voice=voice,
-            caption=f"📢 {caption}",
+            caption=pub_caption,
+            parse_mode="HTML",
         )
         channel_str = str(channel).lstrip("@")
         if msg and hasattr(msg, "message_id"):
-            link = f"https://t.me/{channel_str}/{msg.message_id}"
+            mid = msg.message_id
+            link = f"https://t.me/{channel_str}/{mid}"
             await callback.message.answer(
-                f"📢 <b>Audio kanalga joylashtirildi:</b>\n<a href='{link}'>👆 Ko'rish</a>",
+                f"📢 <b>Audio kanalga joylashtirildi!</b>\n"
+                f"🔗 <a href='{link}'>👆 Ko'rish (#{mid})</a>\n"
+                f"🆔 Sizning ID: <code>#{uid}</code>",
                 parse_mode="HTML",
                 disable_web_page_preview=True,
             )

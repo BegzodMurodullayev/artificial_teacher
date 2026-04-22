@@ -201,7 +201,7 @@ async def callback_report_private(callback: CallbackQuery):
 
 @_cb_router.callback_query(F.data.startswith("rpt_pub:"))
 async def callback_report_public(callback: CallbackQuery):
-    """Post HTML report to public INLINE_HTML_CHANNEL."""
+    """Post HTML report to public INLINE_HTML_CHANNEL with user ID label."""
     key = callback.data.split(":")[1]
     entry = _REPORT_CACHE.get(key)
     if not entry:
@@ -209,6 +209,10 @@ async def callback_report_public(callback: CallbackQuery):
         return
 
     html_bytes, filename, caption = entry
+    user = callback.from_user
+    uid = user.id if user else 0
+    uname = f"@{user.username}" if user and user.username else (user.first_name if user else "")
+
     try:
         from src.config import settings
         from src.bot.loader import bot as _bot
@@ -219,19 +223,29 @@ async def callback_report_public(callback: CallbackQuery):
             await callback.answer("⚠️ Kanal sozlanmagan.", show_alert=True)
             return
 
+        # Add user ID label to channel caption
+        pub_caption = (
+            f"📂 <b>Hisobot</b>\n"
+            f"{caption}\n"
+            f"🆔 <code>#{uid}</code> | {uname}"
+        )
+
         doc = BufferedInputFile(html_bytes, filename=filename)
         msg = await _bot.send_document(
             chat_id=channel,
             document=doc,
-            caption=f"📢 <b>Public hisobot</b>\n{caption}",
+            caption=pub_caption,
             parse_mode="HTML",
         )
-        # Build link to channel message
+        # Build link to channel message with ID label
         channel_str = str(channel).lstrip("@")
         if msg and hasattr(msg, "message_id"):
-            link = f"https://t.me/{channel_str}/{msg.message_id}"
+            mid = msg.message_id
+            link = f"https://t.me/{channel_str}/{mid}"
             await callback.message.answer(
-                f"📢 <b>Kanal hisoboti:</b>\n<a href='{link}'>👆 Ko'rish</a>",
+                f"📢 <b>Kanalga joylashtirildi!</b>\n"
+                f"🔗 <a href='{link}'>👆 Ko'rish (#{mid})</a>\n"
+                f"🆔 Sizning ID: <code>#{uid}</code>",
                 parse_mode="HTML",
                 disable_web_page_preview=True,
             )

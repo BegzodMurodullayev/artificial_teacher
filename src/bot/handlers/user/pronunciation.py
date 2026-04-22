@@ -1,11 +1,13 @@
 """
 Pronunciation handler — pronunciation guide + TTS audio + HTML report.
+Audio is sent directly to the user in chat.
+HTML and Audio have separate Private/Public share keyboards.
 """
 
 import logging
 
 from aiogram import Router
-from aiogram.types import Message, BufferedInputFile
+from aiogram.types import Message, BufferedInputFile, InlineKeyboardMarkup, InlineKeyboardButton
 
 from src.bot.utils.telegram import safe_reply, escape_html
 from src.services import ai_service, tts_service
@@ -86,15 +88,15 @@ async def process_pronunciation(
     else:
         guide_text = f"🔊 <b>Talaffuz:</b> <i>{escape_html(text)}</i>"
 
-    # ── HTML report keyboard (Private / Public) ──
+    # ── Build HTML report keyboard (Private / Public) ──
     username = ""
     if message.from_user:
         username = message.from_user.username or message.from_user.first_name or ""
 
-    kb = None
+    html_kb = None
     try:
         from src.bot.handlers.user.check import build_report_keyboard
-        kb = build_report_keyboard(
+        html_kb = build_report_keyboard(
             text=text,
             corrected="",
             analysis=[],
@@ -109,23 +111,60 @@ async def process_pronunciation(
             },
         )
     except Exception as e:
-        logger.warning("pronunciation report keyboard error: %s", e)
+        logger.warning("pronunciation HTML report keyboard error: %s", e)
 
-    await safe_reply(message, guide_text, reply_markup=kb)
+    # Send guide text + HTML share keyboard
+    await safe_reply(message, guide_text, reply_markup=html_kb)
 
-    # ── TTS Audio ──
+    # ── TTS Audio — always send directly to user ──
     await message.chat.do("upload_voice")
-    audio_bytes = await tts_service.synthesize_pronunciation(text, accent=accent)
+    try:
+        audio_bytes = await tts_service.synthesize_pronunciation(text, accent=accent)
+    except Exception as e:
+        logger.warning("TTS synthesis error: %s", e)
+        audio_bytes = None
 
     if audio_bytes:
-        audio_file = tts_service.make_audio_file(audio_bytes, f"{text[:30]}.mp3")
+        audio_caption = f"🔊 <b>{escape_html(text)}</b> ({accent.upper()} accent)"
+
+        # Send audio directly to user
         try:
-            await message.answer_voice(
-                voice=BufferedInputFile(audio_file.read(), filename=audio_file.name),
-                caption=f"🔊 {escape_html(text)} ({accent.upper()} accent)",
+            sent_voice = await message.answer_voice(
+                voice=BufferedInputFile(audio_bytes, filename=f"{text[:30]}.ogg"),
+                caption=audio_caption,
+                parse_mode="HTML",
             )
         except Exception as e:
-            logger.warning("Failed to send audio: %s", e)
-            await safe_reply(message, "⚠️ Audio fayl yuborib bo'lmadi.")
+            logger.warning("Failed to send voice: %s", e)
+            sent_voice = None
+
+        # Cache audio + show Audio Private/Public share keyboard
+        try:
+            import hashlib
+            from src.bot.handlers.inline.inline_handler import _AUDIO_CACHE
+
+            key = hashlib.md5(audio_bytes[:256] if len(audio_bytes) > 256 else audio_bytes).hexdigest()[:16]
+            _AUDIO_CACHE[key] = (
+                audio_bytes,
+                f"{text[:20]}.ogg",
+                f"🔊 {text} ({accent.upper()}) | 👤 @{username}" if username else f"🔊 {text} ({accent.upper()})"
+            )
+
+            audio_share_kb = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="🔒 Audio (Private)", callback_data=f"aud_prv:{key}"),
+                InlineKeyboardButton(text="📢 Audio (Public)",  callback_data=f"aud_pub:{key}"),
+            ]])
+
+            await message.answer(
+                "🎙 <b>Audio ulashish:</b>",
+                reply_markup=audio_share_kb,
+                parse_mode="HTML",
+            )
+        except Exception as e:
+            logger.warning("Audio cache/share keyboard error: %s", e)
     else:
-        await safe_reply(message, "⚠️ Audio generatsiya qilib bo'lmadi.")
+        await safe_reply(
+            message,
+            "⚠️ Audio generatsiya qilib bo'lmadi.\n"
+            "<i>TTS xizmati vaqtincha ishlamayapti yoki so'z qo'llab-quvvatlanmaydi.</i>"
+        )

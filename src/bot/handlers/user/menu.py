@@ -190,34 +190,37 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
         from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
         from src.config import settings
         if settings.WEB_APP_URL:
+            base = settings.WEB_APP_URL.rstrip('/')
             kb = InlineKeyboardMarkup(inline_keyboard=[[
-                InlineKeyboardButton(text="📚 Kutubxonaga kirish", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/library"))
+                InlineKeyboardButton(text="📚 Kutubxonaga kirish", web_app=WebAppInfo(url=f"{base}/library?tab=book"))
             ]])
-            await safe_reply(message, "📚 <b>Kutubxona</b>\n\nJahon adabiyoti, faktlar va zakovat savollari markazi!", reply_markup=kb)
+            await safe_reply(message, "📚 <b>Kutubxona</b>\n\nJahon adabiyoti, ingliz tili qoidalari va ko'proq!", reply_markup=kb)
         else:
-            await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
+            await safe_reply(message, "📚 <b>Kutubxona</b>\n\nJahon adabiyoti va qoidalar bo'limi (WebApp ulanmagan).")
 
     elif action == "evrika":
         from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
         from src.config import settings
         if settings.WEB_APP_URL:
+            base = settings.WEB_APP_URL.rstrip('/')
             kb = InlineKeyboardMarkup(inline_keyboard=[[
-                InlineKeyboardButton(text="💡 Faktlarni o'qish", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/library"))
+                InlineKeyboardButton(text="💡 Faktlarni o'qish", web_app=WebAppInfo(url=f"{base}/library?tab=fact"))
             ]])
-            await safe_reply(message, "💡 <b>Evrika!</b>\n\nQiziqarli kashfiyotlar va faktlar bilan tanishing!", reply_markup=kb)
+            await safe_reply(message, "💡 <b>Evrika!</b>\n\nQiziqarli kashfiyotlar va ilmiy faktlar bilan tanishing!", reply_markup=kb)
         else:
-            await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
+            await safe_reply(message, "💡 <b>Evrika!</b>\n\nQiziqarli faktlar bo'limi (WebApp ulanmagan).")
 
     elif action == "zakovat":
         from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
         from src.config import settings
         if settings.WEB_APP_URL:
+            base = settings.WEB_APP_URL.rstrip('/')
             kb = InlineKeyboardMarkup(inline_keyboard=[[
-                InlineKeyboardButton(text="🧠 Zakovat savollari", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/library"))
+                InlineKeyboardButton(text="🧠 Zakovat savollari", web_app=WebAppInfo(url=f"{base}/library?tab=quiz"))
             ]])
-            await safe_reply(message, "🧠 <b>Zakovat</b>\n\nMantiqiy savollar olimpiadasiga xush kelibsiz!", reply_markup=kb)
+            await safe_reply(message, "🧠 <b>Zakovat</b>\n\nMantiqiy va qiyin savollar olimpiadasiga xush kelibsiz!", reply_markup=kb)
         else:
-            await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
+            await safe_reply(message, "🧠 <b>Zakovat</b>\n\nMantiqiy savollar bo'limi (WebApp ulanmagan).")
 
     elif action == "iq_test":
         from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
