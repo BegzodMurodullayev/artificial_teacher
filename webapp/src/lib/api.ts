@@ -210,4 +210,17 @@ export const materialsApi = {
     api.get<MaterialData>(`/materials/${id}`).then(r => r.data),
 }
 
+export interface IQQuestion {
+  id: number
+  type: string
+  question: string
+  options: string[]
+}
+
+export const iqApi = {
+  getQuestions: () => api.get<{status: string, questions: IQQuestion[]}>('/games/iqtest/questions').then(r => r.data),
+  submitResult: (answers: Record<number, number>) => 
+    api.post<{status: string, score: number, new_best: boolean}>('/games/iqtest/result', { answers }).then(r => r.data),
+}
+
 export default api

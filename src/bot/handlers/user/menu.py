@@ -242,7 +242,15 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
             await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
 
     elif action == "iq_test":
-        await safe_reply(message, "🧠 <b>IQ Test</b>\n\nMantiqiy fikrlash testi. (Tez kunda)")
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+        from src.config import settings
+        if settings.WEB_APP_URL:
+            kb = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="🧠 IQ Testni boshlash", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/iqtest"))
+            ]])
+            await safe_reply(message, "🧠 <b>IQ Test</b>\n\nMantiqiy fikrlash darajangizni aniqlovchi va savollari tez-tez yangilanib turuvchi maxsus test! Test yakunida natijangiz statistikangizga saqlanadi.", reply_markup=kb)
+        else:
+            await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
 
     elif action == "pomodoro":
         from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo

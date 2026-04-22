@@ -102,6 +102,19 @@ async def cmd_library(message: Message, db_user: dict | None = None):
     else:
         await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
 
+@router.message(Command("iqtest"))
+async def cmd_iqtest(message: Message, db_user: dict | None = None):
+    """Handle /iqtest command to open the IQ Test WebApp."""
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+    from src.config import settings
+    if settings.WEB_APP_URL:
+        kb = InlineKeyboardMarkup(inline_keyboard=[[
+            InlineKeyboardButton(text="🧠 IQ Testni boshlash", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/iqtest"))
+        ]])
+        await safe_reply(message, "🧠 <b>IQ Test</b>\n\nMantiqiy fikrlash darajangizni aniqlovchi va savollari tez-tez yangilanib turuvchi maxsus test!", reply_markup=kb)
+    else:
+        await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
+
 
 @router.message(Command("settings"))
 async def cmd_settings(message: Message, db_user: dict | None = None):
