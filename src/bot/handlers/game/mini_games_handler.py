@@ -113,7 +113,7 @@ async def cmd_tez_hisob(message: Message, bot: Bot):
 @router.message(F.text.regexp(r'^-?\d+$'))
 async def process_number_input(message: Message):
     """Catch numbers for Raqam Top and Tez Hisob."""
-    from aiogram.dispatcher.event.exceptions import SkipHandler
+    from aiogram.dispatcher.event.bases import SkipHandler
     chat_id = message.chat.id
     
     active_game = await game_dao.get_active_game(chat_id)

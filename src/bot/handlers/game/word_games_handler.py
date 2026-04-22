@@ -133,7 +133,7 @@ async def cmd_tarjima_poyga(message: Message, bot: Bot):
 @router.message(F.text & ~F.text.startswith("/"))
 async def process_word_input(message: Message):
     """Catch words for So'z Topish and Tarjima."""
-    from aiogram.dispatcher.event.exceptions import SkipHandler
+    from aiogram.dispatcher.event.bases import SkipHandler
     chat_id = message.chat.id
     
     active_game = await game_dao.get_active_game(chat_id)
