@@ -150,6 +150,13 @@ export interface LeaderboardEntry {
   streak_days:    number
 }
 
+export interface GameResultData {
+  game_name: string
+  difficulty: string
+  score: number
+  won: boolean
+}
+
 // ── User API ──────────────────────────────────────────
 
 export const userApi = {
@@ -175,6 +182,12 @@ export const leaderboardApi = {
     api.get<LeaderboardEntry[]>(`/leaderboard/global?limit=${limit}`).then(r => r.data),
   getMyRank: () =>
     api.get<{ rank: number; user_id: number }>('/leaderboard/myrank').then(r => r.data),
+}
+
+// ── Games API ─────────────────────────────────────────
+
+export const gamesApi = {
+  saveResult: (data: GameResultData) => api.post('/games/result', data).then(r => r.data),
 }
 
 export default api

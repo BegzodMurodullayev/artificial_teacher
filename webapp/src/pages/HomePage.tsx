@@ -149,7 +149,7 @@ export default function HomePage() {
           { icon: '📚', label: 'Kutubxona', route: null },
           { icon: '❌', label: 'X-O', route: '/games/xo' },
           { icon: '🃏', label: 'Xotira', route: '/games/memory' },
-          { icon: '💡', label: 'Evrika', route: null },
+          { icon: '🧩', label: 'Sudoku', route: '/games/sudoku' },
         ].map((item, i) => (
           <motion.button
             key={item.label}

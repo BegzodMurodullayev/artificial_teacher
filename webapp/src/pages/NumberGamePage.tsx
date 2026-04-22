@@ -5,6 +5,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { gamesApi } from '../lib/api'
 
 type Difficulty = 'easy' | 'medium' | 'hard'
 const DIFFICULTIES = {
@@ -24,7 +25,6 @@ export default function NumberGamePage() {
   const [won, setWon] = useState(false)
   const [score, setScore] = useState(0)
   const [totalScore, setTotalScore] = useState(0)
-  const [round, setRound] = useState(1)
 
   const startGame = useCallback(() => {
     const conf = DIFFICULTIES[difficulty]
@@ -55,6 +55,7 @@ export default function NumberGamePage() {
       newHistory.push({ num, hint })
       setHistory(newHistory)
       setScreen('over')
+      gamesApi.saveResult({ game_name: 'number', difficulty, score: pts, won: true }).catch(console.error)
       return
     }
 
@@ -72,6 +73,7 @@ export default function NumberGamePage() {
     if (newRemaining === 0) {
       setWon(false)
       setScreen('over')
+      gamesApi.saveResult({ game_name: 'number', difficulty, score: 0, won: false }).catch(console.error)
     }
   }, [guess, secret, history, remaining, difficulty])
 

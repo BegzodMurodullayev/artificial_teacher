@@ -86,10 +86,12 @@ def create_api_app():
     from src.api.routes.user import router as user_router
     from src.api.routes.progress import router as progress_router
     from src.api.routes.leaderboard import router as leaderboard_router
+    from src.api.routes.games import router as games_router
 
     app.include_router(user_router)
     app.include_router(progress_router)
     app.include_router(leaderboard_router)
+    app.include_router(games_router)
 
     logger.info("FastAPI app created with %d routes", len(app.routes))
     return app

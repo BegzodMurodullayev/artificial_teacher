@@ -116,3 +116,12 @@ class QuizStartIn(BaseModel):
 class QuizAnswerIn(BaseModel):
     session_id: int
     answer: str  # A, B, C, D, or "skip"
+
+
+# ── WebApp Games ──
+
+class GameResultIn(BaseModel):
+    game_name: str
+    difficulty: str = "medium"
+    score: int = Field(0, ge=0)
+    won: bool = False

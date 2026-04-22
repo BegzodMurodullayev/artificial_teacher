@@ -4,9 +4,10 @@
  * Supports: 2-player, AI (easy/medium/hard), board sizes 3x3, 4x4, 5x5
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { gamesApi } from '../lib/api'
 
 type Mark = 'X' | 'O' | ''
 type Screen = 'who' | 'difficulty' | 'size' | 'game'
@@ -146,7 +147,13 @@ export default function XOGamePage() {
       setBoard(newBoard)
       setGameOver(true)
       setWinner(current)
-      setScores(s => ({ ...s, [current]: s[current] + 1 }))
+      setScores(s => ({ ...s, [current]: s[current as keyof typeof s] + 1 }))
+      if (current === 'X') {
+        const pts = mode === 'ai' ? (difficulty === 'easy' ? 15 : difficulty === 'medium' ? 30 : 50) : 10
+        gamesApi.saveResult({ game_name: 'tic-tac-toe', difficulty: mode === 'ai' ? difficulty : 'easy', score: pts, won: true }).catch(console.error)
+      } else {
+        gamesApi.saveResult({ game_name: 'tic-tac-toe', difficulty: mode === 'ai' ? difficulty : 'easy', score: 0, won: false }).catch(console.error)
+      }
       setTimeout(() => {
         const nom = current === 'X' ? playerName : (mode === 'ai' ? 'AI' : "2-O'yinchi")
         setResult({ emoji: '🏆', title: `${nom} g'alaba qozondi!`, sub: `${current} belgisi yutdi!` })
@@ -158,6 +165,7 @@ export default function XOGamePage() {
       setGameOver(true)
       setWinner('draw')
       setScores(s => ({ ...s, draw: s.draw + 1 }))
+      gamesApi.saveResult({ game_name: 'tic-tac-toe', difficulty: mode === 'ai' ? difficulty : 'easy', score: 5, won: false }).catch(console.error)
       setTimeout(() => {
         setResult({ emoji: '🤝', title: 'Durrang!', sub: 'Hech kim yutmadi!' })
       }, 400)
@@ -181,6 +189,7 @@ export default function XOGamePage() {
           setGameOver(true)
           setWinner('O')
           setScores(s => ({ ...s, O: s.O + 1 }))
+          gamesApi.saveResult({ game_name: 'tic-tac-toe', difficulty: mode === 'ai' ? difficulty : 'easy', score: 0, won: false }).catch(console.error)
           setTimeout(() => setResult({ emoji: '🤖', title: 'AI g\'alaba qildi!', sub: 'Qayta harakat qiling!' }), 500)
           return
         }
@@ -189,6 +198,7 @@ export default function XOGamePage() {
           setGameOver(true)
           setWinner('draw')
           setScores(s => ({ ...s, draw: s.draw + 1 }))
+          gamesApi.saveResult({ game_name: 'tic-tac-toe', difficulty: mode === 'ai' ? difficulty : 'easy', score: 5, won: false }).catch(console.error)
           setTimeout(() => setResult({ emoji: '🤝', title: 'Durrang!', sub: 'Hech kim yutmadi!' }), 400)
           return
         }

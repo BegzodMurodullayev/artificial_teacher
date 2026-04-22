@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { gamesApi } from '../lib/api'
 
 type Op = '+' | '-' | '×' | '÷'
 type Difficulty = 'easy' | 'medium' | 'hard'
@@ -74,6 +75,7 @@ export default function MathGamePage() {
     if (idx >= conf.questions) {
       stopTimer()
       setScreen('over')
+      gamesApi.saveResult({ game_name: 'math', difficulty: d, score, won: correct >= conf.questions * 0.5 }).catch(console.error)
       return
     }
     const q = generateQuestion(d)
@@ -96,7 +98,12 @@ export default function MathGamePage() {
 
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) { stopTimer(); setScreen('over'); return 0 }
+        if (prev <= 1) { 
+          stopTimer()
+          setScreen('over')
+          gamesApi.saveResult({ game_name: 'math', difficulty, score, won: correct >= conf.questions * 0.5 }).catch(console.error)
+          return 0 
+        }
         return prev - 1
       })
     }, 1000)

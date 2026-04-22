@@ -20,6 +20,7 @@ const XOGamePage = lazy(() => import('@/pages/XOGamePage'))
 const MemoryGamePage = lazy(() => import('@/pages/MemoryGamePage'))
 const NumberGamePage = lazy(() => import('@/pages/NumberGamePage'))
 const MathGamePage = lazy(() => import('@/pages/MathGamePage'))
+const SudokuGamePage = lazy(() => import('@/pages/SudokuGamePage'))
 
 function AdminPageSuspense({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<Loader size="full" text="Yuklanmoqda..." />}>{children}</Suspense>
@@ -75,6 +76,7 @@ export default function App() {
                 <Route path="memory" element={<GamePageSuspense><MemoryGamePage /></GamePageSuspense>} />
                 <Route path="number" element={<GamePageSuspense><NumberGamePage /></GamePageSuspense>} />
                 <Route path="math" element={<GamePageSuspense><MathGamePage /></GamePageSuspense>} />
+                <Route path="sudoku" element={<GamePageSuspense><SudokuGamePage /></GamePageSuspense>} />
               </Routes>
             </main>
           </div>

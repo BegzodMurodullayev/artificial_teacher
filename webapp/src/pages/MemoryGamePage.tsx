@@ -7,6 +7,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { gamesApi } from '../lib/api'
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 const THEMES: Record<string, string[]> = {
@@ -112,6 +113,7 @@ export default function MemoryGamePage() {
                   const bonusBall = Math.max(0, 1000 - s * 5)
                   const finalScore = score + pts + bonusBall
                   setScore(finalScore)
+                  gamesApi.saveResult({ game_name: 'memory', difficulty: difficulty!, score: finalScore, won: true }).catch(console.error)
                   const eff = Math.round((newMatched / (attempts + 1)) * 100)
                   setResult({
                     emoji: eff >= 80 ? '🏆' : eff >= 60 ? '🎉' : '👍',

@@ -371,3 +371,19 @@ CREATE TABLE IF NOT EXISTS quiz_sessions (
     FOREIGN KEY(user_id) REFERENCES users(user_id)
 );
 CREATE INDEX IF NOT EXISTS idx_qs_user ON quiz_sessions(user_id, status);
+
+-- ══════════════════════════════════════════════════════════
+-- WEBAPP GAMES (NEW in v2.0)
+-- ══════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS webapp_game_results (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL,
+    game_name       TEXT NOT NULL,
+    difficulty      TEXT DEFAULT 'medium',
+    score           INTEGER DEFAULT 0,
+    won             INTEGER DEFAULT 0,
+    played_at       TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_wgr_user ON webapp_game_results(user_id, game_name);
+
