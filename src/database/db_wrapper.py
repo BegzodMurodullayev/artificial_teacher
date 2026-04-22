@@ -81,10 +81,25 @@ class PostgresConnectionWrapper:
 
     async def executescript(self, sql_script: str) -> None:
         # Convert schema SQL to Postgres types
-        sql = sql_script.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
+        sql = sql_script
+        sql = sql.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
         sql = sql.replace("datetime('now')", "CURRENT_TIMESTAMP")
+        sql = sql.replace("INTEGER DEFAULT 0\n", "INTEGER DEFAULT 0\n")  # no-op, clean
+
+        # PostgreSQL can't run a multi-statement script as one query.
+        # Split on ';' and execute each statement individually.
         async with self.pool.acquire() as conn:
-            await conn.execute(sql)
+            for statement in sql.split(";"):
+                stmt = statement.strip()
+                if stmt and not stmt.startswith("--"):
+                    try:
+                        await conn.execute(stmt)
+                    except Exception as e:
+                        # Log but continue — idempotent re-runs may hit "already exists"
+                        err_str = str(e)
+                        if any(k in err_str for k in ("already exists", "duplicate")):
+                            continue
+                        logger.warning("Schema statement failed: %s | SQL: %.120s", e, stmt)
 
     async def commit(self) -> None:
         # asyncpg auto-commits outside of explicit transactions
