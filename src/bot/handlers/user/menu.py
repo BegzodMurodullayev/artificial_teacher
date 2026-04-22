@@ -209,13 +209,37 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
             await safe_reply(message, "⚠️ Sizda admin huquqi yo'q.")
 
     elif action == "library":
-        await safe_reply(message, "📚 <b>Kutubxona</b>\n\nAsarlar va maqolalar tez kunda WebApp orqali taqdim etiladi!")
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+        from src.config import settings
+        if settings.WEB_APP_URL:
+            kb = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="📚 Kutubxonaga kirish", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/library"))
+            ]])
+            await safe_reply(message, "📚 <b>Kutubxona</b>\n\nJahon adabiyoti, faktlar va zakovat savollari markazi!", reply_markup=kb)
+        else:
+            await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
 
     elif action == "evrika":
-        await safe_reply(message, "💡 <b>Evrika!</b>\n\nQiziqarli faktlar ustida ishlayapmiz.")
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+        from src.config import settings
+        if settings.WEB_APP_URL:
+            kb = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="💡 Faktlarni o'qish", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/library"))
+            ]])
+            await safe_reply(message, "💡 <b>Evrika!</b>\n\nQiziqarli kashfiyotlar va faktlar bilan tanishing!", reply_markup=kb)
+        else:
+            await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
 
     elif action == "zakovat":
-        await safe_reply(message, "🧠 <b>Zakovat</b>\n\nMantiqiy savollar olimpiadasiga tayyor bo'ling! (Tez kunda)")
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+        from src.config import settings
+        if settings.WEB_APP_URL:
+            kb = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="🧠 Zakovat savollari", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/library"))
+            ]])
+            await safe_reply(message, "🧠 <b>Zakovat</b>\n\nMantiqiy savollar olimpiadasiga xush kelibsiz!", reply_markup=kb)
+        else:
+            await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
 
     elif action == "iq_test":
         await safe_reply(message, "🧠 <b>IQ Test</b>\n\nMantiqiy fikrlash testi. (Tez kunda)")

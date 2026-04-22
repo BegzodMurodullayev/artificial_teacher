@@ -376,14 +376,26 @@ CREATE INDEX IF NOT EXISTS idx_qs_user ON quiz_sessions(user_id, status);
 -- WEBAPP GAMES (NEW in v2.0)
 -- ══════════════════════════════════════════════════════════
 CREATE TABLE IF NOT EXISTS webapp_game_results (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id         INTEGER NOT NULL,
-    game_name       TEXT NOT NULL,
-    difficulty      TEXT DEFAULT 'medium',
-    score           INTEGER DEFAULT 0,
-    won             INTEGER DEFAULT 0,
-    played_at       TEXT DEFAULT (datetime('now')),
-    FOREIGN KEY(user_id) REFERENCES users(user_id)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    game_name TEXT NOT NULL,
+    difficulty TEXT,
+    score INTEGER NOT NULL,
+    won BOOLEAN NOT NULL DEFAULT 0,
+    xp_earned INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+-- Kutubxona va Materiallar (Library / Materials)
+CREATE TABLE IF NOT EXISTS materials (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    material_type TEXT NOT NULL, -- 'book', 'fact', 'quiz', 'quiz_variant'
+    category TEXT,
+    title TEXT NOT NULL,
+    author TEXT,
+    description TEXT,
+    content TEXT, -- JSON formatida qo'shimcha ma'lumotlar
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_wgr_user ON webapp_game_results(user_id, game_name);
-

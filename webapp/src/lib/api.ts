@@ -190,4 +190,24 @@ export const gamesApi = {
   saveResult: (data: GameResultData) => api.post('/games/result', data).then(r => r.data),
 }
 
+export interface MaterialData {
+  id: number
+  material_type: string
+  category: string | null
+  title: string
+  author: string | null
+  description: string | null
+  content: any | null
+  created_at: string
+}
+
+export const materialsApi = {
+  getMaterials: (type: string, limit = 50, offset = 0) =>
+    api.get<MaterialData[]>(`/materials?material_type=${type}&limit=${limit}&offset=${offset}`).then(r => r.data),
+  searchMaterials: (q: string, type?: string, limit = 20) =>
+    api.get<MaterialData[]>(`/materials/search?q=${q}${type ? `&material_type=${type}` : ''}&limit=${limit}`).then(r => r.data),
+  getMaterialById: (id: number) =>
+    api.get<MaterialData>(`/materials/${id}`).then(r => r.data),
+}
+
 export default api

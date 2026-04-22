@@ -21,6 +21,7 @@ const MemoryGamePage = lazy(() => import('@/pages/MemoryGamePage'))
 const NumberGamePage = lazy(() => import('@/pages/NumberGamePage'))
 const MathGamePage = lazy(() => import('@/pages/MathGamePage'))
 const SudokuGamePage = lazy(() => import('@/pages/SudokuGamePage'))
+const LibraryPage = lazy(() => import('@/pages/LibraryPage'))
 
 function AdminPageSuspense({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<Loader size="full" text="Yuklanmoqda..." />}>{children}</Suspense>
@@ -91,6 +92,9 @@ export default function App() {
             <AdminPageSuspense><AdminBroadcast /></AdminPageSuspense>
           } />
         </Route>
+
+        {/* ── Library ── */}
+        <Route path="/library" element={<LibraryPage />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
