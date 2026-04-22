@@ -119,14 +119,14 @@ export default function HomePage() {
       {/* ── Quick Actions ── */}
       <div className="grid grid-cols-2 gap-2">
         {[
-          { icon: '✅', label: 'Check',     tab: 'quiz'     as const, accent: 'cyan'   as const },
-          { icon: '🧠', label: 'Quiz',      tab: 'quiz'     as const, accent: 'purple' as const },
-          { icon: '📈', label: 'Taraqqiyot',tab: 'progress' as const, accent: 'cyan'   as const },
-          { icon: '🏆', label: 'Reyting',   tab: 'leaderboard' as const, accent: 'purple' as const },
+          { icon: '✅', label: 'Check',      action: () => navigate('/quiz') },
+          { icon: '🧠', label: 'Quiz',       action: () => navigate('/quiz') },
+          { icon: '📈', label: 'Taraqqiyot', action: () => navigate('/progress') },
+          { icon: '🏆', label: 'Reyting',    action: () => setActiveTab('leaderboard') },
         ].map((item, i) => (
           <motion.button
             key={item.label}
-            onClick={() => setActiveTab(item.tab)}
+            onClick={item.action}
             className="glass-card rounded-2xl p-3 flex items-center gap-2 active:scale-95 transition-transform"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -146,7 +146,7 @@ export default function HomePage() {
         {[
           { icon: '🔢', label: 'Raqam Top', route: '/games/number' },
           { icon: '⚡', label: 'Tez Hisob', route: '/games/math' },
-          { icon: '📚', label: 'Kutubxona', route: null },
+          { icon: '📚', label: 'Kutubxona', route: '/library?tab=book' },
           { icon: '❌', label: 'X-O', route: '/games/xo' },
           { icon: '🃏', label: 'Xotira', route: '/games/memory' },
           { icon: '🧩', label: 'Sudoku', route: '/games/sudoku' },

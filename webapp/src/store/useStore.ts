@@ -67,7 +67,7 @@ interface PlanState {
 interface UIState {
   isLoading:      boolean
   error:          string | null
-  activeTab:      'home' | 'progress' | 'quiz' | 'leaderboard' | 'profile'
+  activeTab:      'home' | 'education' | 'games' | 'leaderboard' | 'profile'
   theme:          'dark'
 }
 

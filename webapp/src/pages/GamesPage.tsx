@@ -50,7 +50,6 @@ const GAMES = [
     color: '#a78bfa',
     glow: 'rgba(167,139,250,0.3)',
     route: '/games/sudoku',
-    soon: true,
   },
   {
     id: 'word',
@@ -60,7 +59,6 @@ const GAMES = [
     color: '#fb923c',
     glow: 'rgba(251,146,60,0.3)',
     route: '/games/word',
-    soon: true,
   },
 ]
 

@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { materialsApi, MaterialData } from '../lib/api'
+import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from '../lib/i18n'
 
 type Tab = 'book' | 'fact' | 'quiz'
 
 export default function LibraryPage() {
-  const [activeTab, setActiveTab] = useState<Tab>('book')
+  const [searchParams] = useSearchParams()
+  const initialTab = (searchParams.get('tab') as Tab) || 'book'
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab)
   const [materials, setMaterials] = useState<MaterialData[]>([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')

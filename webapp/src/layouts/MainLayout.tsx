@@ -12,8 +12,8 @@ import { lazy, Suspense } from 'react'
 import { Loader } from '@/components/ui/Loader'
 
 const HomePage        = lazy(() => import('@/pages/HomePage'))
-const ProgressPage    = lazy(() => import('@/pages/ProgressPage'))
-const QuizPage        = lazy(() => import('@/pages/QuizPage'))
+const EducationPage   = lazy(() => import('@/pages/EducationPage'))
+const GamesPage       = lazy(() => import('@/pages/GamesPage'))
 const LeaderboardPage = lazy(() => import('@/pages/LeaderboardPage'))
 const ProfilePage     = lazy(() => import('@/pages/ProfilePage'))
 
@@ -32,8 +32,8 @@ export function MainLayout() {
 
   const pages: Record<string, React.ReactNode> = {
     home:        <PageSuspense><HomePage /></PageSuspense>,
-    progress:    <PageSuspense><ProgressPage /></PageSuspense>,
-    quiz:        <PageSuspense><QuizPage /></PageSuspense>,
+    education:   <PageSuspense><EducationPage /></PageSuspense>,
+    games:       <PageSuspense><GamesPage /></PageSuspense>,
     leaderboard: <PageSuspense><LeaderboardPage /></PageSuspense>,
     profile:     <PageSuspense><ProfilePage /></PageSuspense>,
   }

@@ -21,9 +21,12 @@ const MemoryGamePage = lazy(() => import('@/pages/MemoryGamePage'))
 const NumberGamePage = lazy(() => import('@/pages/NumberGamePage'))
 const MathGamePage = lazy(() => import('@/pages/MathGamePage'))
 const SudokuGamePage = lazy(() => import('@/pages/SudokuGamePage'))
+const WordGamePage = lazy(() => import('@/pages/WordGamePage'))
 const LibraryPage = lazy(() => import('@/pages/LibraryPage'))
 const PomodoroPage = lazy(() => import('@/pages/PomodoroPage'))
 const IQTestPage = lazy(() => import('@/pages/IQTestPage'))
+const ProgressPage = lazy(() => import('@/pages/ProgressPage'))
+const QuizPage = lazy(() => import('@/pages/QuizPage'))
 
 function AdminPageSuspense({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<Loader size="full" text="Yuklanmoqda..." />}>{children}</Suspense>
@@ -67,6 +70,22 @@ export default function App() {
         {/* ── User WebApp ── */}
         <Route path="/" element={<MainLayout />} />
 
+        {/* ── Progress & Quiz (Standalone) ── */}
+        <Route path="/progress" element={
+          <div className="flex flex-col min-h-screen bg-space-black no-overscroll">
+            <div className="starfield" aria-hidden />
+            <div className="bg-grid fixed inset-0 z-0 opacity-50 pointer-events-none" aria-hidden />
+            <main className="relative z-10 flex-1 pb-safe"><GamePageSuspense><ProgressPage /></GamePageSuspense></main>
+          </div>
+        } />
+        <Route path="/quiz" element={
+          <div className="flex flex-col min-h-screen bg-space-black no-overscroll">
+            <div className="starfield" aria-hidden />
+            <div className="bg-grid fixed inset-0 z-0 opacity-50 pointer-events-none" aria-hidden />
+            <main className="relative z-10 flex-1 pb-safe"><GamePageSuspense><QuizPage /></GamePageSuspense></main>
+          </div>
+        } />
+
         {/* ── Games (Standalone inside WebApp context) ── */}
         <Route path="/games/*" element={
           <div className="flex flex-col min-h-screen bg-space-black no-overscroll">
@@ -80,6 +99,7 @@ export default function App() {
                 <Route path="number" element={<GamePageSuspense><NumberGamePage /></GamePageSuspense>} />
                 <Route path="math" element={<GamePageSuspense><MathGamePage /></GamePageSuspense>} />
                 <Route path="sudoku" element={<GamePageSuspense><SudokuGamePage /></GamePageSuspense>} />
+                <Route path="word" element={<GamePageSuspense><WordGamePage /></GamePageSuspense>} />
               </Routes>
             </main>
           </div>

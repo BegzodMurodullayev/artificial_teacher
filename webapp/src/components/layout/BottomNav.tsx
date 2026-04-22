@@ -7,17 +7,17 @@ import { clsx } from 'clsx'
 import { useStore, useActiveTab } from '@/store/useStore'
 
 interface Tab {
-  id: 'home' | 'progress' | 'quiz' | 'leaderboard' | 'profile'
+  id: 'home' | 'education' | 'games' | 'leaderboard' | 'profile'
   icon: string
   label: string
 }
 
 const TABS: Tab[] = [
   { id: 'home',        icon: '🏠', label: 'Bosh'     },
-  { id: 'progress',   icon: '📈', label: 'Taraqqiyot'},
-  { id: 'quiz',       icon: '🧠', label: 'Quiz'      },
-  { id: 'leaderboard',icon: '🏆', label: 'Reyting'  },
-  { id: 'profile',    icon: '👤', label: 'Profil'    },
+  { id: 'education',   icon: '🎓', label: 'Ta\'lim'  },
+  { id: 'games',       icon: '🎮', label: 'O\'yinlar'},
+  { id: 'leaderboard', icon: '🏆', label: 'Reyting'  },
+  { id: 'profile',     icon: '👤', label: 'Profil'   },
 ]
 
 export function BottomNav() {
