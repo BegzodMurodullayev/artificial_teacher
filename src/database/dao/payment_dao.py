@@ -29,7 +29,8 @@ async def create_payment(
         (user_id, plan_name, amount, duration_days, currency, method, receipt_file_id, note),
     )
     await db.commit()
-    return cursor.lastrowid
+    row = await cursor.fetchone()
+    return row[0] if row else 0
 
 
 async def get_payment(payment_id: int) -> dict | None:

@@ -111,12 +111,13 @@ async def activate_subscription(
     # Create new subscription
     cursor = await db.execute(
         """INSERT INTO subscriptions (user_id, plan_name, started_at, expires_at, granted_days, is_active)
-           VALUES (?, ?, ?, ?, ?, 1)""",
+           VALUES (?, ?, ?, ?, ?, 1) RETURNING id""",
         (user_id, plan_name, now.isoformat(timespec="seconds"),
          expires.isoformat(timespec="seconds"), days),
     )
     await db.commit()
-    return cursor.lastrowid
+    row = await cursor.fetchone()
+    return row[0] if row else 0
 
 
 async def remaining_days(user_id: int) -> int:

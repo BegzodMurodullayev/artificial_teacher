@@ -24,11 +24,12 @@ async def add_sponsor(channel_id: int, username: str = "", title: str = "") -> i
            ON CONFLICT(channel_id) DO UPDATE SET
                channel_username = excluded.channel_username,
                title = excluded.title,
-               is_active = 1""",
+               is_active = 1 RETURNING id""",
         (channel_id, username, title),
     )
     await db.commit()
-    return cursor.lastrowid
+    row = await cursor.fetchone()
+    return row[0] if row else 0
 
 
 async def remove_sponsor(channel_id: int) -> None:

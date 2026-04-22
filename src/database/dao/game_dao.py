@@ -30,7 +30,8 @@ async def create_game_session(
         (chat_id, game_type, payload_json, created_by),
     )
     await db.commit()
-    return cursor.lastrowid
+    row = await cursor.fetchone()
+    return row[0] if row else 0
 
 
 async def get_active_game(chat_id: int) -> dict | None:

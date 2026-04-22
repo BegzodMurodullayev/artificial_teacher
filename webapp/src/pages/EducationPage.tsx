@@ -3,6 +3,7 @@
  */
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { usePlan } from '@/store/useStore'
 
 const EDU_MODULES = [
   {
@@ -49,6 +50,19 @@ const EDU_MODULES = [
 
 export default function EducationPage() {
   const navigate = useNavigate()
+  const plan = usePlan()
+
+  const handleModuleClick = (mod: typeof EDU_MODULES[0]) => {
+    if (mod.id === 'iqtest' && !plan.iq_test_enabled) {
+      if ((window as any).Telegram?.WebApp) {
+        (window as any).Telegram.WebApp.showAlert("🧩 IQ Test faqat Pro va Premium obunalar uchun!\n\nIltimos, botdan obunangizni yangilang.");
+      } else {
+        alert("🧩 IQ Test faqat Pro va Premium obunalar uchun!");
+      }
+      return;
+    }
+    navigate(mod.route)
+  }
 
   return (
     <div className="page pb-24">
@@ -71,7 +85,7 @@ export default function EducationPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.07 }}
-            onClick={() => navigate(mod.route)}
+            onClick={() => handleModuleClick(mod)}
             style={{
               background: `rgba(15,20,50,0.7)`,
               border: `1px solid ${mod.color}33`,
@@ -82,10 +96,16 @@ export default function EducationPage() {
               position: 'relative',
               overflow: 'hidden',
               transition: 'all 0.25s ease',
+              opacity: (mod.id === 'iqtest' && !plan.iq_test_enabled) ? 0.7 : 1,
             }}
             whileHover={{ scale: 1.03, y: -3 }}
             whileTap={{ scale: 0.98 }}
           >
+            {mod.id === 'iqtest' && !plan.iq_test_enabled && (
+              <div style={{ position: 'absolute', top: '10px', right: '12px', fontSize: '18px' }}>
+                🔒
+              </div>
+            )}
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
               background: `linear-gradient(90deg, transparent, ${mod.color}, transparent)`,

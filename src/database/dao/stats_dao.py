@@ -22,7 +22,7 @@ async def get_stats(user_id: int) -> dict:
     if row:
         return dict(row)
     # Create stats row
-    await db.execute("INSERT OR IGNORE INTO stats (user_id) VALUES (?)", (user_id,))
+    await db.execute("INSERT INTO stats (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING", (user_id,))
     await db.commit()
     cursor = await db.execute("SELECT * FROM stats WHERE user_id = ?", (user_id,))
     row = await cursor.fetchone()
@@ -42,7 +42,7 @@ async def inc_stat(user_id: int, field: str, amount: int = 1) -> None:
         return
 
     db = await get_db()
-    await db.execute("INSERT OR IGNORE INTO stats (user_id) VALUES (?)", (user_id,))
+    await db.execute("INSERT INTO stats (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING", (user_id,))
     await db.execute(
         f"UPDATE stats SET {field} = {field} + ? WHERE user_id = ?",
         (amount, user_id),
@@ -62,7 +62,7 @@ async def set_stat(user_id: int, field: str, value: int) -> None:
         return
 
     db = await get_db()
-    await db.execute("INSERT OR IGNORE INTO stats (user_id) VALUES (?)", (user_id,))
+    await db.execute("INSERT INTO stats (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING", (user_id,))
     await db.execute(
         f"UPDATE stats SET {field} = ? WHERE user_id = ?",
         (value, user_id),

@@ -22,7 +22,7 @@ async def get_wallet(user_id: int) -> dict:
         return dict(row)
     ref_code = uuid.uuid4().hex[:8].upper()
     await db.execute(
-        "INSERT OR IGNORE INTO reward_wallet (user_id, referral_code) VALUES (?, ?)",
+        "INSERT INTO reward_wallet (user_id, referral_code) VALUES (?, ?) ON CONFLICT (user_id) DO NOTHING",
         (user_id, ref_code),
     )
     await db.commit()
@@ -117,7 +117,8 @@ async def create_promo_code(
         (code.upper(), plan_name, days, max_uses, created_by),
     )
     await db.commit()
-    return cursor.lastrowid
+    row = await cursor.fetchone()
+    return row[0] if row else 0
 
 
 # ══════════════════════════════════════════════════════════

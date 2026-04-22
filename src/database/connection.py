@@ -3,49 +3,22 @@ Async SQLite connection manager using aiosqlite.
 Provides a singleton connection with WAL mode and performance pragmas.
 """
 
-import aiosqlite
 import logging
 from pathlib import Path
 
-from src.config import settings
+from src.database.db_wrapper import DatabaseFactory
 
 logger = logging.getLogger(__name__)
 
-_db: aiosqlite.Connection | None = None
 
-
-async def get_db() -> aiosqlite.Connection:
-    """Get or create the singleton database connection."""
-    global _db
-    if _db is None:
-        db_path = Path(settings.DB_PATH)
-        db_path.parent.mkdir(parents=True, exist_ok=True)
-        logger.info("Connecting to database: %s", db_path)
-
-        _db = await aiosqlite.connect(str(db_path), timeout=20)
-        _db.row_factory = aiosqlite.Row
-
-        # Performance pragmas
-        await _db.execute("PRAGMA journal_mode=WAL")
-        await _db.execute("PRAGMA synchronous=NORMAL")
-        await _db.execute("PRAGMA busy_timeout=7000")
-        await _db.execute("PRAGMA temp_store=MEMORY")
-        await _db.execute("PRAGMA foreign_keys=ON")
-        await _db.execute("PRAGMA wal_autocheckpoint=1000")
-        await _db.execute("PRAGMA cache_size=-20000")
-
-        logger.info("Database connected with WAL mode enabled")
-
-    return _db
+async def get_db():
+    """Get the singleton database connection (SQLite or PostgreSQL)."""
+    return await DatabaseFactory.get_db()
 
 
 async def close_db() -> None:
     """Close the database connection gracefully."""
-    global _db
-    if _db:
-        await _db.close()
-        _db = None
-        logger.info("Database connection closed")
+    await DatabaseFactory.close_db()
 
 
 async def init_db() -> None:
@@ -71,13 +44,24 @@ async def init_db() -> None:
     logger.info("Database initialization complete")
 
 
-async def _run_migrations(db: aiosqlite.Connection) -> None:
-    """Run ALTER TABLE migrations for backward compatibility with old databases."""
-
-    async def _table_columns(table: str) -> set[str]:
-        cursor = await db.execute(f"PRAGMA table_info({table})")
-        rows = await cursor.fetchall()
-        return {row[1] for row in rows}
+async def _run_migrations(db) -> None:
+    """Run ALTER TABLE migrations for backward compatibility."""
+    
+    if DatabaseFactory.is_postgres():
+        # PostgreSQL syntax for checking columns
+        async def _table_columns(table: str) -> set[str]:
+            cursor = await db.execute(
+                "SELECT column_name FROM information_schema.columns WHERE table_name = $1", 
+                (table,)
+            )
+            rows = await cursor.fetchall()
+            return {row[0] for row in rows}
+    else:
+        # SQLite syntax for checking columns
+        async def _table_columns(table: str) -> set[str]:
+            cursor = await db.execute(f"PRAGMA table_info({table})")
+            rows = await cursor.fetchall()
+            return {row[1] for row in rows}
 
     async def _add_column_if_missing(table: str, column: str, definition: str) -> None:
         cols = await _table_columns(table)
@@ -105,7 +89,7 @@ async def _run_migrations(db: aiosqlite.Connection) -> None:
     await db.execute("UPDATE payments SET duration_days=30 WHERE duration_days IS NULL OR duration_days=0")
 
 
-async def _seed_default_plans(db: aiosqlite.Connection) -> None:
+async def _seed_default_plans(db) -> None:
     """Insert default subscription plans if the plans table is empty."""
     cursor = await db.execute("SELECT COUNT(*) FROM plans")
     row = await cursor.fetchone()

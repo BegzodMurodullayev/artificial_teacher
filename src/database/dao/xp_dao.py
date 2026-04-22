@@ -42,7 +42,7 @@ async def add_xp(user_id: int, amount: int, source: str, source_id: str = "", me
     )
 
     # Ensure user_xp row exists
-    await db.execute("INSERT OR IGNORE INTO user_xp (user_id) VALUES (?)", (user_id,))
+    await db.execute("INSERT INTO user_xp (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING", (user_id,))
 
     # Update daily XP
     today = date.today().isoformat()
@@ -90,7 +90,7 @@ def _xp_for_level(level: int) -> int:
 async def get_xp_summary(user_id: int) -> dict:
     """Get user's XP summary."""
     db = await get_db()
-    await db.execute("INSERT OR IGNORE INTO user_xp (user_id) VALUES (?)", (user_id,))
+    await db.execute("INSERT INTO user_xp (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING", (user_id,))
     await db.commit()
 
     cursor = await db.execute("SELECT * FROM user_xp WHERE user_id = ?", (user_id,))

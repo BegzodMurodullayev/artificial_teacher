@@ -70,7 +70,8 @@ async def insert_material(material_type: str, title: str, category: Optional[str
         (material_type, category, title, author, description, content)
     )
     await db.commit()
-    return cursor.lastrowid
+    row = await cursor.fetchone()
+    return row[0] if row else 0
 
 async def count_materials(material_type: str) -> int:
     db = await get_db()

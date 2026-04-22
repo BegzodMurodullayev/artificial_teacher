@@ -156,9 +156,13 @@ async def _btn_adm_plans(message: Message, db_user: dict | None = None):
         plans = []
     
     text = "⚙️ <b>Tarif Rejalar</b>\n\n"
+    buttons = []
+    
     if plans:
         for p in plans:
-            text += f"• <b>{escape_html(p.get('display_name', p.get('name', '?')))}</b> — {fmt_price(p.get('price_monthly', 0))}/oy\n"
+            pname = p.get('name', '?')
+            text += f"• <b>{escape_html(p.get('display_name', pname))}</b> — {fmt_price(p.get('price_monthly', 0))}/oy\n"
+            buttons.append([InlineKeyboardButton(text=f"✏️ {pname.title()} narxini tahrirlash", callback_data=f"adm_edit_plan:{pname}")])
     else:
         text += (
             "⭐ Free — Bepul\n"
@@ -166,8 +170,62 @@ async def _btn_adm_plans(message: Message, db_user: dict | None = None):
             "💸 Pro — 59,000 so'm/oy\n"
             "👑 Premium — 99,000 so'm/oy\n"
         )
-    text += "\n/admin buyrug'i bilan dashboardga qaytish."
-    await safe_reply(message, text)
+        
+    buttons.append([InlineKeyboardButton(text="🔙 Dashboard", callback_data="adm:back")])
+    await safe_reply(message, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+
+@router.callback_query(F.data.startswith("adm_edit_plan:"))
+async def callback_adm_edit_plan(callback: CallbackQuery, db_user: dict | None = None):
+    """Start plan editing flow."""
+    plan_name = callback.data.split(":")[1]
+    
+    # Store pending edit state in memory or pass via callback
+    # For simplicity, we just prompt the user with a forced reply or handle it via a pending state
+    # We will use the Message state
+    from src.bot.loader import dp
+    await safe_edit(
+        callback,
+        f"✏️ <b>{plan_name.title()}</b> rejasini tahrirlash.\n\n"
+        f"Yangi oylik narxni kiriting (raqamlarda, masalan: 59000):\n\n"
+        f"<i>(Bekor qilish uchun 'bekor' deb yozing)</i>"
+    )
+    
+    # Set user state for pending plan price edit
+    from aiogram.fsm.context import FSMContext
+    state: FSMContext = await dp.fsm.resolve_context(bot=callback.bot, chat_id=callback.message.chat.id, user_id=callback.from_user.id)
+    await state.set_state("ADMIN_EDIT_PLAN_PRICE")
+    await state.update_data(edit_plan_name=plan_name)
+    await safe_answer_callback(callback)
+
+
+@router.message(F.state == "ADMIN_EDIT_PLAN_PRICE")
+async def _handle_admin_edit_plan_price(message: Message, state, db_user: dict | None = None):
+    """Handle new price input."""
+    if message.text.lower() == "bekor":
+        await state.clear()
+        await safe_reply(message, "❌ Tahrirlash bekor qilindi.")
+        await cmd_admin(message, db_user)
+        return
+        
+    try:
+        new_price = float(message.text.strip())
+        if new_price < 0:
+            raise ValueError()
+    except ValueError:
+        await safe_reply(message, "❌ Faqat musbat son kiriting (masalan: 59000).")
+        return
+        
+    data = await state.get_data()
+    plan_name = data.get("edit_plan_name")
+    
+    await subscription_dao.update_plan_field(plan_name, "price_monthly", new_price)
+    # Also optionally update yearly (x10)
+    await subscription_dao.update_plan_field(plan_name, "price_yearly", new_price * 10)
+    
+    await state.clear()
+    await safe_reply(message, f"✅ <b>{plan_name.title()}</b> rejasining narxi {fmt_price(new_price)}/oy etib belgilandi!")
+    await cmd_admin(message, db_user)
 
 @router.message(F.text == "🏆 Reyting")
 async def _btn_adm_leaderboard(message: Message, db_user: dict | None = None):

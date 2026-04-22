@@ -33,7 +33,8 @@ async def create_quiz_session(
         (user_id, qtype, level, language, total_questions, question_timeout, chat_id),
     )
     await db.commit()
-    return cursor.lastrowid
+    row = await cursor.fetchone()
+    return row[0] if row else 0
 
 
 async def get_quiz_session(session_id: int) -> dict | None:
@@ -108,7 +109,8 @@ async def record_quiz_attempt(
         (user_id, qtype, total, correct, wrong, mode, level_before, level_after, iq_score),
     )
     await db.commit()
-    return cursor.lastrowid
+    row = await cursor.fetchone()
+    return row[0] if row else 0
 
 
 # ══════════════════════════════════════════════════════════
