@@ -22,6 +22,17 @@ async def add_xp(user_id: int, amount: int, source: str, source_id: str = "", me
     Sources: quiz_correct, check, game_win, streak, daily_login, lesson, pomodoro
     """
     db = await get_db()
+    
+    # Check for XP Multipliers (Weekend / Night Owl)
+    multiplier = 1.0
+    now = datetime.now()
+    if now.weekday() >= 5: # Saturday = 5, Sunday = 6
+        multiplier *= 1.5
+    if now.hour >= 22 or now.hour <= 4:
+        multiplier *= 1.2
+        
+    amount = int(amount * multiplier)
+    
     meta_json = json.dumps(metadata or {}, ensure_ascii=False)
 
     # Record transaction
@@ -216,6 +227,10 @@ async def seed_achievements() -> None:
         ("level_b1", "Intermediate", "B1 darajaga yetish", "📊", 100, "general", '{"level": "B1"}'),
         ("level_c1", "Advanced", "C1 darajaga yetish", "🎓", 300, "general", '{"level": "C1"}'),
         ("referral_3", "Influencer", "3 ta do'stni taklif qilish", "👥", 75, "social", '{"referrals": 3}'),
+        ("night_owl", "Night Owl", "Tunda o'qish (22:00-04:00)", "🦉", 25, "event", '{"time": "night"}'),
+        ("weekend_warrior", "Weekend Warrior", "Dam olish kuni faol bo'lish", "🌴", 40, "event", '{"time": "weekend"}'),
+        ("pomodoro_10", "Focus Master", "10 ta Pomodoro blokini tugatish", "🍅", 100, "general", '{"pomodoro": 10}'),
+        ("iq_genius", "IQ Genius", "IQ testda 120+ ball", "🧠", 200, "quiz", '{"iq_score": 120}'),
     ]
     await db.executemany(
         """INSERT INTO achievements (code, title, description, icon, xp_reward, category, condition)

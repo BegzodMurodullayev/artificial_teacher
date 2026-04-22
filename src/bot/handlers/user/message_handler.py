@@ -75,18 +75,24 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
         duration = message.voice.duration
         await message.chat.do("record_voice")
 
-        transcript = await transcription_service.transcribe_voice(
+        transcript_data = await transcription_service.transcribe_voice(
             bot=bot,
             file_id=message.voice.file_id,
             duration=duration,
         )
-        if not transcript:
-            await safe_reply(message, "❌ Ovozli xabarni tanib bo'lmadi yoki u juda uzun (max 60s).")
+        if not transcript_data:
+            await safe_reply(message, "❌ Ovozli xabarni tanib bo'lmadi yoki u juda uzun (max 300s).")
             return
 
         await stats_dao.inc_stat(user_id, "voice_total")
-        text = transcript
-        await safe_reply(message, f"🎙 <i>{escape_html(text)}</i>")
+        text = transcript_data["text"]
+        accuracy = transcript_data.get("accuracy", 100)
+        
+        reply_msg = f"🎙 <i>{escape_html(text)}</i>"
+        if accuracy < 90:
+            reply_msg += f"\n\n⚠️ <b>Talaffuz aniqligi:</b> {accuracy}%"
+            
+        await safe_reply(message, reply_msg)
     elif message.text:
         text = message.text
 
@@ -139,21 +145,23 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
         await safe_reply(message, response)
         await add_history(user_id, role="assistant", content=response)
 
-    elif selected_mode == "TRANSLATION":
-        is_latin = bool(re.search(r'[a-zA-Z]', text))
-        is_cyrillic = bool(re.search(r'[а-яА-Я]', text))
-        direction = "en_to_uz" if is_latin and not is_cyrillic else "uz_to_en"
+    elif selected_mode in ("TRANSLATION", "uz_to_en", "en_to_uz", "ru_to_en", "en_to_ru"):
+        direction = selected_mode
+        if selected_mode == "TRANSLATION":
+            is_latin = bool(re.search(r'[a-zA-Z]', text))
+            is_cyrillic = bool(re.search(r'[а-яА-Я]', text))
+            direction = "en_to_uz" if is_latin and not is_cyrillic else "uz_to_en"
         await process_translation(message, text, user_id, direction=direction, level=level)
 
-    elif selected_mode == "PRONUNCIATION":
+    elif selected_mode in ("PRONUNCIATION", "pronunciation"):
         from src.bot.handlers.user.pronunciation import process_pronunciation
         await process_pronunciation(message, text, user_id)
 
-    elif selected_mode in ("TECHNICAL", "SUPPORT"):
+    elif selected_mode in ("TECHNICAL", "SUPPORT", "bot"):
         response = await ai_service.ask_ai(text, mode="bot", user_id=user_id, level=level)
         await safe_reply(message, response)
         
-    elif selected_mode == "CORRECTION":
+    elif selected_mode in ("CORRECTION", "check"):
         await process_grammar_check(message, text, user_id, level)
         
     else:

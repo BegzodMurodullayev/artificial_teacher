@@ -23,16 +23,15 @@ async def transcribe_voice(bot: Bot, file_id: str, duration: int) -> Optional[st
     """
     Downloads voice/audio file from Telegram and transcribes it using OpenAI Whisper.
     Limits transcription to 60 seconds (unless bypassed by caller).
-    
     Returns:
-        The transcribed text, or None if failed/too long.
+        A dict with 'text' and optional 'accuracy', or None if failed.
     """
     if not _client:
         logger.error("OpenAI API key not set. Transcription service unavailable.")
         return None
         
-    if duration > 60:
-        logger.warning(f"Audio too long ({duration}s). Limit is 60s.")
+    if duration > 300:
+        logger.warning(f"Audio too long ({duration}s). Limit is 300s.")
         return None
         
     try:
@@ -53,12 +52,23 @@ async def transcribe_voice(bot: Bot, file_id: str, duration: int) -> Optional[st
         response = await _client.audio.transcriptions.create(
             model="whisper-1",
             file=file_bytes,
+            response_format="verbose_json",
+            timestamp_granularities=["word"]
         )
         
+        # Calculate accuracy if word level data is available
         text = response.text.strip()
-        logger.info(f"Transcribed {duration}s audio in {time.time() - start_time:.2f}s. Result: {len(text)} chars")
+        accuracy = 100
         
-        return text
+        # Attempt to calculate confidence from word probabilities if available in the new API
+        if hasattr(response, 'words') and response.words:
+            probs = [w.get('probability', 1.0) for w in response.words if 'probability' in w]
+            if probs:
+                accuracy = int((sum(probs) / len(probs)) * 100)
+
+        logger.info(f"Transcribed {duration}s audio in {time.time() - start_time:.2f}s. Result: {len(text)} chars, Accuracy: {accuracy}%")
+        
+        return {"text": text, "accuracy": accuracy}
             
     except openai.OpenAIError as e:
         logger.error(f"Whisper API error: {e}")

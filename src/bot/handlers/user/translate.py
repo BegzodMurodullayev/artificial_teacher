@@ -54,10 +54,22 @@ async def process_translation(
         header = "🌐 <b>UZ → EN Tarjima</b>"
         orig_label = "🇺🇿"
         trans_label = "🇬🇧"
-    else:
+    elif direction == "en_to_uz":
         header = "🌐 <b>EN → UZ Tarjima</b>"
         orig_label = "🇬🇧"
         trans_label = "🇺🇿"
+    elif direction == "ru_to_en":
+        header = "🌐 <b>RU → EN Tarjima</b>"
+        orig_label = "🇷🇺"
+        trans_label = "🇬🇧"
+    elif direction == "en_to_ru":
+        header = "🌐 <b>EN → RU Tarjima</b>"
+        orig_label = "🇬🇧"
+        trans_label = "🇷🇺"
+    else:
+        header = "🌐 <b>Tarjima</b>"
+        orig_label = "📝"
+        trans_label = "📝"
 
     response = (
         f"{header}\n\n"

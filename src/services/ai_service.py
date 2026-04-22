@@ -45,6 +45,16 @@ Translate the English text to natural Uzbek.
 Return JSON: {"original": "english text", "translation": "uzbek text", "notes": "translation notes"}
 Respond ONLY with JSON.""",
 
+    "translate_ru_en": """You are a professional RU→EN translator.
+Translate the Russian text to natural English.
+Return JSON: {"original": "russian text", "translation": "english text", "notes": "any relevant notes about the translation"}
+Respond ONLY with JSON.""",
+
+    "translate_en_ru": """You are a professional EN→RU translator.
+Translate the English text to natural Russian.
+Return JSON: {"original": "english text", "translation": "russian text", "notes": "translation notes"}
+Respond ONLY with JSON.""",
+
     "pronunciation": """You are an English pronunciation expert.
 Provide a detailed pronunciation guide for the given word/phrase.
 Return JSON: {"word": "...", "ipa_us": "/.../ (US)", "ipa_uk": "/.../ (UK)", "syllables": "syl-la-bles", "tips": ["tip1", "tip2"], "example_sentences": ["sentence1", "sentence2"], "common_mistakes": ["mistake1"]}
@@ -76,6 +86,11 @@ Respond ONLY with valid JSON.""",
 Generate a random English word suitable for intermediate learners.
 Return JSON: {"word": "...", "part_of_speech": "noun/verb/adj/...", "definition": "...", "example": "example sentence", "synonyms": ["..."], "uzbek": "uzbek translation"}
 Choose an interesting, useful word. Respond ONLY with JSON.""",
+
+    "word_card": """You are an English vocabulary expert.
+Generate a beautiful word card for the provided word.
+Return JSON: {"word": "...", "translation": "uzbek translation", "ipa": "pronunciation", "part_of_speech": "noun/verb/adj/...", "definition": "english definition", "example": "english example sentence", "example_translation": "uzbek translation of example"}
+Respond ONLY with valid JSON.""",
 
     "bot": """You are Artificial Teacher, a friendly AI English tutor.
 Help the user learn English. Be encouraging and educational.

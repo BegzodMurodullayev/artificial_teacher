@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { iqApi, IQQuestion } from '../lib/api'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '../lib/i18n'
 
 export default function IQTestPage() {
   const [questions, setQuestions] = useState<IQQuestion[]>([])
@@ -13,6 +14,7 @@ export default function IQTestPage() {
   const [result, setResult] = useState<{score: number, new_best: boolean} | null>(null)
   
   const navigate = useNavigate()
+  const t = useTranslation()
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -58,7 +60,7 @@ export default function IQTestPage() {
       setResult({ score: res.score, new_best: res.new_best })
     } catch (e) {
       console.error(e)
-      alert("Natijani yuborishda xatolik yuz berdi.")
+      alert(t('iq_submit_err'))
     }
   }
 
@@ -85,7 +87,7 @@ export default function IQTestPage() {
           className="bg-white/10 p-8 rounded-3xl border border-white/20 w-full max-w-sm"
         >
           <div className="text-6xl mb-4">🧠</div>
-          <h2 className="text-2xl font-bold text-white mb-2">IQ Test Natijasi</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('iq_result')}</h2>
           
           {result ? (
             <>
@@ -94,11 +96,11 @@ export default function IQTestPage() {
               </div>
               {result.new_best && (
                 <div className="inline-block bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full text-sm font-bold mb-4">
-                  🌟 Yangi rekord!
+                  {t('iq_new_best')}
                 </div>
               )}
               <p className="text-white/70 mb-6 text-sm">
-                Sizning mantiqiy fikrlash darajangiz yuqoridagi ko'rsatkich bilan baholandi. Bu natija profil statistikasiga saqlandi.
+                {t('iq_desc_res')}
               </p>
             </>
           ) : (
@@ -109,7 +111,7 @@ export default function IQTestPage() {
             onClick={() => navigate('/')}
             className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl text-white font-bold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all active:scale-95"
           >
-            Bosh sahifaga qaytish
+            {t('iq_back_home')}
           </button>
         </motion.div>
       </div>
@@ -117,7 +119,7 @@ export default function IQTestPage() {
   }
 
   if (questions.length === 0) {
-    return <div className="page p-5 text-white/50 text-center">Savollar topilmadi.</div>
+    return <div className="page p-5 text-white/50 text-center">{t('iq_no_questions')}</div>
   }
 
   const currentQ = questions[currentIdx]
@@ -127,13 +129,13 @@ export default function IQTestPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6 bg-white/5 p-4 rounded-2xl">
         <div>
-          <div className="text-xs text-white/50 font-bold uppercase tracking-wider mb-1">Savol</div>
+          <div className="text-xs text-white/50 font-bold uppercase tracking-wider mb-1">{t('iq_question')}</div>
           <div className="text-xl font-black text-white">
             {currentIdx + 1} <span className="text-white/30">/ {questions.length}</span>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-xs text-white/50 font-bold uppercase tracking-wider mb-1">Vaqt</div>
+          <div className="text-xs text-white/50 font-bold uppercase tracking-wider mb-1">{t('iq_time')}</div>
           <div className={`text-xl font-mono font-black ${timeLeft < 60 ? 'text-red-400 animate-pulse' : 'text-white'}`}>
             {formatTime(timeLeft)}
           </div>
@@ -153,9 +155,9 @@ export default function IQTestPage() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentQ.id}
-          initial={{ x: 20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -20, opacity: 0 }}
+          initial={{ x: 20, opacity: 0, scale: 0.95 }}
+          animate={{ x: 0, opacity: 1, scale: 1 }}
+          exit={{ x: -20, opacity: 0, filter: 'blur(4px)' }}
           transition={{ duration: 0.2 }}
           className="bg-white/10 border border-white/20 p-6 rounded-3xl shadow-xl"
         >
@@ -195,14 +197,13 @@ export default function IQTestPage() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation */}
       <div className="flex justify-between mt-8">
         <button
           onClick={() => setCurrentIdx(c => Math.max(0, c - 1))}
           disabled={currentIdx === 0}
           className="px-6 py-3 rounded-xl bg-white/10 text-white font-bold disabled:opacity-30 transition-opacity"
         >
-          Oldingi
+          {t('iq_prev')}
         </button>
         
         {currentIdx === questions.length - 1 ? (
@@ -210,14 +211,14 @@ export default function IQTestPage() {
             onClick={handleSubmit}
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold shadow-lg shadow-purple-500/30"
           >
-            Yakunlash
+            {t('iq_finish')}
           </button>
         ) : (
           <button
             onClick={() => setCurrentIdx(c => Math.min(questions.length - 1, c + 1))}
             className="px-6 py-3 rounded-xl bg-white/20 text-white font-bold hover:bg-white/30 transition-colors"
           >
-            Keyingi
+            {t('iq_next')}
           </button>
         )}
       </div>

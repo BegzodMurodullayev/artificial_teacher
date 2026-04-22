@@ -11,11 +11,12 @@ Usage in any chat:
 import hashlib
 import logging
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import (
     InlineQuery,
     InlineQueryResultArticle,
     InputTextMessageContent,
+    CallbackQuery,
 )
 
 from src.services import ai_service
@@ -86,6 +87,14 @@ async def handle_inline_query(inline_query: InlineQuery):
     elif lower.startswith("bot:"):
         text = raw[4:].strip()
         results = await _inline_bot(text, user_id)
+
+    elif lower.startswith("word:"):
+        text = raw[5:].strip()
+        results = await _inline_word(text, user_id)
+
+    elif lower.startswith("quiz:"):
+        text = raw[5:].strip()
+        results = await _inline_quiz(text, user_id)
 
     else:
         # Treat as grammar check by default
@@ -275,6 +284,95 @@ async def _inline_bot(text: str, user_id: int) -> list:
 
 
 # ══════════════════════════════════════════════════════════
+# WORD CARD
+# ══════════════════════════════════════════════════════════
+
+async def _inline_word(text: str, user_id: int) -> list:
+    if not text:
+        return [_error_card("🔤 So'z kiriting: word: serendipity")]
+
+    result = await ai_service.ask_json(text, mode="word_card", user_id=user_id)
+    if not result:
+        return [_error_card("❌ So'z ma'lumoti olinmadi.")]
+
+    word = escape_html(result.get("word", text))
+    translation = escape_html(result.get("translation", ""))
+    ipa = escape_html(result.get("ipa", ""))
+    pos = escape_html(result.get("part_of_speech", ""))
+    definition = escape_html(result.get("definition", ""))
+    example = escape_html(result.get("example", ""))
+    example_translation = escape_html(result.get("example_translation", ""))
+
+    lines = [
+        f"🇺🇸 <b>{word.capitalize()}</b> <code>[{ipa}]</code> - <i>{pos}</i>",
+        f"🇺🇿 <b>{translation}</b>",
+        "",
+        f"📖 <b>Ma'nosi:</b> {definition}",
+        "",
+        f"🗣 <b>Misol:</b> <i>{example}</i>",
+        f"💡 <b>Tarjimasi:</b> <i>{example_translation}</i>"
+    ]
+
+    return [InlineQueryResultArticle(
+        id=_uid(f"word:{text}"),
+        title=f"🔤 {word.capitalize()} — {translation}",
+        description=definition,
+        input_message_content=InputTextMessageContent(
+            message_text="\n".join(lines),
+            parse_mode="HTML",
+        ),
+        thumbnail_url="https://img.icons8.com/fluency/48/dictionary.png",
+    )]
+
+
+# ══════════════════════════════════════════════════════════
+# QUIZ SHARE
+# ══════════════════════════════════════════════════════════
+
+async def _inline_quiz(text: str, user_id: int) -> list:
+    topic = text if text else "random general english"
+    
+    result = await ai_service.ask_json(topic, mode="quiz_generate", user_id=user_id)
+    if not result:
+        return [_error_card("❌ Quiz yaratilmadi.")]
+
+    question = escape_html(result.get("question", ""))
+    options = result.get("options", {})
+    answer = result.get("answer", "A")
+
+    lines = [
+        f"🎯 <b>Tezkor Quiz</b>",
+        f"<i>Mavzu: {escape_html(topic).title()}</i>",
+        "",
+        f"❓ <b>{question}</b>",
+    ]
+    
+    for k, v in options.items():
+        lines.append(f"<b>{k})</b> {escape_html(v)}")
+
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    # Create simple callback buttons: "inl_q:<correct_ans>:<selected_ans>"
+    # Ex: inl_q:A:A
+    buttons = []
+    for k in options.keys():
+        buttons.append(InlineKeyboardButton(text=k, callback_data=f"inl_q:{answer}:{k}"))
+        
+    kb = InlineKeyboardMarkup(inline_keyboard=[buttons])
+
+    return [InlineQueryResultArticle(
+        id=_uid(f"quiz:{topic}:{question}"),
+        title=f"🎯 Quiz ulashish: {topic.capitalize()}",
+        description=question,
+        reply_markup=kb,
+        input_message_content=InputTextMessageContent(
+            message_text="\n".join(lines),
+            parse_mode="HTML",
+        ),
+        thumbnail_url="https://img.icons8.com/fluency/48/quiz.png",
+    )]
+
+
+# ══════════════════════════════════════════════════════════
 # HELP CARDS (empty query)
 # ══════════════════════════════════════════════════════════
 
@@ -292,6 +390,12 @@ def _help_cards() -> list:
         ("🤖 AI Suhbat", "bot: savol yozing", "Ingliz tili bo'yicha savol bering",
          "bot: What is the difference between since and for?",
          "https://img.icons8.com/fluency/48/bot.png"),
+        ("🔤 So'z kartochkasi", "word: so'z", "Chiroyli so'z yodlash kartochkasi",
+         "word: serendipity",
+         "https://img.icons8.com/fluency/48/dictionary.png"),
+        ("🎯 Quiz ulashish", "quiz: mavzu", "Guruhlarga tezkor test yuborish",
+         "quiz: present perfect",
+         "https://img.icons8.com/fluency/48/quiz.png"),
     ]
     results = []
     for i, (title, desc, tip, example, thumb) in enumerate(cards):
@@ -311,7 +415,6 @@ def _help_cards() -> list:
         ))
     return results
 
-
 def _error_card(msg: str) -> InlineQueryResultArticle:
     return InlineQueryResultArticle(
         id=_uid(msg),
@@ -321,3 +424,23 @@ def _error_card(msg: str) -> InlineQueryResultArticle:
             message_text=msg,
         ),
     )
+
+# ══════════════════════════════════════════════════════════
+# INLINE CALLBACK HANDLERS
+# ══════════════════════════════════════════════════════════
+
+@router.callback_query(F.data.startswith("inl_q:"))
+async def handle_inline_quiz_callback(callback: CallbackQuery):
+    """Handle answer button clicks from inline quizzes."""
+    parts = callback.data.split(":")
+    if len(parts) != 3:
+        await callback.answer("Xato ma'lumot.", show_alert=True)
+        return
+        
+    correct_ans = parts[1]
+    selected_ans = parts[2]
+    
+    if selected_ans == correct_ans:
+        await callback.answer("✅ To'g'ri javob topdingiz! Barakalla!", show_alert=True)
+    else:
+        await callback.answer(f"❌ Noto'g'ri.\nTo'g'ri javob: {correct_ans}", show_alert=True)

@@ -18,7 +18,7 @@ def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboard
     """Build the main user reply keyboard based on plan and role."""
     rows = [
         [KeyboardButton(text="🎓 Ta'lim"), KeyboardButton(text="🎯 Sinovlar")],
-        [KeyboardButton(text="🎮 Guruh O'yinlari"), KeyboardButton(text="👤 Kabinetim")],
+        [KeyboardButton(text="🎮 O'yinlar"), KeyboardButton(text="👤 Kabinetim")],
         [KeyboardButton(text="⚙️ Qo'shimcha")],
     ]
 
@@ -124,7 +124,7 @@ USER_MENU_ALIASES = {
     "main_menu":     ["🔙 Asosiy Menyu"],
     "edu_menu":      ["🎓 Ta'lim"],
     "test_menu":     ["🎯 Sinovlar"],
-    "games_menu":    ["🎮 Guruh O'yinlari"],
+    "games_menu":    ["🎮 O'yinlar", "🎮 Guruh O'yinlari"],
     "cabinet_menu":  ["👤 Kabinetim"],
     "extra_menu":    ["⚙️ Qo'shimcha"],
     "admin":         ["🛡 Admin Panel", "admin panel"],
@@ -177,6 +177,8 @@ def mode_picker_keyboard(current_mode: str = "check") -> InlineKeyboardMarkup:
         ("✅ Check", "mode:check"),
         ("🌐 UZ→EN", "mode:uz_to_en"),
         ("🌐 EN→UZ", "mode:en_to_uz"),
+        ("🇷🇺 RU→EN", "mode:ru_to_en"),
+        ("🇬🇧 EN→RU", "mode:en_to_ru"),
         ("🔊 Pronunciation", "mode:pronunciation"),
         ("🤖 AI Chat", "mode:bot"),
     ]

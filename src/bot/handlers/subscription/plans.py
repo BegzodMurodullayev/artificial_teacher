@@ -6,7 +6,10 @@ import logging
 
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton,
+    PreCheckoutQuery, ContentType
+)
 
 from src.bot.utils.telegram import safe_reply, safe_edit, safe_answer_callback, escape_html, fmt_price
 from src.bot.keyboards.user_menu import subscription_plans_keyboard
@@ -143,27 +146,63 @@ async def callback_buy(callback: CallbackQuery, db_user: dict | None = None):
             price = max(0, price - credit)
             credit_text = f"\n💳 Kredit (qolgan {remaining} kun): -{fmt_price(credit)}"
 
-    # Get payment config
-    from src.database.dao.reward_dao import get_config
-    card_number = await get_config("payment_config", "card_number", "")
-    card_holder = await get_config("payment_config", "card_holder", "")
-
     # Create pending payment
     payment_id = await payment_dao.create_payment(
         user_id=user_id,
         plan_name=plan_name,
         amount=price,
         duration_days=days,
-        method="manual",
+        method="pending_method",
     )
 
     display = plan.get("display_name", plan_name.title())
     text = (
-        f"💳 <b>To'lov #{payment_id}</b>\n\n"
+        f"💳 <b>To'lov usulini tanlang</b>\n\n"
         f"📋 Reja: <b>{display}</b>\n"
         f"📅 Davomiylik: <b>{days} kun</b>\n"
         f"💰 Summa: <b>{fmt_price(price)}</b>"
         f"{credit_text}\n\n"
+    )
+
+    stars_amount = int(price / 150) if price > 0 else 0
+
+    buttons = []
+    if price > 0:
+        buttons.append([InlineKeyboardButton(text="💳 Karta (Click/Payme)", callback_data=f"pay_manual:{payment_id}")])
+        buttons.append([InlineKeyboardButton(text=f"⭐ Telegram Stars ({stars_amount} XTR)", callback_data=f"pay_stars:{payment_id}")])
+    else:
+        buttons.append([InlineKeyboardButton(text="✅ Bepul oling", callback_data=f"pay_manual:{payment_id}")])
+        
+    buttons.append([InlineKeyboardButton(text="❌ Bekor qilish", callback_data=f"cancel_pay:{payment_id}")])
+    
+    await safe_edit(callback, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+    await safe_answer_callback(callback)
+
+
+@router.callback_query(F.data.startswith("pay_manual:"))
+async def callback_pay_manual(callback: CallbackQuery, db_user: dict | None = None):
+    """Handle manual payment flow."""
+    if not db_user:
+        return
+
+    payment_id = int(callback.data.split(":")[1])
+    payment = await payment_dao.get_payment(payment_id)
+    if not payment or payment["user_id"] != db_user["user_id"]:
+        await safe_answer_callback(callback, "❌ To'lov topilmadi", show_alert=True)
+        return
+
+    # Update method
+    await payment_dao._db.execute("UPDATE payments SET method = 'manual' WHERE id = ?", (payment_id,))
+    await payment_dao._db.commit()
+
+    from src.database.dao.reward_dao import get_config
+    card_number = await get_config("payment_config", "card_number", "")
+    card_holder = await get_config("payment_config", "card_holder", "")
+
+    text = (
+        f"💳 <b>To'lov #{payment_id} (Manual)</b>\n\n"
+        f"📋 Reja: <b>{payment['plan_name'].title()}</b>\n"
+        f"💰 Summa: <b>{fmt_price(payment['amount'])}</b>\n\n"
     )
 
     if card_number:
@@ -183,6 +222,92 @@ async def callback_buy(callback: CallbackQuery, db_user: dict | None = None):
     buttons = [[InlineKeyboardButton(text="❌ Bekor qilish", callback_data=f"cancel_pay:{payment_id}")]]
     await safe_edit(callback, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
     await safe_answer_callback(callback)
+
+
+@router.callback_query(F.data.startswith("pay_stars:"))
+async def callback_pay_stars(callback: CallbackQuery, db_user: dict | None = None):
+    """Handle Telegram Stars payment flow."""
+    if not db_user:
+        return
+
+    payment_id = int(callback.data.split(":")[1])
+    payment = await payment_dao.get_payment(payment_id)
+    if not payment or payment["user_id"] != db_user["user_id"]:
+        await safe_answer_callback(callback, "❌ To'lov topilmadi", show_alert=True)
+        return
+
+    stars_amount = int(payment['amount'] / 150)
+    if stars_amount <= 0:
+        await safe_answer_callback(callback, "❌ Xato", show_alert=True)
+        return
+
+    # Update method
+    await payment_dao._db.execute("UPDATE payments SET method = 'stars' WHERE id = ?", (payment_id,))
+    await payment_dao._db.commit()
+
+    from aiogram.types import LabeledPrice
+    from src.bot.loader import bot
+    
+    await safe_edit(callback, "⭐ Telegram Stars hisob-fakturasi tayyorlanmoqda...")
+    await safe_answer_callback(callback)
+
+    try:
+        await bot.send_invoice(
+            chat_id=callback.from_user.id,
+            title=f"Artificial Teacher - {payment['plan_name'].title()} obuna",
+            description=f"{payment['duration_days']} kunlik premium imkoniyatlar uchun to'lov.",
+            payload=f"stars_pay:{payment_id}",
+            provider_token="",  # Empty for Telegram Stars
+            currency="XTR",
+            prices=[LabeledPrice(label="Obuna narxi", amount=stars_amount)],
+        )
+    except Exception as e:
+        logger.error("Failed to send stars invoice: %s", e)
+        await callback.message.answer("❌ Stars invoice yaratishda xatolik yuz berdi.")
+
+
+@router.pre_checkout_query()
+async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery):
+    """Handle Telegram Stars pre-checkout."""
+    await pre_checkout_query.answer(ok=True)
+
+
+@router.message(F.successful_payment)
+async def successful_payment_handler(message: Message, db_user: dict | None = None):
+    """Handle successful Telegram Stars payment."""
+    if not db_user:
+        return
+
+    payment_info = message.successful_payment
+    payload = payment_info.invoice_payload
+
+    if not payload.startswith("stars_pay:"):
+        return
+
+    payment_id = int(payload.split(":")[1])
+    payment = await payment_dao.get_payment(payment_id)
+
+    if not payment or payment["status"] != "pending":
+        return
+
+    # Auto-approve Stars payment
+    await payment_dao.approve_payment(payment_id, admin_id=0) # 0 means auto
+
+    # Activate subscription
+    await subscription_dao.activate_subscription(
+        user_id=payment["user_id"],
+        plan_name=payment["plan_name"],
+        days=payment.get("duration_days", 30),
+    )
+
+    plan_display = payment["plan_name"].title()
+    await safe_reply(
+        message,
+        f"🎉 <b>To'lov muvaffaqiyatli amalga oshirildi!</b>\n\n"
+        f"📋 Reja: <b>{plan_display}</b>\n"
+        f"📅 Davomiylik: <b>{payment.get('duration_days', 30)} kun</b>\n\n"
+        f"Botning barcha premium imkoniyatlaridan to'liq foydalanishingiz mumkin! 🚀",
+    )
 
 
 @router.callback_query(F.data.startswith("cancel_pay:"))

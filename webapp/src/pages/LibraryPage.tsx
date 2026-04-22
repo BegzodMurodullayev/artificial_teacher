@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { materialsApi, MaterialData } from '../lib/api'
+import { useTranslation } from '../lib/i18n'
 
 type Tab = 'book' | 'fact' | 'quiz'
 
@@ -9,6 +10,7 @@ export default function LibraryPage() {
   const [materials, setMaterials] = useState<MaterialData[]>([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
+  const t = useTranslation()
 
   useEffect(() => {
     fetchMaterials()
@@ -44,15 +46,15 @@ export default function LibraryPage() {
   }
 
   const tabLabels = {
-    book: { label: 'Kitoblar', icon: '📚' },
-    fact: { label: 'Faktlar', icon: '💡' },
-    quiz: { label: 'Zakovat', icon: '🧠' },
+    book: { labelKey: 'lib_books', icon: '📚' },
+    fact: { labelKey: 'lib_facts', icon: '💡' },
+    quiz: { labelKey: 'lib_quiz', icon: '🧠' },
   }
 
   return (
     <div className="page pb-20">
       <div className="flex items-center gap-3 mb-6">
-        <h1 className="text-text-primary font-bold text-2xl">📚 Kutubxona</h1>
+        <h1 className="text-text-primary font-bold text-2xl">📚 {t('lib_title')}</h1>
       </div>
 
       {/* Tabs */}
@@ -66,11 +68,11 @@ export default function LibraryPage() {
             }}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               activeTab === tab
-                ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
+                ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20'
                 : 'text-text-secondary hover:text-white'
             }`}
           >
-            {tabLabels[tab].icon} {tabLabels[tab].label}
+            {tabLabels[tab].icon} {t(tabLabels[tab].labelKey)}
           </button>
         ))}
       </div>
@@ -81,8 +83,8 @@ export default function LibraryPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={`${tabLabels[activeTab].label}dan izlash...`}
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-500 transition-colors"
+          placeholder={t('lib_search', { x: t(tabLabels[activeTab].labelKey).toLowerCase() })}
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-500 focus:bg-white/10 transition-all shadow-inner"
         />
         <button
           type="submit"
@@ -104,9 +106,9 @@ export default function LibraryPage() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="col-span-full text-center py-10 text-white/50"
+                className="col-span-full text-center py-10 text-white/50 bg-white/5 rounded-2xl border border-white/10"
               >
-                Hech narsa topilmadi 😔
+                {t('lib_not_found')}
               </motion.div>
             )}
             {materials.map((m) => (
@@ -142,11 +144,11 @@ export default function LibraryPage() {
                 {/* Show quiz answer if it's a quiz, hidden by default maybe? */}
                 {m.material_type === 'quiz' && m.content && (
                   <div className="mt-4 pt-4 border-t border-white/10">
-                    <details className="text-sm">
-                      <summary className="text-blue-400 cursor-pointer font-semibold outline-none select-none">
-                        Javobni ko'rish
+                    <details className="text-sm group">
+                      <summary className="text-blue-400 hover:text-blue-300 cursor-pointer font-semibold outline-none select-none transition-colors">
+                        {t('lib_show_answer')}
                       </summary>
-                      <div className="mt-2 p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-green-300 font-medium">
+                      <div className="mt-3 p-3 bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 rounded-xl text-green-300 font-medium">
                         {typeof m.content === 'string' ? JSON.parse(m.content)?.javob : m.content?.javob}
                       </div>
                     </details>
@@ -154,9 +156,9 @@ export default function LibraryPage() {
                 )}
                 
                 {m.material_type === 'fact' && m.content && (
-                  <div className="mt-3 pt-3 border-t border-white/10 text-xs text-white/60">
-                    <p><strong>Yil:</strong> {typeof m.content === 'string' ? JSON.parse(m.content)?.year : m.content?.year}</p>
-                    <p><strong>Hudud:</strong> {typeof m.content === 'string' ? JSON.parse(m.content)?.region : m.content?.region}</p>
+                  <div className="mt-3 pt-3 border-t border-white/10 text-xs text-white/60 flex gap-4">
+                    <p><strong className="text-white/80">{t('lib_year')}:</strong> {typeof m.content === 'string' ? JSON.parse(m.content)?.year : m.content?.year}</p>
+                    <p><strong className="text-white/80">{t('lib_region')}:</strong> {typeof m.content === 'string' ? JSON.parse(m.content)?.region : m.content?.region}</p>
                   </div>
                 )}
               </motion.div>

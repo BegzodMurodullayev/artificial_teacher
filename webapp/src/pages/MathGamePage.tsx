@@ -6,14 +6,15 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { gamesApi } from '../lib/api'
+import { useTranslation } from '../lib/i18n'
 
 type Op = '+' | '-' | '×' | '÷'
 type Difficulty = 'easy' | 'medium' | 'hard'
 
 const CONFIGS = {
-  easy:   { ops: ['+', '-'] as Op[],       range: 20,  time: 30, questions: 10, label: 'Oson',  color: '#4ade80' },
-  medium: { ops: ['+', '-', '×'] as Op[],  range: 50,  time: 25, questions: 15, label: "O'rta", color: '#fbbf24' },
-  hard:   { ops: ['+', '-', '×', '÷'] as Op[], range: 100, time: 20, questions: 20, label: 'Qiyin', color: '#f87171' },
+  easy:   { ops: ['+', '-'] as Op[],       range: 20,  time: 30, questions: 10, labelKey: 'easy',  color: '#4ade80' },
+  medium: { ops: ['+', '-', '×'] as Op[],  range: 50,  time: 25, questions: 15, labelKey: 'medium', color: '#fbbf24' },
+  hard:   { ops: ['+', '-', '×', '÷'] as Op[], range: 100, time: 20, questions: 20, labelKey: 'hard', color: '#f87171' },
 }
 
 interface Question { a: number; b: number; op: Op; answer: number; display: string }
@@ -137,6 +138,7 @@ export default function MathGamePage() {
   const conf = CONFIGS[difficulty]
   const progress = question ? (qIndex / conf.questions) * 100 : 0
   const timerPct = (timeLeft / conf.time) * 100
+  const t = useTranslation()
 
   return (
     <div className="page" style={{ paddingBottom: '16px' }}>
@@ -146,10 +148,10 @@ export default function MathGamePage() {
         {screen === 'setup' && (
           <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
             <div className="flex items-center gap-3 mb-5">
-              <button onClick={() => navigate('/games')} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(180,200,255,0.8)', padding: '6px 12px', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>← Orqaga</button>
-              <h1 className="text-text-primary font-bold text-xl">⚡ Tez Hisob</h1>
+              <button onClick={() => navigate('/games')} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(180,200,255,0.8)', padding: '6px 12px', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>← {t('back')}</button>
+              <h1 className="text-text-primary font-bold text-xl">⚡ {t('math_title')}</h1>
             </div>
-            <p className="text-text-muted text-sm mb-4">Daraja tanlang</p>
+            <p className="text-text-muted text-sm mb-4">{t('num_desc')}</p>
             <div className="grid grid-cols-1 gap-3 mb-5">
               {(Object.entries(CONFIGS) as [Difficulty, typeof CONFIGS[Difficulty]][]).map(([key, d]) => (
                 <button key={key} onClick={() => setDifficulty(key)}
@@ -159,9 +161,9 @@ export default function MathGamePage() {
                     display: 'flex', alignItems: 'center', gap: '14px', transition: 'all 0.2s' }}>
                   <span style={{ fontSize: '28px' }}>{key === 'easy' ? '😊' : key === 'medium' ? '🧠' : '⚡'}</span>
                   <div>
-                    <div style={{ color: '#fff', fontWeight: 700, fontSize: '15px' }}>{d.label}</div>
+                    <div style={{ color: '#fff', fontWeight: 700, fontSize: '15px' }}>{t(d.labelKey)}</div>
                     <div style={{ color: 'rgba(180,200,255,0.5)', fontSize: '12px' }}>
-                      {d.questions} savol | {d.time}s countdown | {d.ops.join(', ')}
+                      {d.questions} {t('math_questions')} | {d.time}s | {d.ops.join(', ')}
                     </div>
                   </div>
                   {difficulty === key && <div style={{ marginLeft: 'auto', color: d.color, fontSize: '18px' }}>✓</div>}
@@ -169,7 +171,7 @@ export default function MathGamePage() {
               ))}
             </div>
             <button onClick={startGame} style={{ width: '100%', padding: '14px', borderRadius: '16px', border: 'none', background: 'linear-gradient(135deg, #4ade80, #22c55e)', color: '#052e16', fontSize: '15px', fontWeight: 800, cursor: 'pointer' }}>
-              ⚡ Boshlash
+              ⚡ {t('math_start')}
             </button>
           </motion.div>
         )}
@@ -195,18 +197,17 @@ export default function MathGamePage() {
               <motion.div style={{ height: '100%', background: timeLeft <= 5 ? '#f87171' : '#60a5fa', borderRadius: '2px' }} animate={{ width: `${timerPct}%` }} transition={{ duration: 1, ease: 'linear' }} />
             </div>
 
-            {/* Question */}
             <AnimatePresence mode="wait">
               <motion.div key={qIndex}
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20 }}
+                exit={{ opacity: 0, y: -20, filter: 'blur(4px)' }}
                 style={{ textAlign: 'center', marginBottom: '28px' }}>
-                <div style={{ fontSize: '11px', color: 'rgba(180,200,255,0.5)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>Hisoblang</div>
+                <div style={{ fontSize: '11px', color: 'rgba(180,200,255,0.5)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>{t('math_calc')}</div>
                 <div style={{ fontSize: '42px', fontWeight: 900, color: '#fff' }}>{question.display} = ?</div>
                 {feedback && (
                   <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} style={{ marginTop: '8px', fontSize: '20px' }}>
-                    {feedback === 'correct' ? '✅ To\'g\'ri!' : `❌ Noto'g'ri! Javob: ${question.answer}`}
+                    {feedback === 'correct' ? `✅ ${t('math_right')}` : `❌ ${t('math_wrong', { x: question.answer })}`}
                   </motion.div>
                 )}
               </motion.div>
@@ -246,13 +247,13 @@ export default function MathGamePage() {
               {correct >= conf.questions * 0.8 ? '🏆' : correct >= conf.questions * 0.5 ? '🎉' : '💪'}
             </div>
             <h2 style={{ color: '#fff', fontSize: '22px', fontWeight: 800, marginBottom: '16px' }}>
-              {correct >= conf.questions * 0.8 ? 'Ajoyib!' : correct >= conf.questions * 0.5 ? "Zo'r!" : 'Mashq qilish kerak!'}
+              {correct >= conf.questions * 0.8 ? t('math_awesome') : correct >= conf.questions * 0.5 ? t('math_good') : t('math_bad')}
             </h2>
             <div className="grid grid-cols-3 gap-3 mb-6">
               {[
-                { label: 'Ball', value: score, color: '#fbbf24' },
-                { label: "To'g'ri", value: `${correct}/${conf.questions}`, color: '#4ade80' },
-                { label: 'Aniqlik', value: `${Math.round(correct / conf.questions * 100)}%`, color: '#60a5fa' },
+                { label: t('math_score'), value: score, color: '#fbbf24' },
+                { label: t('math_correct_count'), value: `${correct}/${conf.questions}`, color: '#4ade80' },
+                { label: t('math_accuracy'), value: `${Math.round(correct / conf.questions * 100)}%`, color: '#60a5fa' },
               ].map((s, i) => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '14px 8px' }}>
                   <div style={{ fontSize: '22px', fontWeight: 800, color: s.color }}>{s.value}</div>
@@ -261,8 +262,8 @@ export default function MathGamePage() {
               ))}
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <button onClick={startGame} style={{ padding: '14px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #4ade80, #22c55e)', color: '#052e16', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>🔄 Qayta</button>
-              <button onClick={() => setScreen('setup')} style={{ padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: 'rgba(200,220,255,0.8)', cursor: 'pointer', fontSize: '14px' }}>← Sozlash</button>
+              <button onClick={startGame} style={{ padding: '14px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #4ade80, #22c55e)', color: '#052e16', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>🔄 {t('math_again')}</button>
+              <button onClick={() => setScreen('setup')} style={{ padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: 'rgba(200,220,255,0.8)', cursor: 'pointer', fontSize: '14px' }}>← {t('num_setup')}</button>
             </div>
           </motion.div>
         )}

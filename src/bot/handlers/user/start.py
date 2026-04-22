@@ -156,18 +156,26 @@ async def callback_set_level(callback: CallbackQuery, db_user: dict | None = Non
 @router.callback_query(F.data.startswith("mode:"))
 async def callback_set_mode(callback: CallbackQuery, db_user: dict | None = None):
     """Handle mode selection callback."""
+    if not db_user:
+        await safe_answer_callback(callback, "❌ Xatolik")
+        return
+        
     mode = callback.data.split(":")[1]
     mode_names = {
         "check": "✅ Grammatika tekshiruv",
         "uz_to_en": "🌐 UZ→EN Tarjima",
         "en_to_uz": "🌐 EN→UZ Tarjima",
+        "ru_to_en": "🇷🇺 RU→EN Tarjima",
+        "en_to_ru": "🇬🇧 EN→RU Tarjima",
         "pronunciation": "🔊 Talaffuz",
         "bot": "🤖 AI Suhbat",
     }
     name = mode_names.get(mode, mode)
     await safe_answer_callback(callback, f"✅ Rejim: {name}")
 
-    # Store mode in FSM or user_data — will be handled via FSM in full implementation
+    from src.services.mode_manager import set_mode
+    await set_mode(db_user["user_id"], mode)
+
     await safe_edit(
         callback,
         f"⚙️ <b>Rejim tanlandi:</b> {name}\n\nEndi matn yozing!",

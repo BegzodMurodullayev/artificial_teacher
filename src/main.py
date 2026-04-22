@@ -149,6 +149,7 @@ async def main():
     # 6. Start bot
     try:
         logger.info("🤖 Starting bot polling...")
+        await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     except (KeyboardInterrupt, SystemExit):
         logger.info("Bot stopped by user")

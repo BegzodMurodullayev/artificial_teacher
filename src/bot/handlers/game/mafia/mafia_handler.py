@@ -236,6 +236,7 @@ async def cb_start_game(callback: CallbackQuery, bot: Bot):
     roles = _assign_roles(player_ids)
 
     payload["alive"] = {str(uid): role for uid, role in roles.items()}
+    payload["original_roles"] = {str(uid): role for uid, role in roles.items()}
     payload["session_id"] = session_id
     payload["round"] = 1
     payload["night_votes"] = {}
@@ -614,21 +615,20 @@ async def _show_roles(bot: Bot, chat_id: int, payload: dict):
     for uid_str, name in players.items():
         role = payload.get("alive", {}).get(uid_str, None)
         if not role:
-            # Was killed — check initial assignment
-            # Find from the names + we need original roles
-            role = "?"
+            role = payload.get("original_roles", {}).get(uid_str, "?")
         all_roles[uid_str] = role
 
     # Build role list
     names = payload.get("names", {})
     lines = ["📋 <b>Barcha rollar:</b>\n"]
     for uid_str, name in names.items():
-        role = payload.get("alive", {}).get(uid_str, "💀 O'lgan")
+        role = all_roles.get(uid_str, "?")
+        status = " (💀 O'lgan)" if uid_str not in payload.get("alive", {}) else ""
         if isinstance(role, str) and role in ROLES:
             role_label = ROLES[role]
         else:
             role_label = str(role)
-        lines.append(f"  {role_label} — {name}")
+        lines.append(f"  {role_label} — {name}{status}")
 
     try:
         await bot.send_message(chat_id, "\n".join(lines))

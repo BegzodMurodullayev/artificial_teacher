@@ -21,6 +21,7 @@ router.callback_query.filter(RoleFilter("admin", "owner"))
 
 
 @router.message(Command("admin"))
+@router.message(F.text == "🛡 Admin Panel")
 async def cmd_admin(message: Message, db_user: dict | None = None):
     """Show admin dashboard."""
     try:
@@ -79,8 +80,41 @@ async def _btn_adm_stats(message: Message, db_user: dict | None = None):
     paid = await subscription_dao.count_paid_users()
     revenue = await payment_dao.get_total_revenue()
     admins = await user_dao.count_users_by_role("admin")
-    text = f"📈 <b>Global Statistika</b>\n\n👥 Jami userlar: <b>{fmt_num(total_users)}</b>\n💎 Pulli obunalar: <b>{fmt_num(paid)}</b>\n💰 Jami tushum: <b>{fmt_price(revenue)}</b>\n🛡 Adminlar: <b>{admins}</b>\n"
-    await safe_reply(message, text)
+
+    # Generate recent 7 days registration chart
+    from src.database.connection import get_db
+    db = await get_db()
+    cursor = await db.execute('''
+        SELECT date(joined_at) as d, count(*) as c 
+        FROM users 
+        WHERE joined_at >= date('now', '-7 days')
+        GROUP BY d ORDER BY d ASC
+    ''')
+    rows = await cursor.fetchall()
+    
+    chart = ""
+    if rows:
+        max_c = max([r['c'] for r in rows]) if rows else 1
+        for r in rows:
+            blocks = int((r['c'] / max_c) * 10)
+            bar = "█" * blocks + "░" * (10 - blocks)
+            chart += f"\n<code>{r['d'][5:]}</code> | {bar} <b>{r['c']}</b>"
+    else:
+        chart = "\n<i>Ma'lumot yo'q</i>"
+
+    text = (
+        "📊 <b>Kengaytirilgan Statistika</b>\n\n"
+        f"👥 Jami userlar: <b>{fmt_num(total_users)}</b>\n"
+        f"💎 Pulli obunalar: <b>{fmt_num(paid)}</b>\n"
+        f"💰 Jami tushum: <b>{fmt_price(revenue)}</b>\n"
+        f"🛡 Adminlar: <b>{admins}</b>\n\n"
+        f"📈 <b>Oxirgi 7 kunlik o'sish:</b>{chart}"
+    )
+
+    buttons = [
+        [InlineKeyboardButton(text="📥 Barcha Userlarni Export Qilish (CSV)", callback_data="adm:export_users")]
+    ]
+    await safe_reply(message, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
 
 @router.message(F.text == "🔙 Asosiy Menyu")
 async def _btn_adm_back(message: Message, db_user: dict | None = None):
@@ -256,6 +290,69 @@ async def callback_admin_users(callback: CallbackQuery, db_user: dict | None = N
     await safe_answer_callback(callback)
 
 
+@router.message(F.text.regexp(r'^@[\w_]+$') | F.text.regexp(r'^\d{5,15}$'))
+async def _search_user_admin(message: Message, db_user: dict | None = None):
+    """Search for a user by ID or Username (Admins only)."""
+    query = message.text.strip()
+    user = None
+    if query.startswith('@'):
+        user = await user_dao.find_user_by_username(query[1:])
+    else:
+        try:
+            user = await user_dao.get_user(int(query))
+        except ValueError:
+            user = None
+            
+    if not user:
+        await safe_reply(message, "❌ <b>Foydalanuvchi topilmadi.</b>")
+        return
+        
+    # Build user info card
+    plan = await subscription_dao.get_active_plan_name(user["user_id"])
+    text = (
+        f"👤 <b>Foydalanuvchi Profil</b>\n\n"
+        f"ID: <code>{user['user_id']}</code>\n"
+        f"Ism: {escape_html(user.get('first_name', ''))}\n"
+        f"Username: @{escape_html(user.get('username', ''))}\n"
+        f"Daraja: {user.get('level', 'A1')}\n"
+        f"Rol: {user.get('role', 'user')}\n"
+        f"Obuna: <b>{plan}</b>\n"
+        f"Qo'shilgan: {user.get('joined_at', '')}\n"
+        f"Holat: {'🚫 <b>Ban qilingan</b>' if user.get('is_banned') else '✅ <b>Aktiv</b>'}"
+    )
+    
+    ban_action = "unban" if user.get('is_banned') else "ban"
+    ban_text = "✅ Bandan Olish" if user.get('is_banned') else "🚫 Ban Qilish"
+    
+    buttons = [
+        [InlineKeyboardButton(text=ban_text, callback_data=f"adm_user:{ban_action}:{user['user_id']}")],
+        [InlineKeyboardButton(text="⭐ Obuna Berish (Free)", callback_data=f"adm_user:free:{user['user_id']}")],
+        [InlineKeyboardButton(text="💎 Obuna Berish (Pro - 30 kun)", callback_data=f"adm_user:pro:{user['user_id']}")],
+    ]
+    await safe_reply(message, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+
+@router.callback_query(F.data.startswith("adm_user:"))
+async def callback_adm_user_action(callback: CallbackQuery, db_user: dict | None = None):
+    """Handle admin actions on user profile."""
+    parts = callback.data.split(":")
+    action = parts[1]
+    target_id = int(parts[2])
+    
+    if action == "ban":
+        await user_dao.ban_user(target_id, 1)
+        await safe_answer_callback(callback, "🚫 User ban qilindi!")
+    elif action == "unban":
+        await user_dao.ban_user(target_id, 0)
+        await safe_answer_callback(callback, "✅ User bandan olindi!")
+    elif action in ("free", "pro"):
+        days = 30 if action == "pro" else 0
+        await subscription_dao.activate_subscription(target_id, action, days)
+        await safe_answer_callback(callback, f"⭐ {action.title()} obunasi berildi!")
+        
+    await safe_edit(callback, f"✅ Harakat ({action}) bajarildi: <code>{target_id}</code>")
+
+
 # ── Broadcast ──
 
 @router.callback_query(F.data == "adm:broadcast")
@@ -323,23 +420,80 @@ async def cmd_broadcast(message: Message, db_user: dict | None = None):
 
 @router.callback_query(F.data == "adm:stats")
 async def callback_admin_stats(callback: CallbackQuery, db_user: dict | None = None):
-    """Show global statistics."""
+    """Show global statistics with text charts."""
     total_users = await user_dao.count_users()
     paid = await subscription_dao.count_paid_users()
     revenue = await payment_dao.get_total_revenue()
     admins = await user_dao.count_users_by_role("admin")
 
+    # Generate recent 7 days registration chart
+    from src.database.connection import get_db
+    db = await get_db()
+    cursor = await db.execute('''
+        SELECT date(joined_at) as d, count(*) as c 
+        FROM users 
+        WHERE joined_at >= date('now', '-7 days')
+        GROUP BY d ORDER BY d ASC
+    ''')
+    rows = await cursor.fetchall()
+    
+    chart = ""
+    if rows:
+        max_c = max([r['c'] for r in rows]) if rows else 1
+        for r in rows:
+            blocks = int((r['c'] / max_c) * 10)
+            bar = "█" * blocks + "░" * (10 - blocks)
+            chart += f"\n<code>{r['d'][5:]}</code> | {bar} <b>{r['c']}</b>"
+    else:
+        chart = "\n<i>Ma'lumot yo'q</i>"
+
     text = (
-        "📈 <b>Global Statistika</b>\n\n"
+        "📊 <b>Kengaytirilgan Statistika</b>\n\n"
         f"👥 Jami userlar: <b>{fmt_num(total_users)}</b>\n"
         f"💎 Pulli obunalar: <b>{fmt_num(paid)}</b>\n"
         f"💰 Jami tushum: <b>{fmt_price(revenue)}</b>\n"
-        f"🛡 Adminlar: <b>{admins}</b>\n"
+        f"🛡 Adminlar: <b>{admins}</b>\n\n"
+        f"📈 <b>Oxirgi 7 kunlik o'sish:</b>{chart}"
     )
 
-    buttons = [[InlineKeyboardButton(text="🔙 Dashboard", callback_data="adm:back")]]
+    buttons = [
+        [InlineKeyboardButton(text="📥 Barcha Userlarni Export Qilish (CSV)", callback_data="adm:export_users")],
+        [InlineKeyboardButton(text="🔙 Dashboard", callback_data="adm:back")]
+    ]
     await safe_edit(callback, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
     await safe_answer_callback(callback)
+
+@router.callback_query(F.data == "adm:export_users")
+async def callback_export_users(callback: CallbackQuery, db_user: dict | None = None):
+    """Export all users to CSV and send as document."""
+    await safe_answer_callback(callback, "CSV yaratilmoqda, kuting...")
+    
+    import csv
+    import io
+    from aiogram.types import BufferedInputFile
+    
+    from src.database.connection import get_db
+    db = await get_db()
+    cursor = await db.execute("SELECT * FROM users")
+    users = await cursor.fetchall()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    if users:
+        writer.writerow(users[0].keys()) # Headers
+        for u in users:
+            writer.writerow(dict(u).values())
+            
+    csv_bytes = output.getvalue().encode('utf-8')
+    doc = BufferedInputFile(csv_bytes, filename="users_export.csv")
+    
+    from src.bot.loader import bot
+    await bot.send_document(
+        chat_id=callback.from_user.id,
+        document=doc,
+        caption="📊 Foydalanuvchilar ro'yxati (CSV)"
+    )
 
 
 @router.callback_query(F.data == "adm:back")

@@ -103,3 +103,35 @@ async def cmd_clear(message: Message, db_user: dict | None = None):
     from src.database.dao.history_dao import clear_history
     await clear_history(db_user["user_id"])
     await safe_reply(message, "🗑 <b>Suhbat tarixi tozalandi!</b>")
+
+@router.message(Command("leaderboard"))
+async def cmd_leaderboard(message: Message, db_user: dict | None = None):
+    """Show global leaderboard based on XP."""
+    from src.database.connection import get_db
+    db = await get_db()
+    
+    # Get top 10 by total_xp
+    cursor = await db.execute('''
+        SELECT u.first_name, u.username, x.total_xp, x.current_level 
+        FROM user_xp x
+        JOIN users u ON x.user_id = u.user_id
+        WHERE x.total_xp > 0
+        ORDER BY x.total_xp DESC
+        LIMIT 10
+    ''')
+    leaders = await cursor.fetchall()
+    
+    if not leaders:
+        await safe_reply(message, "🏆 <b>Reyting</b>\n\nHali reytingda hech kim yo'q. Birinchi bo'ling!")
+        return
+        
+    text = "🏆 <b>Global XP Reytingi (Top 10)</b>\n\n"
+    medals = ["🥇", "🥈", "🥉"]
+    
+    for i, r in enumerate(leaders):
+        name = escape_html(r["first_name"] or r["username"] or "Student")
+        medal = medals[i] if i < 3 else f"{i+1}."
+        text += f"{medal} <b>{name}</b> (Lvl {r['current_level']}) — {fmt_num(r['total_xp'])} XP\n"
+        
+    text += "\n<i>XP ishlash uchun dars qiling, quiz yeching va Pomodoro dan foydalaning!</i>"
+    await safe_reply(message, text)
