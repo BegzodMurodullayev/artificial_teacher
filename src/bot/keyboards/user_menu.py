@@ -74,6 +74,7 @@ def cabinet_menu() -> ReplyKeyboardMarkup:
 
 def extra_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="⏱ Pomodoro Timer")],
         [KeyboardButton(text="⚙️ Sozlamalar"), KeyboardButton(text="ℹ️ Aloqa")],
         [KeyboardButton(text="🔙 Asosiy Menyu")]
     ], resize_keyboard=True)
@@ -109,6 +110,7 @@ USER_MENU_ALIASES = {
     "library":       ["📚 Kutubxona"],
     "evrika":        ["💡 Evrika"],
     "zakovat":       ["🧠 Zakovat"],
+    "pomodoro":      ["⏱ Pomodoro Timer", "pomodoro"],
     "game_xo":       ["❌ X-O (Tic-Tac)"],
     "game_memory":   ["🃏 Xotira"],
     "game_sudoku":   ["🧩 Sudoku"],

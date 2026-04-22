@@ -244,6 +244,17 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
     elif action == "iq_test":
         await safe_reply(message, "🧠 <b>IQ Test</b>\n\nMantiqiy fikrlash testi. (Tez kunda)")
 
+    elif action == "pomodoro":
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+        from src.config import settings
+        if settings.WEB_APP_URL:
+            kb = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="⏱ Pomodoro taymerni ochish", web_app=WebAppInfo(url=f"{settings.WEB_APP_URL.rstrip('/')}/pomodoro"))
+            ]])
+            await safe_reply(message, "⏱ <b>Pomodoro Timer</b>\n\nDiqqatingizni jamlab o'qish yoki ishlash uchun maxsus taymer!\n\n100% tugatilgan fokus vaqti sizga XP taqdim etadi.", reply_markup=kb)
+        else:
+            await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
+
     elif action == "bonuses":
         await safe_reply(message, "🎁 <b>Bonuslar</b>\n\nDo'stlaringizni taklif qiling va bonus ballarga ega bo'ling!")
 
