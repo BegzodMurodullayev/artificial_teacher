@@ -4,7 +4,7 @@
 
 -- ── USERS ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS users (
-    user_id     INTEGER PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
     username    TEXT DEFAULT '',
     first_name  TEXT DEFAULT '',
     role        TEXT DEFAULT 'user',
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS plans (
 -- ── SUBSCRIPTIONS ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS subscriptions (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id     INTEGER,
+    user_id BIGINT,
     plan_name   TEXT DEFAULT 'free',
     started_at  TEXT DEFAULT (datetime('now')),
     expires_at  TEXT,
@@ -56,7 +56,7 @@ CREATE INDEX IF NOT EXISTS idx_subs_expires ON subscriptions(expires_at);
 -- ── PAYMENTS ──────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS payments (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id         INTEGER,
+    user_id BIGINT,
     plan_name       TEXT,
     amount          REAL,
     duration_days   INTEGER DEFAULT 30,
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS payments (
     note            TEXT DEFAULT '',
     created_at      TEXT DEFAULT (datetime('now')),
     reviewed_at     TEXT,
-    reviewed_by     INTEGER,
+    reviewed_by BIGINT,
     FOREIGN KEY(user_id) REFERENCES users(user_id)
 );
 CREATE INDEX IF NOT EXISTS idx_pay_user ON payments(user_id);
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS payment_config (
 
 -- ── DAILY USAGE ───────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS daily_usage (
-    user_id     INTEGER,
+    user_id BIGINT,
     usage_date  TEXT,
     checks      INTEGER DEFAULT 0,
     quiz        INTEGER DEFAULT 0,
@@ -96,7 +96,7 @@ CREATE INDEX IF NOT EXISTS idx_usage_date ON daily_usage(user_id, usage_date);
 
 -- ── STATS ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS stats (
-    user_id             INTEGER PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
     checks_total        INTEGER DEFAULT 0,
     translations_total  INTEGER DEFAULT 0,
     pron_total          INTEGER DEFAULT 0,
@@ -116,7 +116,7 @@ CREATE INDEX IF NOT EXISTS idx_stats_streak ON stats(streak_days DESC);
 -- ── CHAT HISTORY ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS history (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id     INTEGER,
+    user_id BIGINT,
     role        TEXT DEFAULT 'user',
     content     TEXT DEFAULT '',
     created_at  TEXT DEFAULT (datetime('now')),
@@ -127,7 +127,7 @@ CREATE INDEX IF NOT EXISTS idx_history_user ON history(user_id);
 -- ── QUIZ ATTEMPTS ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS quiz_attempts (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id         INTEGER,
+    user_id BIGINT,
     qtype           TEXT DEFAULT 'quiz',
     total           INTEGER DEFAULT 0,
     correct         INTEGER DEFAULT 0,
@@ -144,7 +144,7 @@ CREATE INDEX IF NOT EXISTS idx_qa_user ON quiz_attempts(user_id, qtype);
 -- ── QUESTION HISTORY (avoid repeats) ──────────────────────
 CREATE TABLE IF NOT EXISTS question_history (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id     INTEGER,
+    user_id BIGINT,
     question_key TEXT,
     asked_at    TEXT DEFAULT (datetime('now')),
     FOREIGN KEY(user_id) REFERENCES users(user_id)
@@ -154,7 +154,7 @@ CREATE INDEX IF NOT EXISTS idx_qh_user ON question_history(user_id);
 -- ── LEVEL SIGNALS ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS level_signals (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id     INTEGER,
+    user_id BIGINT,
     source      TEXT DEFAULT 'check',
     estimated_level TEXT DEFAULT 'A1',
     weight      REAL DEFAULT 1.0,
@@ -165,7 +165,7 @@ CREATE INDEX IF NOT EXISTS idx_ls_user ON level_signals(user_id);
 
 -- ── GROUP SETTINGS ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS group_settings (
-    chat_id                 INTEGER PRIMARY KEY,
+    chat_id BIGINT PRIMARY KEY,
     check_enabled           INTEGER DEFAULT 1,
     bot_enabled             INTEGER DEFAULT 1,
     translate_enabled       INTEGER DEFAULT 1,
@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS group_settings (
 -- ── SPONSOR CHANNELS ──────────────────────────────────────
 CREATE TABLE IF NOT EXISTS sponsor_channels (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-    channel_id          INTEGER UNIQUE,
+    channel_id BIGINT UNIQUE,
     channel_username    TEXT DEFAULT '',
     title               TEXT DEFAULT '',
     is_active           INTEGER DEFAULT 1
@@ -184,11 +184,11 @@ CREATE TABLE IF NOT EXISTS sponsor_channels (
 
 -- ── REWARD WALLET ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS reward_wallet (
-    user_id         INTEGER PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
     points          REAL DEFAULT 0,
     cash_balance    REAL DEFAULT 0,
     referral_code   TEXT UNIQUE DEFAULT '',
-    referred_by     INTEGER DEFAULT 0,
+    referred_by BIGINT DEFAULT 0,
     total_referrals INTEGER DEFAULT 0,
     FOREIGN KEY(user_id) REFERENCES users(user_id)
 );
@@ -207,7 +207,7 @@ CREATE TABLE IF NOT EXISTS promo_codes (
     days        INTEGER DEFAULT 0,
     max_uses    INTEGER DEFAULT 1,
     used_count  INTEGER DEFAULT 0,
-    created_by  INTEGER DEFAULT 0,
+    created_by BIGINT DEFAULT 0,
     created_at  TEXT DEFAULT (datetime('now')),
     expires_at  TEXT,
     is_active   INTEGER DEFAULT 1
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS promo_packs (
 -- ── WEBAPP PROGRESS ───────────────────────────────────────
 CREATE TABLE IF NOT EXISTS webapp_progress (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id         INTEGER,
+    user_id BIGINT,
     progress_date   TEXT,
     words           INTEGER DEFAULT 0,
     quiz            INTEGER DEFAULT 0,
@@ -247,7 +247,7 @@ CREATE INDEX IF NOT EXISTS idx_wp_user ON webapp_progress(user_id, progress_date
 -- XP transaction log (immutable audit trail)
 CREATE TABLE IF NOT EXISTS xp_transactions (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id     INTEGER NOT NULL,
+    user_id BIGINT NOT NULL,
     amount      INTEGER NOT NULL,
     source      TEXT NOT NULL,
     source_id   TEXT DEFAULT '',
@@ -261,7 +261,7 @@ CREATE INDEX IF NOT EXISTS idx_xp_created ON xp_transactions(created_at);
 
 -- User XP summary cache
 CREATE TABLE IF NOT EXISTS user_xp (
-    user_id         INTEGER PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
     total_xp        INTEGER DEFAULT 0,
     current_level   INTEGER DEFAULT 1,
     xp_to_next      INTEGER DEFAULT 100,
@@ -289,7 +289,7 @@ CREATE TABLE IF NOT EXISTS achievements (
 -- User earned achievements
 CREATE TABLE IF NOT EXISTS user_achievements (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id          INTEGER NOT NULL,
+    user_id BIGINT NOT NULL,
     achievement_code TEXT NOT NULL,
     earned_at        TEXT DEFAULT (datetime('now')),
     UNIQUE(user_id, achievement_code),
@@ -304,12 +304,12 @@ CREATE INDEX IF NOT EXISTS idx_ua_user ON user_achievements(user_id);
 -- Game sessions with structured state
 CREATE TABLE IF NOT EXISTS game_sessions (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    chat_id      INTEGER NOT NULL,
+    chat_id BIGINT NOT NULL,
     game_type    TEXT NOT NULL,
     status       TEXT DEFAULT 'waiting',
     round_number INTEGER DEFAULT 0,
     payload      TEXT DEFAULT '{}',
-    created_by   INTEGER DEFAULT 0,
+    created_by BIGINT DEFAULT 0,
     created_at   TEXT DEFAULT (datetime('now')),
     updated_at   TEXT DEFAULT (datetime('now')),
     finished_at  TEXT
@@ -320,8 +320,8 @@ CREATE INDEX IF NOT EXISTS idx_gs_chat ON game_sessions(chat_id, status);
 CREATE TABLE IF NOT EXISTS game_participations (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     session_id      INTEGER NOT NULL,
-    chat_id         INTEGER NOT NULL,
-    user_id         INTEGER NOT NULL,
+    chat_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
     points_earned   INTEGER DEFAULT 0,
     answers_correct INTEGER DEFAULT 0,
     answers_total   INTEGER DEFAULT 0,
@@ -335,8 +335,8 @@ CREATE INDEX IF NOT EXISTS idx_gp_session ON game_participations(session_id);
 -- Group game scores (leaderboard — kept for backward compat)
 CREATE TABLE IF NOT EXISTS group_game_scores (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    chat_id     INTEGER,
-    user_id     INTEGER,
+    chat_id BIGINT,
+    user_id BIGINT,
     username    TEXT DEFAULT '',
     points      INTEGER DEFAULT 0,
     wins        INTEGER DEFAULT 0,
@@ -350,7 +350,7 @@ CREATE INDEX IF NOT EXISTS idx_ggs_user ON group_game_scores(user_id);
 -- ══════════════════════════════════════════════════════════
 CREATE TABLE IF NOT EXISTS quiz_sessions (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id          INTEGER NOT NULL,
+    user_id BIGINT NOT NULL,
     qtype            TEXT DEFAULT 'quiz',
     level            TEXT DEFAULT 'A1',
     language         TEXT DEFAULT 'en',
@@ -364,7 +364,7 @@ CREATE TABLE IF NOT EXISTS quiz_sessions (
     current_question TEXT DEFAULT '{}',
     history          TEXT DEFAULT '[]',
     used_keys        TEXT DEFAULT '[]',
-    chat_id          INTEGER DEFAULT 0,
+    chat_id BIGINT DEFAULT 0,
     message_id       INTEGER DEFAULT 0,
     started_at       TEXT DEFAULT (datetime('now')),
     finished_at      TEXT,
@@ -377,7 +377,7 @@ CREATE INDEX IF NOT EXISTS idx_qs_user ON quiz_sessions(user_id, status);
 -- ══════════════════════════════════════════════════════════
 CREATE TABLE IF NOT EXISTS webapp_game_results (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
+    user_id BIGINT NOT NULL,
     game_name TEXT NOT NULL,
     difficulty TEXT,
     score INTEGER NOT NULL,

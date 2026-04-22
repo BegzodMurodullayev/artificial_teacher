@@ -23,7 +23,8 @@ def convert_sql_to_postgres(sql: str) -> str:
     sql = re.sub(r'\?', repl, sql)
     
     # 2. Convert datetime('now') to CURRENT_TIMESTAMP
-    sql = sql.replace("datetime('now')", "CURRENT_TIMESTAMP")
+    sql = sql.replace("(datetime('now'))", "CAST(CURRENT_TIMESTAMP AS TEXT)")
+    sql = sql.replace("datetime('now')", "CAST(CURRENT_TIMESTAMP AS TEXT)")
     
     # 3. In PostgreSQL, LIMIT ? OFFSET ? -> LIMIT $1 OFFSET $2
     # This is handled automatically by the ? replacement above!
@@ -83,15 +84,18 @@ class PostgresConnectionWrapper:
         # Convert schema SQL to Postgres types
         sql = sql_script
         sql = sql.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
-        sql = sql.replace("datetime('now')", "CURRENT_TIMESTAMP")
+        sql = sql.replace("(datetime('now'))", "CAST(CURRENT_TIMESTAMP AS TEXT)")
+        sql = sql.replace("datetime('now')", "CAST(CURRENT_TIMESTAMP AS TEXT)")
         sql = sql.replace("INTEGER DEFAULT 0\n", "INTEGER DEFAULT 0\n")  # no-op, clean
+        import re
+        sql = re.sub(r'--.*$', '', sql, flags=re.MULTILINE)
 
         # PostgreSQL can't run a multi-statement script as one query.
         # Split on ';' and execute each statement individually.
         async with self.pool.acquire() as conn:
             for statement in sql.split(";"):
                 stmt = statement.strip()
-                if stmt and not stmt.startswith("--"):
+                if stmt:
                     try:
                         await conn.execute(stmt)
                     except Exception as e:
