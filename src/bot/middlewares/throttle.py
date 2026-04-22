@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class ThrottleMiddleware(BaseMiddleware):
     """Rate-limit users: max 1 event per `rate_limit` seconds."""
 
-    def __init__(self, rate_limit: float = 0.5):
+    def __init__(self, rate_limit: float = 0.3):
         self.rate_limit = rate_limit
         self._timestamps: dict[int, float] = {}
 
@@ -35,8 +35,8 @@ class ThrottleMiddleware(BaseMiddleware):
         last = self._timestamps.get(uid, 0)
 
         if now - last < self.rate_limit:
-            logger.debug("Throttled user %s (%.2fs since last)", uid, now - last)
-            return None  # Silently drop
+            logger.warning("[THROTTLE] Dropped update from user %s (%.2fs < %.2fs limit)", uid, now - last, self.rate_limit)
+            return None  # Drop
 
         self._timestamps[uid] = now
 

@@ -36,13 +36,23 @@ def _is_admin(db_user: dict, user_id: int) -> bool:
 # MAIN MENU BUTTON DISPATCHER
 # ══════════════════════════════════════════════════════════
 
-@router.message(lambda msg: msg.text and resolve_menu_action(msg.text) is not None)
+from aiogram import F
+from src.bot.keyboards.user_menu import USER_MENU_ALIASES, resolve_menu_action, user_main_menu
+
+def is_menu_action(message: Message) -> bool:
+    """Return True if the message text matches any known menu alias."""
+    if not message.text:
+        return False
+    return resolve_menu_action(message.text) is not None
+
+@router.message(is_menu_action)
 async def menu_button_handler(message: Message, db_user: dict | None = None):
     """Route menu button presses to the appropriate handler."""
+    action = resolve_menu_action(message.text)  # resolve again — fast dict lookup
+    logger.info("menu_button_handler TRIGGERED: text=%r action=%s", message.text, action)
     if not db_user or not message.text:
         return
 
-    action = resolve_menu_action(message.text)
     uid = message.from_user.id if message.from_user else 0
 
     # ── Admin panel buttons ──────────────────────────────
@@ -104,6 +114,8 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
 
     # ── Route by action key ──────────────────────────────
     elif action == "check":
+        from src.services.mode_manager import set_mode
+        await set_mode(uid, "CORRECTION")
         await safe_reply(
             message,
             "✅ <b>Grammatika tekshiruv rejimi</b>\n\n"
@@ -126,6 +138,8 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
         await safe_reply(message, "🌐 <b>Tarjima rejimi</b>\n\nYo'nalishni tanlang:", reply_markup=kb)
 
     elif action == "pronunciation":
+        from src.services.mode_manager import set_mode
+        await set_mode(uid, "PRONUNCIATION")
         await safe_reply(
             message,
             "🔊 <b>Talaffuz rejimi</b>\n\n"

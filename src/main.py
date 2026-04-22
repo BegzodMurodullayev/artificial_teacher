@@ -5,6 +5,12 @@ Entry point — starts Bot (aiogram), API (FastAPI), and Scheduler (APScheduler)
 import asyncio
 import logging
 import sys
+import io
+
+# Fix UnicodeEncodeError for emojis on Windows
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 import uvicorn
 
@@ -35,12 +41,12 @@ def register_middlewares():
     from src.bot.middlewares.throttle import ThrottleMiddleware
     from src.bot.middlewares.sponsor import SponsorMiddleware
 
-    # Order matters: throttle → auth → sponsor
-    dp.message.middleware(ThrottleMiddleware(rate_limit=0.5))
+    # Order matters: auth → sponsor  (throttle temporarily disabled for debugging)
+    # dp.message.middleware(ThrottleMiddleware(rate_limit=0.5))
     dp.message.middleware(AuthMiddleware())
     dp.message.middleware(SponsorMiddleware())
 
-    dp.callback_query.middleware(ThrottleMiddleware(rate_limit=0.3))
+    # dp.callback_query.middleware(ThrottleMiddleware(rate_limit=0.3))
     dp.callback_query.middleware(AuthMiddleware())
     dp.callback_query.middleware(SponsorMiddleware())
 

@@ -70,6 +70,30 @@ async def _btn_adm_payments(message: Message, db_user: dict | None = None):
 async def _btn_adm_users(message: Message, db_user: dict | None = None):
     await safe_reply(message, "👥 <b>Foydalanuvchi qidirish</b>\n\nUser ID yoki @username yuboring.\nFormatlar:\n• <code>123456789</code>\n• <code>@username</code>")
 
+@router.message(F.text.regexp(r"^(\d{5,15}|@\w{4,32})$"))
+async def _adm_search_user_input(message: Message, db_user: dict | None = None):
+    query = message.text.strip()
+    if query.startswith("@"):
+        user = await user_dao.get_user_by_username(query[1:])
+    else:
+        user = await user_dao.get_user(int(query))
+        
+    if not user:
+        await safe_reply(message, "❌ <b>Foydalanuvchi topilmadi.</b>")
+        return
+        
+    plan = await subscription_dao.get_active_plan_name(user["user_id"])
+    text = (
+        f"👤 <b>Foydalanuvchi ma'lumotlari:</b>\n\n"
+        f"ID: <code>{user['user_id']}</code>\n"
+        f"Ism: {escape_html(user.get('first_name', '?'))}\n"
+        f"Username: @{user.get('username', '?')}\n"
+        f"Daraja: <b>{user.get('level', 'A1')}</b>\n"
+        f"Obuna: <b>{plan.title()}</b>\n"
+        f"Ro'yxatdan o'tgan: {user.get('joined_at', '?')[:10]}\n"
+    )
+    await safe_reply(message, text)
+
 @router.message(F.text == "📢 Broadcast")
 async def _btn_adm_broadcast(message: Message, db_user: dict | None = None):
     await safe_reply(message, "📢 <b>Broadcast</b>\n\nBarcha foydalanuvchilarga xabar yuborish uchun:\n\n<code>/broadcast Xabar matni</code>")

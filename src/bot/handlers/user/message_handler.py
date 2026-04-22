@@ -157,7 +157,7 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
         from src.bot.handlers.user.pronunciation import process_pronunciation
         await process_pronunciation(message, text, user_id)
 
-    elif selected_mode in ("TECHNICAL", "SUPPORT", "bot"):
+    elif selected_mode in ("TECHNICAL", "SUPPORT", "bot", "UNCLEAR"):
         response = await ai_service.ask_ai(text, mode="bot", user_id=user_id, level=level)
         await safe_reply(message, response)
         
@@ -165,15 +165,5 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
         await process_grammar_check(message, text, user_id, level)
         
     else:
-        # UNCLEAR
-        from src.bot.keyboards.user_menu import edu_menu
-        await safe_reply(
-            message, 
-            "🤔 Tushunmadim, sizga qanday yordam bera olaman?\n\n"
-            "Iltimos, kerakli rejimni tanlang:\n"
-            "• Tarjima (Matn yuboring va /translate)\n"
-            "• Xatolarni tekshirish (Inglizcha yuboring)\n"
-            "• Suhbat (/teacher)\n\n"
-            "Yoki menyudan tanlang:",
-            reply_markup=edu_menu()
-        )
+        # Failsafe
+        await safe_reply(message, "⚠️ Tizimda xatolik yuz berdi. Iltimos qayta urinib ko'ring.")
