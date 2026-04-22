@@ -86,21 +86,21 @@ export default function GamesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.07 }}
-            onClick={() => !game.soon && navigate(game.route)}
+            onClick={() => navigate(game.route)}
             style={{
               background: `rgba(15,20,50,0.7)`,
               border: `1px solid ${game.color}33`,
               borderRadius: '18px',
               padding: '16px',
               textAlign: 'left',
-              cursor: game.soon ? 'not-allowed' : 'pointer',
-              opacity: game.soon ? 0.6 : 1,
+              cursor: 'pointer',
+              opacity: 1,
               position: 'relative',
               overflow: 'hidden',
               transition: 'all 0.25s ease',
             }}
-            whileHover={!game.soon ? { scale: 1.03, y: -3 } : {}}
-            whileTap={!game.soon ? { scale: 0.98 } : {}}
+            whileHover={{ scale: 1.03, y: -3 }}
+            whileTap={{ scale: 0.98 }}
           >
             {/* Glow */}
             <div style={{
@@ -115,16 +115,6 @@ export default function GamesPage() {
             <div style={{ color: 'rgba(180,200,255,0.6)', fontSize: '11px', lineHeight: 1.3 }}>
               {game.desc}
             </div>
-            {game.soon && (
-              <div style={{
-                position: 'absolute', top: '10px', right: '10px',
-                background: 'rgba(255,255,255,0.1)', borderRadius: '6px',
-                padding: '2px 6px', fontSize: '9px', color: 'rgba(180,200,255,0.7)',
-                fontWeight: 700, letterSpacing: '0.5px',
-              }}>
-                TEZDA
-              </div>
-            )}
           </motion.button>
         ))}
       </div>
