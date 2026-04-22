@@ -38,7 +38,17 @@ async def callback_lesson_select(callback: CallbackQuery, db_user: dict | None =
     await stats_dao.inc_stat(user_id, "lessons_total")
 
     if topic == "custom":
-        await safe_edit(callback, "✏️ <b>Custom dars</b>\n\nDars mavzusini yozing (masalan: \"Present Perfect\"):")
+        # Set pending state so the next plain message becomes the lesson topic
+        try:
+            from src.bot.handlers.user.message_handler import set_pending_custom_lesson
+            set_pending_custom_lesson(user_id)
+        except Exception:
+            pass
+        await safe_edit(
+            callback,
+            "✏️ <b>Custom dars</b>\n\nDars mavzusini yozing (masalan: \"Present Perfect\"):\n"
+            "<i>Keyingi xabaringiz dars mavzusi sifatida qabul qilinadi.</i>"
+        )
         await safe_answer_callback(callback)
         return
 
@@ -97,7 +107,17 @@ async def callback_rule_select(callback: CallbackQuery, db_user: dict | None = N
     level = db_user.get("level", "A1")
 
     if rule == "custom":
-        await safe_edit(callback, "✏️ <b>Custom qoida</b>\n\nGrammatika mavzusini yozing (masalan: \"reported speech\"):")
+        # Set pending state
+        try:
+            from src.bot.handlers.user.message_handler import set_pending_custom_lesson
+            set_pending_custom_lesson(user_id)
+        except Exception:
+            pass
+        await safe_edit(
+            callback,
+            "✏️ <b>Custom qoida</b>\n\nGrammatika mavzusini yozing (masalan: \"reported speech\"):\n"
+            "<i>Keyingi xabaringiz qoida mavzusi sifatida qabul qilinadi.</i>"
+        )
         await safe_answer_callback(callback)
         return
 

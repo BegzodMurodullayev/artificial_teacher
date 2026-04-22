@@ -1,5 +1,5 @@
 """
-Quiz handlers — /quiz, /iqtest, question flow, result display.
+Quiz handlers — /quiz, /iqtest, question flow, result display with HTML report.
 DB-backed sessions replace the old in-memory dict.
 """
 
@@ -34,13 +34,21 @@ FALLBACK_QUESTIONS_UZ = [
 ]
 
 
+def _get_display_name(user) -> str:
+    """Get best display name for user."""
+    if not user:
+        return "Student"
+    if user.username:
+        return f"@{user.username}"
+    return user.first_name or "Student"
+
+
 @router.message(Command("quiz"))
 async def cmd_quiz(message: Message, db_user: dict | None = None):
     """Start a quiz — select question count."""
     if not db_user:
         return
 
-    # Check limit
     plan = await subscription_dao.get_user_plan(db_user["user_id"])
     limit = plan.get("quiz_per_day", 5)
     allowed = await stats_dao.check_limit(db_user["user_id"], "quiz", limit)
@@ -48,7 +56,6 @@ async def cmd_quiz(message: Message, db_user: dict | None = None):
         await safe_reply(message, f"⚠️ Kunlik quiz limiti tugadi ({limit} ta).\n/subscribe — yangilash")
         return
 
-    # Check for existing active session
     active = await quiz_dao.get_active_quiz_session(db_user["user_id"])
     if active:
         await safe_reply(message, "⚠️ Sizda faol quiz bor. Avval uni yakunlang.")
@@ -82,7 +89,6 @@ async def callback_quiz_pick_count(callback: CallbackQuery, db_user: dict | None
         return
 
     count = int(value)
-    # Next: select time
     buttons = [
         [
             InlineKeyboardButton(text="⏱ 30s", callback_data=f"qtime:{count}:30"),
@@ -108,7 +114,6 @@ async def callback_quiz_pick_time(callback: CallbackQuery, db_user: dict | None 
     count = int(parts[1])
     timeout = int(parts[2])
 
-    # Language selection
     buttons = [
         [
             InlineKeyboardButton(text="🇬🇧 English", callback_data=f"qlang:{count}:{timeout}:en"),
@@ -138,7 +143,6 @@ async def callback_quiz_start(callback: CallbackQuery, db_user: dict | None = No
 
     await stats_dao.inc_usage(user_id, "quiz")
 
-    # Create DB-backed session
     session_id = await quiz_dao.create_quiz_session(
         user_id=user_id,
         qtype="quiz",
@@ -151,8 +155,6 @@ async def callback_quiz_start(callback: CallbackQuery, db_user: dict | None = No
 
     await safe_edit(callback, f"🧠 <b>Quiz #{session_id} boshlandi!</b>\n\n⏳ Birinchi savol tayyorlanmoqda...")
     await safe_answer_callback(callback)
-
-    # Generate and send first question
     await _send_next_question(callback.message, session_id, user_id, level, lang)
 
 
@@ -160,19 +162,16 @@ async def _generate_question(level: str, lang: str, avoid_keys: list[str]) -> di
     """Generate a quiz question using AI with fallback."""
     mode = "quiz_generate"
     prompt = f"Level: {level}. Language: {'Uzbek' if lang == 'uz' else 'English'}. Generate a question."
-
     if avoid_keys:
         prompt += f" Avoid keys: {', '.join(avoid_keys[-20:])}"
 
     result = await ai_service.ask_json(prompt, mode=mode, level=level)
 
-    # Validate
     if result and all(k in result for k in ("question", "options", "answer")):
         opts = result.get("options", {})
         if isinstance(opts, dict) and len(opts) >= 4 and result["answer"] in opts:
             return result
 
-    # Fallback
     bank = FALLBACK_QUESTIONS_UZ if lang == "uz" else FALLBACK_QUESTIONS_EN
     for q in bank:
         if q["key"] not in avoid_keys:
@@ -194,16 +193,13 @@ async def _send_next_question(message: Message, session_id: int, user_id: int, l
         await _finish_quiz(message, session_id)
         return
 
-    # Get avoid keys
     used_keys = json.loads(session.get("used_keys", "[]"))
-
     question = await _generate_question(level, lang, used_keys)
     if not question:
         await safe_reply(message, "❌ Savol generatsiya qilib bo'lmadi.")
         await _finish_quiz(message, session_id)
         return
 
-    # Update session
     key = question.get("key", f"q_{asked}")
     used_keys.append(key)
     await quiz_dao.update_quiz_session(
@@ -213,7 +209,6 @@ async def _send_next_question(message: Message, session_id: int, user_id: int, l
         used_keys=json.dumps(used_keys, ensure_ascii=False),
     )
 
-    # Build question message
     q_text = escape_html(question["question"])
     options = question.get("options", {})
     timeout = session["question_timeout"]
@@ -277,7 +272,6 @@ async def callback_quiz_answer(callback: CallbackQuery, db_user: dict | None = N
     if explanation:
         result_text += f"\n💡 {escape_html(explanation)}"
 
-    # Record in history
     history.append({
         "question": question.get("question", ""),
         "user_answer": answer,
@@ -295,11 +289,10 @@ async def callback_quiz_answer(callback: CallbackQuery, db_user: dict | None = N
     await safe_answer_callback(callback, "✅ To'g'ri!" if is_correct else "❌ Noto'g'ri!")
     await safe_edit(callback, result_text)
 
-    # Small delay then next question
     await asyncio.sleep(1.5)
 
     if answered >= session["total_questions"]:
-        await _finish_quiz(callback.message, session_id)
+        await _finish_quiz(callback.message, session_id, tg_user=callback.from_user)
     else:
         await _send_next_question(
             callback.message, session_id,
@@ -307,8 +300,8 @@ async def callback_quiz_answer(callback: CallbackQuery, db_user: dict | None = N
         )
 
 
-async def _finish_quiz(message: Message, session_id: int):
-    """Finish quiz session and show results."""
+async def _finish_quiz(message: Message, session_id: int, tg_user=None):
+    """Finish quiz session and show results with HTML report."""
     session = await quiz_dao.get_quiz_session(session_id)
     if not session:
         return
@@ -321,8 +314,8 @@ async def _finish_quiz(message: Message, session_id: int):
     answered = session["answered"]
     level = session["level"]
     accuracy = (correct / total * 100) if total > 0 else 0
+    history = json.loads(session.get("history", "[]"))
 
-    # Record attempt
     await quiz_dao.record_quiz_attempt(
         user_id=user_id,
         qtype=session["qtype"],
@@ -334,14 +327,11 @@ async def _finish_quiz(message: Message, session_id: int):
         level_after=level,
     )
 
-    # Update stats
     await stats_dao.inc_stat(user_id, "quiz_played")
     await stats_dao.inc_stat(user_id, "quiz_correct", correct)
 
-    # Auto-adjust level
     level_result = await auto_adjust_from_quiz(user_id, correct, total, level)
 
-    # Performance rating
     if accuracy >= 90:
         rating = "🌟 A'lo!"
         emoji = "🏆"
@@ -371,14 +361,49 @@ async def _finish_quiz(message: Message, session_id: int):
 
     text += "\n🔄 Yana o'ynash: /quiz"
 
-    await safe_reply(message, text)
+    # ── HTML report with Private/Public share ──
+    username = ""
+    if tg_user:
+        username = tg_user.username or tg_user.first_name or ""
+    elif message and message.from_user:
+        username = message.from_user.username or message.from_user.first_name or ""
+
+    kb = None
+    try:
+        from src.bot.utils.html_report import build_quiz_report
+        from src.bot.handlers.user.check import _cache_key, _REPORT_CACHE
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+        html_content = build_quiz_report(
+            correct=correct,
+            total=total,
+            accuracy=accuracy,
+            rating=rating,
+            history=history,
+            level=level,
+            level_changed=level_result if level_result.get("changed") else None,
+            qtype=session["qtype"],
+            username=username,
+        )
+        html_bytes = html_content.encode("utf-8")
+        key = _cache_key(html_content)
+        _REPORT_CACHE[key] = (html_bytes, "quiz_hisobot.html", f"🧠 Quiz Hisoboti\n👤 @{username}" if username else "🧠 Quiz Hisoboti")
+
+        kb = InlineKeyboardMarkup(inline_keyboard=[[
+            InlineKeyboardButton(text="🔒 Private", callback_data=f"rpt_prv:{key}"),
+            InlineKeyboardButton(text="📢 Public",  callback_data=f"rpt_pub:{key}"),
+        ]])
+    except Exception as e:
+        logger.warning("quiz html report error: %s", e)
+
+    await safe_reply(message, text, reply_markup=kb)
 
 
 # ── IQ Test ──
 
 @router.message(Command("iqtest"))
-async def cmd_iqtest(message: Message, db_user: dict | None = None):
-    """Start IQ test (Pro+ only)."""
+async def cmd_iqtest_quiz(message: Message, db_user: dict | None = None):
+    """Start IQ test (Pro+ only) — direct command handler."""
     if not db_user:
         return
 

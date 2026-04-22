@@ -1,5 +1,5 @@
 """
-Pronunciation handler — pronunciation guide + TTS audio.
+Pronunciation handler — pronunciation guide + TTS audio + HTML report.
 """
 
 import logging
@@ -23,15 +23,13 @@ async def process_pronunciation(
     accent: str = "us",
     level: str = "A1",
 ) -> None:
-    """Core pronunciation logic — AI guide + TTS audio."""
+    """Core pronunciation logic — AI guide + TTS audio + HTML report."""
 
-    # Moderation
     warning = moderation_warning(text)
     if warning:
         await safe_reply(message, warning)
         return
 
-    # Check limit
     plan = await subscription_dao.get_user_plan(user_id)
     limit = plan.get("pron_audio_per_day", 5)
     allowed = await stats_dao.check_limit(user_id, "pron_audio", limit)
@@ -47,8 +45,10 @@ async def process_pronunciation(
     await stats_dao.inc_stat(user_id, "pron_total")
     await message.chat.do("typing")
 
-    # Get AI pronunciation guide
     result = await ai_service.ask_json(text, mode="pronunciation", level=level, user_id=user_id)
+
+    ipa_us = ipa_uk = syllables = ""
+    tips = examples = mistakes = []
 
     if result:
         word = escape_html(result.get("word", text))
@@ -69,17 +69,14 @@ async def process_pronunciation(
             lines.append(f"🇬🇧 UK: <code>{ipa_uk}</code>")
         if syllables:
             lines.append(f"📊 Bo'g'inlar: <code>{syllables}</code>")
-
         if tips:
             lines.append("\n💡 <b>Maslahatlar:</b>")
             for tip in tips[:5]:
                 lines.append(f"  • {escape_html(tip)}")
-
         if examples:
             lines.append("\n📋 <b>Misollar:</b>")
             for ex in examples[:3]:
                 lines.append(f"  • <i>{escape_html(ex)}</i>")
-
         if mistakes:
             lines.append("\n⚠️ <b>Keng tarqalgan xatolar:</b>")
             for m in mistakes[:3]:
@@ -89,9 +86,34 @@ async def process_pronunciation(
     else:
         guide_text = f"🔊 <b>Talaffuz:</b> <i>{escape_html(text)}</i>"
 
-    await safe_reply(message, guide_text)
+    # ── HTML report keyboard (Private / Public) ──
+    username = ""
+    if message.from_user:
+        username = message.from_user.username or message.from_user.first_name or ""
 
-    # Generate TTS audio
+    kb = None
+    try:
+        from src.bot.handlers.user.check import build_report_keyboard
+        kb = build_report_keyboard(
+            text=text,
+            corrected="",
+            analysis=[],
+            summary="",
+            level="",
+            username=username,
+            rtype="pron",
+            extra={
+                "ipa_us": ipa_us, "ipa_uk": ipa_uk,
+                "syllables": syllables, "tips": tips,
+                "examples": examples, "mistakes": mistakes,
+            },
+        )
+    except Exception as e:
+        logger.warning("pronunciation report keyboard error: %s", e)
+
+    await safe_reply(message, guide_text, reply_markup=kb)
+
+    # ── TTS Audio ──
     await message.chat.do("upload_voice")
     audio_bytes = await tts_service.synthesize_pronunciation(text, accent=accent)
 

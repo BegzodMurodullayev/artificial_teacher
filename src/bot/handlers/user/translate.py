@@ -1,5 +1,5 @@
 """
-Translate handler — bidirectional UZ↔EN translation.
+Translate handler — bidirectional UZ↔EN translation with HTML report.
 """
 
 import logging
@@ -22,9 +22,8 @@ async def process_translation(
     direction: str = "uz_to_en",
     level: str = "A1",
 ) -> None:
-    """Core translation logic."""
+    """Core translation logic with HTML report."""
 
-    # Check daily limit
     plan = await subscription_dao.get_user_plan(user_id)
     limit = plan.get("ai_messages_day", 20)
     allowed = await stats_dao.check_limit(user_id, "ai_messages", limit)
@@ -52,24 +51,19 @@ async def process_translation(
 
     if direction == "uz_to_en":
         header = "🌐 <b>UZ → EN Tarjima</b>"
-        orig_label = "🇺🇿"
-        trans_label = "🇬🇧"
+        orig_label, trans_label = "🇺🇿", "🇬🇧"
     elif direction == "en_to_uz":
         header = "🌐 <b>EN → UZ Tarjima</b>"
-        orig_label = "🇬🇧"
-        trans_label = "🇺🇿"
+        orig_label, trans_label = "🇬🇧", "🇺🇿"
     elif direction == "ru_to_en":
         header = "🌐 <b>RU → EN Tarjima</b>"
-        orig_label = "🇷🇺"
-        trans_label = "🇬🇧"
+        orig_label, trans_label = "🇷🇺", "🇬🇧"
     elif direction == "en_to_ru":
         header = "🌐 <b>EN → RU Tarjima</b>"
-        orig_label = "🇬🇧"
-        trans_label = "🇷🇺"
+        orig_label, trans_label = "🇬🇧", "🇷🇺"
     else:
         header = "🌐 <b>Tarjima</b>"
-        orig_label = "📝"
-        trans_label = "📝"
+        orig_label = trans_label = "📝"
 
     response = (
         f"{header}\n\n"
@@ -79,4 +73,25 @@ async def process_translation(
     if notes:
         response += f"\n\n📌 <i>{notes}</i>"
 
-    await safe_reply(message, response)
+    # ── HTML report keyboard ──
+    username = ""
+    if message.from_user:
+        username = message.from_user.username or message.from_user.first_name or ""
+
+    try:
+        from src.bot.handlers.user.check import build_report_keyboard
+        kb = build_report_keyboard(
+            text=result.get("original", text),
+            corrected=result.get("translation", ""),
+            analysis=[],
+            summary=result.get("notes", ""),
+            level="",
+            username=username,
+            rtype="translate",
+            extra={"direction": direction},
+        )
+    except Exception as e:
+        logger.warning("translate report keyboard error: %s", e)
+        kb = None
+
+    await safe_reply(message, response, reply_markup=kb)

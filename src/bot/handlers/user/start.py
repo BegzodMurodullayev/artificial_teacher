@@ -42,7 +42,11 @@ async def cmd_start(message: Message, db_user: dict | None = None):
     plan_name = await subscription_dao.get_active_plan_name(user_id)
     stats = await stats_dao.get_stats(user_id)
 
-    name = escape_html(user.first_name or "Student")
+    # Greet with @username if available, else first_name
+    if user.username:
+        name = escape_html(f"@{user.username}")
+    else:
+        name = escape_html(user.first_name or "Student")
 
     welcome = (
         f"👋 <b>Assalomu alaykum, {name}!</b>\n\n"
@@ -102,7 +106,17 @@ async def cmd_library(message: Message, db_user: dict | None = None):
 
 @router.message(Command("iqtest"))
 async def cmd_iqtest(message: Message, db_user: dict | None = None):
-    """Handle /iqtest command to open the IQ Test WebApp."""
+    """Handle /iqtest command — Pro+ only WebApp IQ Test."""
+    if not db_user:
+        return
+    plan = await subscription_dao.get_user_plan(db_user["user_id"])
+    if not plan.get("iq_test_enabled"):
+        await safe_reply(
+            message,
+            "🧩 <b>IQ Test</b> faqat <b>Pro</b> va <b>Premium</b> foydalanuvchilar uchun!\n\n"
+            "Obunangizni yangilash: /subscribe"
+        )
+        return
     from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
     from src.config import settings
     if settings.WEB_APP_URL:
@@ -116,17 +130,31 @@ async def cmd_iqtest(message: Message, db_user: dict | None = None):
 
 @router.message(Command("settings"))
 async def cmd_settings(message: Message, db_user: dict | None = None):
-    """Handle /settings — show level and mode pickers."""
+    """Handle /settings — show level, mode and name pickers."""
     if not db_user:
         return
 
     level = db_user.get("level", "A1")
+    display_name = db_user.get("first_name", "") or ""
+    username = message.from_user.username if message.from_user else ""
+    name_line = f"@{username}" if username else display_name or "—"
+
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    name_kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✏️ Ismni o'zgartirish", callback_data="settings:rename")],
+    ])
+
     text = (
         f"⚙️ <b>Sozlamalar</b>\n\n"
-        f"📊 Joriy daraja: <b>{level}</b>\n\n"
+        f"👤 Ism: <b>{name_line}</b>\n"
+        f"📊 Daraja: <b>{level}</b>\n\n"
         "Darajangizni o'zgartiring:"
     )
-    await safe_reply(message, text, reply_markup=level_picker_keyboard())
+    from src.bot.keyboards.user_menu import level_picker_keyboard as _lpk
+    full_kb = _lpk()
+    # Append name button row
+    full_kb.inline_keyboard.append([InlineKeyboardButton(text="✏️ Ismni o'zgartirish", callback_data="settings:rename")])
+    await safe_reply(message, text, reply_markup=full_kb)
 
 
 @router.callback_query(F.data.startswith("set_level:"))
@@ -179,6 +207,17 @@ async def callback_set_mode(callback: CallbackQuery, db_user: dict | None = None
         f"⚙️ <b>Rejim tanlandi:</b> {name}\n\nEndi matn yozing!",
         reply_markup=mode_picker_keyboard(mode),
     )
+
+
+@router.callback_query(F.data == "settings:rename")
+async def callback_settings_rename(callback: CallbackQuery, db_user: dict | None = None):
+    """Prompt user to send their preferred display name."""
+    if not db_user:
+        return
+    from src.services.mode_manager import set_mode
+    await set_mode(db_user["user_id"], "RENAME_PENDING")
+    await safe_answer_callback(callback)
+    await safe_edit(callback, "✏️ <b>Yangi ismingizni yozing:</b>\n\n<i>Masalan: Begzod yoki @begzod</i>")
 
 
 @router.callback_query(F.data == "back:main")

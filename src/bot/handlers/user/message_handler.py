@@ -15,10 +15,14 @@ from src.bot.handlers.user.check import process_grammar_check
 from src.bot.handlers.user.translate import process_translation
 from src.bot.utils.telegram import safe_reply, escape_html
 from src.database.dao.history_dao import add_history
-from src.database.dao import stats_dao
+from src.database.dao import stats_dao, user_dao
 
 logger = logging.getLogger(__name__)
 router = Router(name="user_message")
+
+# In-memory: user_id → pending custom lesson topic prompt
+_PENDING_CUSTOM_LESSON: dict[int, str] = {}
+
 
 # ══════════════════════════════════════════════════════════
 # MODE COMMANDS
@@ -99,6 +103,25 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
     if not text:
         return
 
+    # ── 0. Pending custom lesson ──
+    if user_id in _PENDING_CUSTOM_LESSON:
+        del _PENDING_CUSTOM_LESSON[user_id]
+        await mode_manager.clear_mode(user_id)
+        await message.chat.do("typing")
+        prompt = f"Create a detailed lesson about '{text}' for level {level}."
+        response = await ai_service.ask_ai(prompt, mode="lesson", level=level, user_id=user_id)
+        await safe_reply(message, f"📚 <b>{escape_html(text.title())}</b>\n\n{escape_html(response)}")
+        return
+
+    # ── 0b. Pending rename ──
+    current_mode_pre = await mode_manager.get_mode(user_id)
+    if current_mode_pre == "RENAME_PENDING":
+        new_name = text.strip().lstrip("@")[:64]
+        await user_dao.upsert_user(user_id, first_name=new_name)
+        await mode_manager.clear_mode(user_id)
+        await safe_reply(message, f"✅ <b>Ismingiz o'zgartirildi:</b> {escape_html(new_name)}")
+        return
+
     # Skip menu button texts
     from src.bot.keyboards.user_menu import resolve_menu_action
     if resolve_menu_action(text):
@@ -163,7 +186,13 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
         
     elif selected_mode in ("CORRECTION", "check"):
         await process_grammar_check(message, text, user_id, level)
-        
+
     else:
         # Failsafe
         await safe_reply(message, "⚠️ Tizimda xatolik yuz berdi. Iltimos qayta urinib ko'ring.")
+
+
+def set_pending_custom_lesson(user_id: int):
+    """Mark that the next message from this user is a custom lesson topic."""
+    _PENDING_CUSTOM_LESSON[user_id] = "pending"
+
