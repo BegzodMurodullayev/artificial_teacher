@@ -6,6 +6,7 @@ import asyncio
 import logging
 import sys
 import io
+import time
 
 # Fix UnicodeEncodeError for emojis on Windows
 if sys.stdout.encoding != 'utf-8':
@@ -57,7 +58,7 @@ def register_middlewares():
 
 def create_api_app():
     """Create FastAPI application with all routes."""
-    from fastapi import FastAPI
+    from fastapi import FastAPI, Request
     from fastapi.middleware.cors import CORSMiddleware
     from src.api.middleware.telegram_auth import TelegramAuthMiddleware
 
@@ -79,14 +80,18 @@ def create_api_app():
     # Telegram initData auth
     app.add_middleware(TelegramAuthMiddleware)
 
-    # Health check (no auth required)
-    @app.get("/")
-    async def health():
-        return {"status": "ok", "service": "Artificial Teacher v2.0"}
+    # Health check (supports GET and HEAD for UptimeRobot)
+    @app.api_route("/", methods=["GET", "HEAD"])
+    async def health(request: Request):
+        return {"status": "ok", "service": "Artificial Teacher v2.0", "timestamp": time.time()}
 
-    @app.get("/health")
-    async def health_check():
+    @app.api_route("/health", methods=["GET", "HEAD"])
+    async def health_check(request: Request):
         return {"status": "ok"}
+
+    @app.get("/ping")
+    async def ping():
+        return "pong"
 
     # Register API routes
     from src.api.routes.user import router as user_router
