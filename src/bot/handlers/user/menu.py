@@ -12,6 +12,7 @@ from aiogram.types import Message
 from src.bot.keyboards.user_menu import resolve_menu_action, user_main_menu
 from src.bot.utils.telegram import safe_reply
 from src.database.dao import subscription_dao
+from aiogram import Bot
 
 logger = logging.getLogger(__name__)
 router = Router(name="menu_dispatch")
@@ -46,7 +47,7 @@ def is_menu_action(message: Message) -> bool:
     return resolve_menu_action(message.text) is not None
 
 @router.message(is_menu_action)
-async def menu_button_handler(message: Message, db_user: dict | None = None):
+async def menu_button_handler(message: Message, bot: Bot, db_user: dict | None = None):
     """Route menu button presses to the appropriate handler."""
     action = resolve_menu_action(message.text)  # resolve again — fast dict lookup
     logger.info("menu_button_handler TRIGGERED: text=%r action=%s", message.text, action)
@@ -84,7 +85,23 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
         if txt == "🧠 IQ Test":
             await safe_reply(message, "🧠 <b>IQ Test</b>\n\nMantiqiy fikrlash darajangizni aniqlaydigan testlar. (Tez kunda...)")
         elif txt == "📅 Kunlik so'z":
-            await safe_reply(message, "📅 <b>Kunlik so'z</b>\n\nBugungi so'z: <b>Enhance</b> — Yaxshilamoq\n<i>Misol: Reading helps to enhance your vocabulary.</i>")
+            msg = await safe_reply(message, "⏳ <i>Kunlik so'z tayyorlanmoqda...</i>")
+            if msg:
+                from src.services import ai_service
+                from src.bot.utils.telegram import safe_edit
+                data = await ai_service.ask_json("Give me a daily word.", mode="daily_word", user_id=uid)
+                if data:
+                    text = (
+                        f"📅 <b>Kunlik so'z</b>\n\n"
+                        f"🔹 <b>{data.get('word', '').capitalize()}</b> ({data.get('part_of_speech', '')})\n"
+                        f"🇺🇿 {data.get('uzbek', '')}\n\n"
+                        f"📖 <i>{data.get('definition', '')}</i>\n"
+                        f"💡 Misol: {data.get('example', '')}\n"
+                        f"🔗 Sinonimlar: {', '.join(data.get('synonyms', []))}"
+                    )
+                else:
+                    text = "❌ So'z tayyorlashda xatolik yuz berdi. Iltimos, qayta urinib ko'ring."
+                await safe_edit(msg, text)
         elif txt == "🎁 Bonuslar":
             await safe_reply(message, "🎁 <b>Bonuslar</b>\n\nDo'stlaringizni taklif qiling va bonus ballarga ega bo'ling!")
         elif txt in ("🕵️ Mafiya", "🎮 Mafiya"):
@@ -165,7 +182,24 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
             from src.bot.handlers.user.profile import cmd_mystats
             await cmd_mystats(message, db_user)
         else:
-            await safe_reply(message, "📅 <b>Kunlik so'z</b>\n\nBugungi so'z: <b>Enhance</b> — Yaxshilamoq\n<i>Misol: Reading helps to enhance your vocabulary.</i>")
+            msg = await safe_reply(message, "⏳ <i>Kunlik so'z tayyorlanmoqda...</i>")
+            if not msg:
+                return
+            from src.services import ai_service
+            from src.bot.utils.telegram import safe_edit
+            data = await ai_service.ask_json("Give me a daily word.", mode="daily_word", user_id=uid)
+            if data:
+                text = (
+                    f"📅 <b>Kunlik so'z</b>\n\n"
+                    f"🔹 <b>{data.get('word', '').capitalize()}</b> ({data.get('part_of_speech', '')})\n"
+                    f"🇺🇿 {data.get('uzbek', '')}\n\n"
+                    f"📖 <i>{data.get('definition', '')}</i>\n"
+                    f"💡 Misol: {data.get('example', '')}\n"
+                    f"🔗 Sinonimlar: {', '.join(data.get('synonyms', []))}"
+                )
+            else:
+                text = "❌ So'z tayyorlashda xatolik yuz berdi. Iltimos, qayta urinib ko'ring."
+            await safe_edit(msg, text)
 
     elif action == "subscribe":
         from src.bot.handlers.subscription.plans import cmd_subscribe
@@ -286,16 +320,24 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
         await safe_reply(message, "🧩 <b>Sudoku</b>\n\nTez kunda WebApp'ga qo'shiladi!")
 
     elif action == "game_number":
-        await safe_reply(message, "🔢 <b>Raqam Topish</b>\n\nBoshlamoqmi? <code>/raqamtop</code> deb yozing!")
+        from src.bot.handlers.game.mini_games_handler import cmd_raqam_top
+        await cmd_raqam_top(message, bot)
+        # await safe_reply(message, "🔢 <b>Raqam Topish</b>\n\nBoshlamoqmi? <code>/raqamtop</code> deb yozing!")
 
     elif action == "game_math":
-        await safe_reply(message, "⚡ <b>Tez Hisob</b>\n\nBoshlamoqmi? <code>/tezhisob</code> deb yozing!")
+        from src.bot.handlers.game.mini_games_handler import cmd_tez_hisob
+        await cmd_tez_hisob(message, bot)
+        # await safe_reply(message, "⚡ <b>Tez Hisob</b>\n\nBoshlamoqmi? <code>/tezhisob</code> deb yozing!")
 
     elif action == "game_word":
-        await safe_reply(message, "🔤 <b>So'z Topish</b>\n\nBoshlamoqmi? <code>/soztopish</code> deb yozing!")
+        from src.bot.handlers.game.word_games_handler import cmd_soz_topish
+        await cmd_soz_topish(message, bot)
+        # await safe_reply(message, "🔤 <b>So'z Topish</b>\n\nBoshlamoqmi? <code>/soztopish</code> deb yozing!")
 
     elif action == "game_translate":
-        await safe_reply(message, "🏃 <b>Tarjima Poygasi</b>\n\nBoshlamoqmi? <code>/tarjimapoyga</code> deb yozing!")
+        from src.bot.handlers.game.word_games_handler import cmd_tarjima_poyga
+        await cmd_tarjima_poyga(message, bot)
+        # await safe_reply(message, "🏃 <b>Tarjima Poygasi</b>\n\nBoshlamoqmi? <code>/tarjimapoyga</code> deb yozing!")
 
     elif action == "game_webapp":
         from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo

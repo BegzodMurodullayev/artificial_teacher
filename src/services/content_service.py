@@ -15,6 +15,7 @@ LESSON_PACKS = {
     "greetings": {
         "title": "🤝 Greetings & Introductions",
         "level": "A1",
+        "intro": "Bu dars salomlashish va oddiy tanishuv gaplarini o'rganish uchun mo'ljallangan.",
         "objectives": ["Learn basic greetings", "Introduce yourself", "Ask about someone"],
         "vocabulary": [
             {"word": "Hello", "definition": "A common greeting", "example": "Hello, how are you?", "uz": "Salom"},
@@ -23,16 +24,21 @@ LESSON_PACKS = {
             {"word": "How are you?", "definition": "Asking about wellbeing", "example": "How are you today?", "uz": "Qalaysiz?"},
             {"word": "Thank you", "definition": "Expressing gratitude", "example": "Thank you for your help.", "uz": "Rahmat"},
         ],
+        "phrases": ["How are you?", "Nice to meet you.", "See you later."],
+        "dialogue": "A: Hello! My name is Sara.\nB: Hi, I am Tom. Nice to meet you.",
         "grammar": "Present tense of 'to be': I am, You are, He/She is",
         "exercises": [
+            "O'zingizni inglizcha tanishtiring.",
             "Fill in: Hello, my name ___ Ali. (is)",
             "Translate: Tanishganimdan xursandman → ?",
             "Complete: How ___ you? I ___ fine. (are, am)",
         ],
+        "tips": ["Rasmiy joyda 'Good morning' ishlating.", "Do'stlar bilan 'Hi' tabiiyroq eshitiladi."],
     },
     "shopping": {
         "title": "🛍️ Shopping & Money",
         "level": "A2",
+        "intro": "Bu dars xarid paytida kerak bo'ladigan asosiy so'z va iboralarni beradi.",
         "objectives": ["Learn shopping vocabulary", "Ask about prices", "Make purchases"],
         "vocabulary": [
             {"word": "How much", "definition": "Asking the price", "example": "How much is this shirt?", "uz": "Qancha?"},
@@ -41,16 +47,21 @@ LESSON_PACKS = {
             {"word": "Discount", "definition": "Price reduction", "example": "Is there any discount?", "uz": "Chegirma"},
             {"word": "Receipt", "definition": "Proof of purchase", "example": "Can I have a receipt?", "uz": "Chek"},
         ],
+        "phrases": ["Can I try this on?", "Do you have a smaller size?", "I would like to buy this."],
+        "dialogue": "A: Can I help you?\nB: Yes, I am looking for a jacket.",
         "grammar": "Comparatives: cheaper, more expensive, the cheapest",
         "exercises": [
+            "Do'konda sotuvchi va xaridor dialogi tuzing.",
             "How much ___ this? (is/are)",
             "This is ___ than that one. (cheap → cheaper)",
             "Can I ___ a receipt? (have)",
         ],
+        "tips": ["Narx so'rashda 'How much is this?' juda foydali.", "Kiyim uchun 'try on' iborasini yodlang."],
     },
     "travel": {
         "title": "✈️ Travel & Transport",
         "level": "A2",
+        "intro": "Sayohat va transport bo'yicha eng kerakli iboralar shu darsda jamlangan.",
         "objectives": ["Learn travel vocabulary", "Ask for directions", "Book transportation"],
         "vocabulary": [
             {"word": "Airport", "definition": "Place for planes", "example": "Let's go to the airport.", "uz": "Aeroport"},
@@ -59,12 +70,16 @@ LESSON_PACKS = {
             {"word": "Arrival", "definition": "When you arrive", "example": "Arrival time is 3 PM.", "uz": "Kelish"},
             {"word": "Luggage", "definition": "Bags and suitcases", "example": "Where is my luggage?", "uz": "Yuk/bagaj"},
         ],
+        "phrases": ["Where is the station?", "I have a reservation.", "What time does it leave?"],
+        "dialogue": "A: Excuse me, where is the bus stop?\nB: It is across the street.",
         "grammar": "Future tense: will + verb, going to + verb",
         "exercises": [
+            "Yo'l so'rash uchun mini dialog yozing.",
             "I ___ travel to London next week. (will)",
             "When is the ___ ? (jo'nash → departure)",
             "She is ___ to visit Paris. (going)",
         ],
+        "tips": ["'Excuse me' bilan boshlasangiz gap muloyim chiqadi.", "'reservation' va 'booking' ko'p ishlatiladi."],
     },
 }
 
@@ -84,52 +99,97 @@ def get_available_lesson_topics() -> list[str]:
 # ══════════════════════════════════════════════════════════
 
 GRAMMAR_RULES = {
-    "tenses": "📚 **English Tenses**\n\n"
-        "1. **Present Simple**: I work / She works\n"
-        "2. **Present Continuous**: I am working\n"
-        "3. **Past Simple**: I worked\n"
-        "4. **Past Continuous**: I was working\n"
-        "5. **Present Perfect**: I have worked\n"
-        "6. **Future Simple**: I will work",
+    "tenses": "📘 <b>Ingliz tilidagi zamonlar</b>\n\n"
+        "<b>1. Simple tenses</b>\n"
+        "• Present Simple: odatiy ish-harakat. Misol: <i>I go to school every day.</i>\n"
+        "• Past Simple: o'tgan zamondagi tugagan ish. Misol: <i>I went yesterday.</i>\n"
+        "• Future Simple: kelajak reja yoki taxmin. Misol: <i>I will call you.</i>\n\n"
+        "<b>2. Continuous tenses</b>\n"
+        "• Davom etayotgan jarayonni bildiradi.\n"
+        "• Misol: <i>She is reading now.</i>\n\n"
+        "<b>3. Perfect tenses</b>\n"
+        "• Natija yoki tajribani ko'rsatadi.\n"
+        "• Misol: <i>They have finished the task.</i>\n\n"
+        "<b>4. Perfect Continuous</b>\n"
+        "• Davomiylik + natija.\n"
+        "• Misol: <i>I have been learning English for two years.</i>\n\n"
+        "<b>💡 Ko'p xato qilinadigan joy</b>\n"
+        "• Present Simple va Present Continuous aralashib ketadi.\n"
+        "• Har bir zamonda signal so'zlarni yodlang: <i>every day, now, already, for/since</i>.",
 
-    "articles": "📚 **Articles: a, an, the**\n\n"
-        "• **a** — unspecific singular (a book, a cat)\n"
-        "• **an** — before vowel sounds (an apple, an hour)\n"
-        "• **the** — specific/known (the sun, the book on the table)\n"
-        "• No article — general/uncountable (water, love, cats in general)",
+    "articles": "📘 <b>Articles: a, an, the</b>\n\n"
+        "<b>a / an</b>\n"
+        "• Bir dona, noaniq narsa uchun.\n"
+        "• <i>a book</i>, <i>a university</i>\n"
+        "• <i>an apple</i>, <i>an hour</i>\n\n"
+        "<b>the</b>\n"
+        "• Aniq yoki oldin tilga olingan narsa uchun.\n"
+        "• <i>the sun</i>, <i>the book on the table</i>\n\n"
+        "<b>Article ishlatilmaydigan holatlar</b>\n"
+        "• Umumiy ko'plik: <i>Books are useful.</i>\n"
+        "• Fanlar va tillar: <i>English is important.</i>\n\n"
+        "<b>💡 Maslahat</b>\n"
+        "• Tovushga qarab tanlang: <i>an honest man</i>, lekin <i>a European city</i>.",
 
-    "prepositions": "📚 **Common Prepositions**\n\n"
-        "• **in** — inside (in the room, in 2024)\n"
-        "• **on** — surface (on the table, on Monday)\n"
-        "• **at** — point (at home, at 5 PM)\n"
-        "• **to** — direction (go to school)\n"
-        "• **for** — purpose/duration (for you, for 3 hours)",
+    "prepositions": "📘 <b>Asosiy prepositions</b>\n\n"
+        "<b>Joy</b>\n"
+        "• <b>in</b> - ichida: <i>in the room</i>\n"
+        "• <b>on</b> - ustida: <i>on the table</i>\n"
+        "• <b>at</b> - nuqtada: <i>at school</i>\n\n"
+        "<b>Vaqt</b>\n"
+        "• <b>in</b> - oy, yil, uzoq davr: <i>in July</i>, <i>in 2026</i>\n"
+        "• <b>on</b> - kun, sana: <i>on Monday</i>\n"
+        "• <b>at</b> - aniq vaqt: <i>at 7:00</i>\n\n"
+        "<b>Boshqa foydali prepositions</b>\n"
+        "• <b>for</b> - davomiylik yoki maqsad\n"
+        "• <b>to</b> - yo'nalish\n"
+        "• <b>with</b> - bilan\n"
+        "• <b>by</b> - orqali yoki yonida\n\n"
+        "<b>💡 Ko'p xato</b>\n"
+        "• <i>in Monday</i> emas, <i>on Monday</i>\n"
+        "• <i>at night</i> lekin <i>in the morning</i>",
 
-    "questions": "📚 **Question Formation**\n\n"
-        "• **Yes/No**: Do/Does/Did + subject + verb?\n"
-        "  → Do you like coffee?\n"
-        "• **Wh-**: Wh-word + auxiliary + subject + verb?\n"
-        "  → Where do you live?\n"
-        "• **Tag**: statement + opposite tag\n"
-        "  → You like tea, don't you?",
+    "questions": "📘 <b>Savol tuzish</b>\n\n"
+        "<b>Yes/No questions</b>\n"
+        "• Yordamchi fe'l oldinga chiqadi.\n"
+        "• <i>Do you like coffee?</i>\n"
+        "• <i>Is she ready?</i>\n\n"
+        "<b>Wh- questions</b>\n"
+        "• <i>What, Where, When, Why, Who, How</i>\n"
+        "• <i>Where do you live?</i>\n"
+        "• <i>Why did he leave?</i>\n\n"
+        "<b>Formula</b>\n"
+        "• Wh-word + auxiliary + subject + main verb\n\n"
+        "<b>💡 Ko'p xato</b>\n"
+        "• <i>Where you live?</i> noto'g'ri\n"
+        "• To'g'ri: <i>Where do you live?</i>",
 
-    "conditionals": "📚 **Conditional Sentences**\n\n"
-        "• **Zero**: If + present, present (facts)\n"
-        "  → If you heat water, it boils.\n"
-        "• **First**: If + present, will + verb (possible)\n"
-        "  → If it rains, I will stay home.\n"
-        "• **Second**: If + past, would + verb (unlikely)\n"
-        "  → If I won the lottery, I would travel.\n"
-        "• **Third**: If + past perfect, would have + V3 (impossible past)\n"
-        "  → If I had studied, I would have passed.",
+    "conditionals": "📘 <b>Conditionals (Shart ergash gaplar)</b>\n\n"
+        "<b>Zero conditional</b>\n"
+        "• Umumiy haqiqat: <i>If you heat ice, it melts.</i>\n\n"
+        "<b>First conditional</b>\n"
+        "• Real kelajak ehtimoli: <i>If it rains, I will stay home.</i>\n\n"
+        "<b>Second conditional</b>\n"
+        "• Hozirgi noreal holat: <i>If I were rich, I would travel more.</i>\n\n"
+        "<b>Third conditional</b>\n"
+        "• O'tgan zamondagi afsus: <i>If she had studied, she would have passed.</i>\n\n"
+        "<b>💡 Maslahat</b>\n"
+        "• <i>if</i> qismida odatda <i>will</i> ishlatilmaydi.",
 
-    "passive": "📚 **Passive Voice**\n\n"
-        "• Active: The cat ate the fish.\n"
-        "• Passive: The fish was eaten by the cat.\n"
-        "• Formula: Object + be + V3 (+ by agent)\n"
-        "• Present: is/are + V3\n"
-        "• Past: was/were + V3\n"
-        "• Future: will be + V3",
+    "passive": "📘 <b>Passive Voice (Majhul nisbat)</b>\n\n"
+        "<b>Formula</b>\n"
+        "• <i>be</i> fe'li + V3 (Past Participle)\n"
+        "• <i>The room is cleaned every day.</i>\n"
+        "• <i>The homework was finished.</i>\n\n"
+        "<b>Qachon ishlatiladi?</b>\n"
+        "• Ishni kim qilgani muhim bo'lmasa\n"
+        "• Natija muhim bo'lsa\n\n"
+        "<b>Active vs Passive</b>\n"
+        "• Active: <i>Ali wrote the letter.</i>\n"
+        "• Passive: <i>The letter was written by Ali.</i>\n\n"
+        "<b>💡 Ko'p xato</b>\n"
+        "• <i>is write</i> emas\n"
+        "• To'g'ri: <i>is written</i>",
 }
 
 

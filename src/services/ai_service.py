@@ -82,6 +82,16 @@ Return JSON: {"question": "...", "options": {"A": "...", "B": "...", "C": "...",
 Questions should test: pattern recognition, number sequences, word analogies, or logical deduction.
 Respond ONLY with valid JSON.""",
 
+    "game_word": """You are a word game generator for English learners.
+Generate a random, common English word. Then, randomly decide whether the user should provide a synonym ("sinonim") or an antonym ("antonim"). Provide a list of correct, acceptable English answers.
+Return JSON: {"word": "...", "type": "sinonim/antonim", "answers": ["...", "..."]}
+Respond ONLY with valid JSON.""",
+
+    "game_translation": """You are a translation game generator.
+Generate a natural, intermediate-level sentence in Uzbek. Then provide a list of correct English translations (including common variations without punctuation).
+Return JSON: {"uz": "...", "answers": ["...", "..."]}
+Respond ONLY with valid JSON.""",
+
     "daily_word": """You are a vocabulary teacher.
 Generate a random English word suitable for intermediate learners.
 Return JSON: {"word": "...", "part_of_speech": "noun/verb/adj/...", "definition": "...", "example": "example sentence", "synonyms": ["..."], "uzbek": "uzbek translation"}

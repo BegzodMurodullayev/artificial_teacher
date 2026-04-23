@@ -62,6 +62,8 @@ class SponsorMiddleware(BaseMiddleware):
         if not not_subscribed:
             return await handler(event, data)
 
+        logger.info("Sponsor check: blocking user_id=%s (not subscribed to %d channels)", user.id, len(not_subscribed))
+
         # Build subscription prompt
         buttons = []
         for s in not_subscribed:

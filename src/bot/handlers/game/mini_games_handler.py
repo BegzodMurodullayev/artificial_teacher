@@ -18,8 +18,9 @@ router = Router(name="mini_games")
 # ══════════════════════════════════════════════════════════
 
 @router.message(Command(commands=["raqamtop", "numberguess"]))
-async def cmd_raqam_top(message: Message):
+async def cmd_raqam_top(message: Message, bot: Bot = None):
     """Start a Number Guess game."""
+    logger.info("cmd_raqam_top TRIGGERED by user_id=%s", message.from_user.id if message.from_user else 0)
     chat_id = message.chat.id
     
     active_game = await game_dao.get_active_game(chat_id)
@@ -58,6 +59,7 @@ async def cmd_raqam_top(message: Message):
 @router.message(Command(commands=["tezhisob", "mathgame"]))
 async def cmd_tez_hisob(message: Message, bot: Bot):
     """Start a Math game."""
+    logger.info("cmd_tez_hisob TRIGGERED by user_id=%s", message.from_user.id if message.from_user else 0)
     chat_id = message.chat.id
     
     active_game = await game_dao.get_active_game(chat_id)
@@ -110,15 +112,20 @@ async def cmd_tez_hisob(message: Message, bot: Bot):
 # CATCH GAME INPUTS
 # ══════════════════════════════════════════════════════════
 
-@router.message(F.text.regexp(r'^-?\d+$'))
+async def is_mini_game_active(message: Message) -> bool:
+    """Filter to check if a mini game is active in this chat."""
+    if not message.text or not message.text.replace("-", "").isdigit():
+        return False
+    active_game = await game_dao.get_active_game(message.chat.id)
+    return active_game is not None and active_game["game_type"] in ["raqam_top", "tez_hisob"]
+
+@router.message(is_mini_game_active)
 async def process_number_input(message: Message):
     """Catch numbers for Raqam Top and Tez Hisob."""
-    from aiogram.dispatcher.event.bases import SkipHandler
     chat_id = message.chat.id
-    
     active_game = await game_dao.get_active_game(chat_id)
-    if not active_game or active_game["game_type"] not in ["raqam_top", "tez_hisob"]:
-        raise SkipHandler() # Let it fall through to other handlers
+    if not active_game:
+        return
 
     user_val = int(message.text)
     user_id = message.from_user.id

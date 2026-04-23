@@ -58,6 +58,9 @@ async def callback_lesson_select(callback: CallbackQuery, db_user: dict | None =
         lines = [f"📚 <b>{escape_html(pack['title'])}</b>\n"]
         lines.append(f"📊 Daraja: <b>{pack['level']}</b>\n")
 
+        if pack.get("intro"):
+            lines.append(f"\n💡 <i>{escape_html(pack['intro'])}</i>")
+
         if pack.get("objectives"):
             lines.append("\n🎯 <b>Maqsadlar:</b>")
             for obj in pack["objectives"]:
@@ -75,6 +78,14 @@ async def callback_lesson_select(callback: CallbackQuery, db_user: dict | None =
                 if uz:
                     lines.append(f"    🇺🇿 {uz}")
 
+        if pack.get("phrases"):
+            lines.append("\n💬 <b>Foydali iboralar:</b>")
+            for ph in pack["phrases"]:
+                lines.append(f"  • {escape_html(ph)}")
+
+        if pack.get("dialogue"):
+            lines.append(f"\n🗣 <b>Dialog:</b>\n<i>{escape_html(pack['dialogue'])}</i>")
+
         if pack.get("grammar"):
             lines.append(f"\n📖 <b>Grammatika:</b>\n{escape_html(pack['grammar'])}")
 
@@ -82,6 +93,11 @@ async def callback_lesson_select(callback: CallbackQuery, db_user: dict | None =
             lines.append("\n✏️ <b>Mashqlar:</b>")
             for ex in pack["exercises"]:
                 lines.append(f"  • {escape_html(ex)}")
+
+        if pack.get("tips"):
+            lines.append("\n📌 <b>Maslahatlar:</b>")
+            for tip in pack["tips"]:
+                lines.append(f"  • {escape_html(tip)}")
 
         await safe_edit(callback, "\n".join(lines))
         await safe_answer_callback(callback)

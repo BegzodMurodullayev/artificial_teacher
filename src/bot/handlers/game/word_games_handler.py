@@ -12,24 +12,7 @@ from src.bot.utils.telegram import safe_reply
 logger = logging.getLogger(__name__)
 router = Router(name="word_games")
 
-WORDS_DB = [
-    {"word": "beautiful", "type": "sinonim", "answers": ["pretty", "gorgeous", "lovely", "attractive"]},
-    {"word": "big", "type": "antonim", "answers": ["small", "tiny", "little"]},
-    {"word": "fast", "type": "sinonim", "answers": ["quick", "rapid", "swift"]},
-    {"word": "good", "type": "antonim", "answers": ["bad", "awful", "terrible", "poor"]},
-    {"word": "smart", "type": "sinonim", "answers": ["clever", "intelligent", "bright", "brilliant"]},
-    {"word": "hot", "type": "antonim", "answers": ["cold", "cool", "freezing"]},
-    {"word": "happy", "type": "sinonim", "answers": ["glad", "joyful", "cheerful"]},
-    {"word": "hard", "type": "antonim", "answers": ["easy", "simple", "soft"]},
-]
-
-TRANSLATION_DB = [
-    {"uz": "Men maktabga boraman.", "en": ["I go to school.", "I am going to school."]},
-    {"uz": "U juda aqlli qiz.", "en": ["She is a very smart girl.", "She is a very intelligent girl."]},
-    {"uz": "Biz kecha kitob o'qidik.", "en": ["We read a book yesterday."]},
-    {"uz": "Sen qachon kelasan?", "en": ["When will you come?", "When are you coming?"]},
-    {"uz": "Menga olma yoqadi.", "en": ["I like apples.", "I love apples."]},
-]
+# Removed static databases, using AI now
 
 # ══════════════════════════════════════════════════════════
 # SO'Z TOPISH
@@ -38,6 +21,7 @@ TRANSLATION_DB = [
 @router.message(Command(commands=["soztopish", "wordgame"]))
 async def cmd_soz_topish(message: Message, bot: Bot):
     """Start a word game (synonyms/antonyms)."""
+    logger.info("cmd_soz_topish TRIGGERED by user_id=%s", message.from_user.id if message.from_user else 0)
     chat_id = message.chat.id
     
     active_game = await game_dao.get_active_game(chat_id)
@@ -45,12 +29,22 @@ async def cmd_soz_topish(message: Message, bot: Bot):
         await safe_reply(message, f"⚠️ Bu chatda allaqachon o'yin ketyapti! (Turi: {active_game['game_type']})")
         return
 
-    word_data = random.choice(WORDS_DB)
+    msg = await safe_reply(message, "⏳ <i>O'yin tayyorlanmoqda...</i>")
+    if not msg:
+        return
+        
+    from src.services import ai_service
+    from src.bot.utils.telegram import safe_edit
+    word_data = await ai_service.ask_json("Give me a word game challenge.", mode="game_word")
     
+    if not word_data or "word" not in word_data or "answers" not in word_data:
+        await safe_edit(msg, "❌ O'yin tayyorlashda xatolik yuz berdi. Qayta urinib ko'ring.")
+        return
+        
     payload = {
         "word": word_data["word"],
-        "type": word_data["type"],
-        "answers": [ans.lower() for ans in word_data["answers"]]
+        "type": word_data.get("type", "sinonim"),
+        "answers": [str(ans).lower().strip() for ans in word_data["answers"]]
     }
     
     session_id = await game_dao.create_game_session(
@@ -60,11 +54,11 @@ async def cmd_soz_topish(message: Message, bot: Bot):
         payload=payload
     )
     
-    await safe_reply(
-        message,
+    await safe_edit(
+        msg,
         f"🔤 <b>So'z Topish O'yini!</b>\n\n"
-        f"Quyidagi so'zning <b>{word_data['type']}</b>ini ingliz tilida yozing:\n"
-        f"👉 <b>{word_data['word']}</b>\n\n"
+        f"Quyidagi so'zning <b>{payload['type']}</b>ini ingliz tilida yozing:\n"
+        f"👉 <b>{payload['word']}</b>\n\n"
         "Vaqt: 30 soniya."
     )
     
@@ -86,6 +80,7 @@ async def cmd_soz_topish(message: Message, bot: Bot):
 @router.message(Command(commands=["tarjimapoyga", "translategame"]))
 async def cmd_tarjima_poyga(message: Message, bot: Bot):
     """Start a translation game."""
+    logger.info("cmd_tarjima_poyga TRIGGERED by user_id=%s", message.from_user.id if message.from_user else 0)
     chat_id = message.chat.id
     
     active_game = await game_dao.get_active_game(chat_id)
@@ -93,11 +88,21 @@ async def cmd_tarjima_poyga(message: Message, bot: Bot):
         await safe_reply(message, f"⚠️ Bu chatda allaqachon o'yin ketyapti! (Turi: {active_game['game_type']})")
         return
 
-    phrase_data = random.choice(TRANSLATION_DB)
+    msg = await safe_reply(message, "⏳ <i>O'yin tayyorlanmoqda...</i>")
+    if not msg:
+        return
+        
+    from src.services import ai_service
+    from src.bot.utils.telegram import safe_edit
+    phrase_data = await ai_service.ask_json("Give me a translation game challenge.", mode="game_translation")
     
+    if not phrase_data or "uz" not in phrase_data or "answers" not in phrase_data:
+        await safe_edit(msg, "❌ O'yin tayyorlashda xatolik yuz berdi. Qayta urinib ko'ring.")
+        return
+        
     payload = {
         "uz": phrase_data["uz"],
-        "answers": [ans.lower().replace(".", "").replace("?", "").replace("!", "") for ans in phrase_data["en"]]
+        "answers": [str(ans).lower().replace(".", "").replace("?", "").replace("!", "").strip() for ans in phrase_data["answers"]]
     }
     
     session_id = await game_dao.create_game_session(
@@ -107,11 +112,11 @@ async def cmd_tarjima_poyga(message: Message, bot: Bot):
         payload=payload
     )
     
-    await safe_reply(
-        message,
+    await safe_edit(
+        msg,
         f"🏃 <b>Tarjima Poygasi!</b>\n\n"
         f"Quyidagi gapni ingliz tiliga tarjima qiling:\n"
-        f"👉 <b>{phrase_data['uz']}</b>\n\n"
+        f"👉 <b>{payload['uz']}</b>\n\n"
         "Vaqt: 45 soniya."
     )
     
@@ -120,7 +125,7 @@ async def cmd_tarjima_poyga(message: Message, bot: Bot):
         game = await game_dao.get_active_game(chat_id)
         if game and game["id"] == session_id and game["status"] != "finished":
             await game_dao.finish_game_session(session_id)
-            ans_str = phrase_data["en"][0]
+            ans_str = phrase_data["answers"][0] if phrase_data["answers"] else "Noma'lum"
             await bot.send_message(chat_id, f"⏱ Vaqt tugadi!\nTo'g'ri tarjima: <b>{ans_str}</b>.")
 
     asyncio.create_task(finish_trans_timeout())
@@ -130,15 +135,20 @@ async def cmd_tarjima_poyga(message: Message, bot: Bot):
 # CATCH GAME INPUTS
 # ══════════════════════════════════════════════════════════
 
-@router.message(F.text & ~F.text.startswith("/"))
+async def is_word_game_active(message: Message) -> bool:
+    """Filter to check if a word game is active in this chat."""
+    if not message.text or message.text.startswith("/"):
+        return False
+    active_game = await game_dao.get_active_game(message.chat.id)
+    return active_game is not None and active_game["game_type"] in ["soz_topish", "tarjima_poygasi"]
+
+@router.message(is_word_game_active)
 async def process_word_input(message: Message):
     """Catch words for So'z Topish and Tarjima."""
-    from aiogram.dispatcher.event.bases import SkipHandler
     chat_id = message.chat.id
-    
     active_game = await game_dao.get_active_game(chat_id)
-    if not active_game or active_game["game_type"] not in ["soz_topish", "tarjima_poygasi"]:
-        raise SkipHandler() # Let it fall through
+    if not active_game:
+        return
         
     user_val = message.text.lower().strip().replace(".", "").replace("?", "").replace("!", "")
     user_id = message.from_user.id
