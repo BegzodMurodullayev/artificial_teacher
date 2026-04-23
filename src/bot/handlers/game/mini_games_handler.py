@@ -116,6 +116,12 @@ async def is_mini_game_active(message: Message) -> bool:
     """Filter to check if a mini game is active in this chat."""
     if not message.text or not message.text.replace("-", "").isdigit():
         return False
+
+    # Do not catch menu buttons
+    from src.bot.keyboards.user_menu import resolve_menu_action
+    if resolve_menu_action(message.text):
+        return False
+
     active_game = await game_dao.get_active_game(message.chat.id)
     return active_game is not None and active_game["game_type"] in ["raqam_top", "tez_hisob"]
 

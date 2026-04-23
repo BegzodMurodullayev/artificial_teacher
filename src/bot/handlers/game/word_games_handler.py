@@ -139,6 +139,12 @@ async def is_word_game_active(message: Message) -> bool:
     """Filter to check if a word game is active in this chat."""
     if not message.text or message.text.startswith("/"):
         return False
+    
+    # Do not catch menu buttons
+    from src.bot.keyboards.user_menu import resolve_menu_action
+    if resolve_menu_action(message.text):
+        return False
+
     active_game = await game_dao.get_active_game(message.chat.id)
     return active_game is not None and active_game["game_type"] in ["soz_topish", "tarjima_poygasi"]
 
