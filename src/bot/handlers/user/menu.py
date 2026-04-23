@@ -44,15 +44,32 @@ def is_menu_action(message: Message) -> bool:
     """Return True if the message text matches any known menu alias."""
     if not message.text:
         return False
-    return resolve_menu_action(message.text) is not None
+    action = resolve_menu_action(message.text)
+    if action:
+        logger.debug("is_menu_action: MATCHED %r -> %s", message.text, action)
+        return True
+    return False
 
 @router.message(is_menu_action)
-async def menu_button_handler(message: Message, bot: Bot, db_user: dict | None = None):
+async def menu_button_handler(message: Message, db_user: dict | None = None):
     """Route menu button presses to the appropriate handler."""
-    action = resolve_menu_action(message.text)  # resolve again — fast dict lookup
-    logger.info("menu_button_handler TRIGGERED: text=%r action=%s", message.text, action)
-    if not db_user or not message.text:
-        return
+    try:
+        action = resolve_menu_action(message.text)
+        logger.info("menu_button_handler TRIGGERED: text=%r action=%s user_id=%s", 
+                    message.text, action, message.from_user.id if message.from_user else 0)
+        
+        if not db_user:
+            logger.warning("menu_button_handler: db_user is None for user %s", message.from_user.id if message.from_user else 0)
+            # Try to fetch user manually if middleware failed
+            from src.database.dao.user_dao import upsert_user
+            user = message.from_user
+            if user:
+                db_user = await upsert_user(user.id, user.username or "", user.first_name or "")
+        
+        if not db_user or not message.text:
+            return
+
+        bot = message.bot
 
     uid = message.from_user.id if message.from_user else 0
 
@@ -349,3 +366,6 @@ async def menu_button_handler(message: Message, bot: Bot, db_user: dict | None =
             await safe_reply(message, "🎮 <b>Katta O'yinlar (WebApp)</b>\n\nX-O, Xotira, Sudoku va boshqa o'yinlar markazi!", reply_markup=kb)
         else:
             await safe_reply(message, "🎮 WebApp hozirda ulanmagan.")
+    except Exception as e:
+        logger.exception("Error in menu_button_handler: %s", e)
+        await safe_reply(message, "⚠️ Menyuda xatolik yuz berdi. Iltimos qayta urinib ko'ring.")

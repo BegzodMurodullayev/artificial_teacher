@@ -125,6 +125,7 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
     # Skip menu button texts
     from src.bot.keyboards.user_menu import resolve_menu_action
     if resolve_menu_action(text):
+        logger.debug("message_handler: skipping menu button text %r", text)
         return
 
     # Skip commands
