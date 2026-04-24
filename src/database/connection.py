@@ -56,6 +56,28 @@ async def _run_migrations(db) -> None:
             )
             rows = await cursor.fetchall()
             return {row[0] for row in rows}
+
+        async def _ensure_bigint_id_columns() -> None:
+            cursor = await db.execute(
+                """
+                SELECT table_name, column_name
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND column_name IN (
+                    'user_id', 'reviewed_by', 'chat_id',
+                    'channel_id', 'referred_by', 'created_by'
+                  )
+                  AND data_type = 'integer'
+                """
+            )
+            rows = await cursor.fetchall()
+            for row in rows:
+                table_name = row[0]
+                column_name = row[1]
+                await db.execute(
+                    f"ALTER TABLE {table_name} ALTER COLUMN {column_name} TYPE BIGINT"
+                )
+                logger.info("Migration: widened %s.%s to BIGINT", table_name, column_name)
     else:
         # SQLite syntax for checking columns
         async def _table_columns(table: str) -> set[str]:
@@ -63,11 +85,16 @@ async def _run_migrations(db) -> None:
             rows = await cursor.fetchall()
             return {row[1] for row in rows}
 
+        async def _ensure_bigint_id_columns() -> None:
+            return
+
     async def _add_column_if_missing(table: str, column: str, definition: str) -> None:
         cols = await _table_columns(table)
         if column not in cols:
             await db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
             logger.info("Migration: added %s.%s", table, column)
+
+    await _ensure_bigint_id_columns()
 
     # Users table migrations
     await _add_column_if_missing("users", "role", "TEXT DEFAULT 'user'")

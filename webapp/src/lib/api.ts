@@ -115,8 +115,10 @@ export interface PlanData {
   pron_audio_per_day: number
   voice_enabled:      number
   inline_enabled:     number
+  group_enabled:      number
   iq_test_enabled:    number
   badge:              string
+  is_active:          number
 }
 
 export interface ProgressData {
@@ -221,6 +223,82 @@ export const iqApi = {
   getQuestions: () => api.get<{status: string, questions: IQQuestion[]}>('/games/iqtest/questions').then(r => r.data),
   submitResult: (answers: Record<number, number>) => 
     api.post<{status: string, score: number, new_best: boolean}>('/games/iqtest/result', { answers }).then(r => r.data),
+}
+
+export interface AdminStatsData {
+  total_users: number
+  paid_users: number
+  pending: number
+  revenue: number
+  conversion: string
+}
+
+export interface AdminPendingPayment {
+  id: number
+  user_id: number
+  plan_name: string
+  amount: number
+  duration_days: number
+  status: string
+  method: string
+  first_name?: string
+  username?: string
+  created_at: string
+}
+
+export interface AdminUserData extends UserData {
+  is_banned: number
+  plan_name: string
+  remaining_days: number
+}
+
+export interface SponsorData {
+  id: number
+  channel_id: number
+  channel_username: string
+  title: string
+  is_active: number
+}
+
+export interface PaymentSettingsData {
+  provider_name: string
+  card_number: string
+  card_holder: string
+  receipt_channel: string
+  manual_enabled: boolean
+  stars_enabled: boolean
+}
+
+export const adminApi = {
+  getStats: () => api.get<AdminStatsData>('/admin/stats').then((r) => r.data),
+  getPendingPayments: () =>
+    api.get<AdminPendingPayment[]>('/admin/payments/pending').then((r) => r.data),
+  handlePayment: (paymentId: number, action: 'approve' | 'reject') =>
+    api.post(`/admin/payments/${paymentId}/${action}`).then((r) => r.data),
+  broadcast: (text: string) =>
+    api.post<{ total: number; sent: number; failed: number }>('/admin/broadcast', { text }).then((r) => r.data),
+  getUsers: (query = '', limit = 25) =>
+    api.get<AdminUserData[]>('/admin/users', { params: { query: query || undefined, limit } }).then((r) => r.data),
+  setUserRole: (userId: number, role: 'user' | 'admin') =>
+    api.post(`/admin/users/${userId}/role`, { role }).then((r) => r.data),
+  setUserBan: (userId: number, isBanned: boolean) =>
+    api.post(`/admin/users/${userId}/ban`, { is_banned: isBanned }).then((r) => r.data),
+  grantSubscription: (userId: number, planName: string, days: number) =>
+    api.post(`/admin/users/${userId}/grant-subscription`, { plan_name: planName, days }).then((r) => r.data),
+  getPlans: () => api.get<PlanData[]>('/admin/plans').then((r) => r.data),
+  updatePlan: (planName: string, payload: Record<string, unknown>) =>
+    api.post<PlanData>(`/admin/plans/${planName}`, payload).then((r) => r.data),
+  getPaymentSettings: () =>
+    api.get<PaymentSettingsData>('/admin/settings/payment').then((r) => r.data),
+  updatePaymentSettings: (payload: Partial<PaymentSettingsData>) =>
+    api.post<PaymentSettingsData>('/admin/settings/payment', payload).then((r) => r.data),
+  getSponsors: () => api.get<SponsorData[]>('/admin/sponsors').then((r) => r.data),
+  addSponsor: (chatRef: string, title: string) =>
+    api.post<SponsorData[]>('/admin/sponsors', { chat_ref: chatRef, title }).then((r) => r.data),
+  toggleSponsor: (channelId: number) =>
+    api.post<SponsorData[]>(`/admin/sponsors/${channelId}/toggle`).then((r) => r.data),
+  deleteSponsor: (channelId: number) =>
+    api.delete(`/admin/sponsors/${channelId}`).then((r) => r.data),
 }
 
 export default api

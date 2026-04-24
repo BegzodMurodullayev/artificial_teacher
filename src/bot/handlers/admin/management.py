@@ -1,6 +1,6 @@
 """
 Additional admin management handlers.
-Provides sponsor, payment-config, and admin-role operations.
+Provides sponsor, payment config, admin-role, and manual moderation tools.
 """
 
 import logging
@@ -30,9 +30,9 @@ def _command_args(text: str) -> list[str]:
 
 def _parse_bool_flag(value: str) -> str | None:
     clean = value.strip().lower()
-    if clean in {"1", "on", "true", "yes", "yoq", "ha", "active"}:
+    if clean in {"1", "on", "true", "yes", "ha", "active"}:
         return "1"
-    if clean in {"0", "off", "false", "no", "yo'q", "stop", "inactive"}:
+    if clean in {"0", "off", "false", "no", "yo'q", "yoq", "stop", "inactive"}:
         return "0"
     return None
 
@@ -58,7 +58,11 @@ async def _resolve_sponsor_reference(raw: str) -> dict | None:
     if token.startswith("@"):
         username = token.lstrip("@").lower()
         return next(
-            (item for item in sponsors if str(item.get("channel_username", "")).lstrip("@").lower() == username),
+            (
+                item
+                for item in sponsors
+                if str(item.get("channel_username", "")).lstrip("@").lower() == username
+            ),
             None,
         )
     try:
@@ -109,14 +113,14 @@ async def _send_admins_overview(message: Message) -> None:
     if admins:
         for item in admins:
             username = item.get("username") or "-"
+            first_name = escape_html(item.get("first_name", "") or "-")
             lines.append(
-                f"<code>{item['user_id']}</code> | {escape_html(item.get('first_name', ''))} | "
+                f"<code>{item['user_id']}</code> | {first_name} | "
                 f"@{escape_html(username)} | <b>{escape_html(item.get('role', 'user'))}</b>"
             )
     else:
         lines.append("<i>Hozircha admin topilmadi.</i>")
-    lines.append("")
-    lines.append(_format_admin_help())
+    lines.extend(["", _format_admin_help()])
     await safe_reply(message, "\n".join(lines))
 
 
@@ -149,24 +153,23 @@ async def _send_sponsors_overview(message: Message) -> None:
             )
     else:
         lines.append("<i>Hali homiy kanal qo'shilmagan.</i>")
-    lines.append("")
-    lines.append(_format_sponsor_help())
+    lines.extend(["", _format_sponsor_help()])
     await safe_reply(message, "\n".join(lines))
 
 
-@router.message(F.text == "ðŸ›¡ Adminlar")
+@router.message(F.text == "🛡 Adminlar")
 @router.message(Command("admins"))
 async def _btn_adm_admins(message: Message, db_user: dict | None = None):
     await _send_admins_overview(message)
 
 
-@router.message(F.text == "ðŸ’° To'lov Sozlamalari")
+@router.message(F.text == "💰 To'lov Sozlamalari")
 @router.message(Command("payconfig"))
 async def _btn_adm_payment_settings(message: Message, db_user: dict | None = None):
     await _send_payment_config(message)
 
 
-@router.message(F.text == "ðŸ“¢ Homiy Kanallar")
+@router.message(F.text == "📢 Homiy Kanallar")
 @router.message(Command("sponsors"))
 async def _btn_adm_sponsors(message: Message, db_user: dict | None = None):
     await _send_sponsors_overview(message)
@@ -251,15 +254,14 @@ async def cmd_addsponsor(message: Message, db_user: dict | None = None):
     try:
         chat_ref = raw_ref if raw_ref.startswith("@") else int(raw_ref)
         chat = await message.bot.get_chat(chat_ref)
-    except Exception as e:
-        logger.warning("Failed to resolve sponsor chat %s: %s", raw_ref, e)
-        await safe_reply(message, "Kanalni topib bo'lmadi. Bot kanalga admin qilinganini tekshiring.")
+    except Exception as exc:
+        logger.warning("Failed to resolve sponsor chat %s: %s", raw_ref, exc)
+        await safe_reply(message, "Kanal topilmadi. Bot kanalga admin qilinganini tekshiring.")
         return
 
     title = " ".join(args[1:]).strip() or getattr(chat, "title", "") or raw_ref
     username = getattr(chat, "username", "") or ""
-    channel_id = int(chat.id)
-    await sponsor_dao.add_sponsor(channel_id=channel_id, username=username, title=title)
+    await sponsor_dao.add_sponsor(channel_id=int(chat.id), username=username, title=title)
     await _send_sponsors_overview(message)
 
 
@@ -362,7 +364,7 @@ async def cmd_banuser(message: Message, db_user: dict | None = None):
         await safe_reply(message, "Foydalanuvchi topilmadi.")
         return
     if int(target["user_id"]) == settings.OWNER_ID:
-        await safe_reply(message, "Owner userni ban qilib bo'lmaydi.")
+        await safe_reply(message, "Owner foydalanuvchini ban qilib bo'lmaydi.")
         return
     await user_dao.ban_user(int(target["user_id"]), 1)
     await safe_reply(message, f"User ban qilindi: <code>{target['user_id']}</code>")
