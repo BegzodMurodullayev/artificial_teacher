@@ -13,6 +13,9 @@ import { userApi } from '@/lib/api'
 // Lazy admin pages
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
 const AdminBroadcast = lazy(() => import('@/pages/admin/AdminBroadcast'))
+const AdminUsers = lazy(() => import('@/pages/admin/AdminUsers'))
+const AdminPlans = lazy(() => import('@/pages/admin/AdminPlans'))
+const AdminSettings = lazy(() => import('@/pages/admin/AdminSettings'))
 
 // Lazy game pages
 const GamesPage = lazy(() => import('@/pages/GamesPage'))
@@ -109,6 +112,15 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={
             <AdminPageSuspense><AdminDashboard /></AdminPageSuspense>
+          } />
+          <Route path="users" element={
+            <AdminPageSuspense><AdminUsers /></AdminPageSuspense>
+          } />
+          <Route path="plans" element={
+            <AdminPageSuspense><AdminPlans /></AdminPageSuspense>
+          } />
+          <Route path="settings" element={
+            <AdminPageSuspense><AdminSettings /></AdminPageSuspense>
           } />
           <Route path="broadcast" element={
             <AdminPageSuspense><AdminBroadcast /></AdminPageSuspense>

@@ -1,18 +1,17 @@
 """
-Pronunciation handler — pronunciation guide + TTS audio + HTML report.
-Audio is sent directly to the user in chat.
-HTML and Audio have separate Private/Public share keyboards.
+Pronunciation handler - pronunciation guide + TTS audio + HTML report.
+Audio and HTML share buttons support both private delivery and public channel posting.
 """
 
 import logging
 
 from aiogram import Router
-from aiogram.types import Message, BufferedInputFile, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import BufferedInputFile, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from src.bot.utils.telegram import safe_reply, escape_html
+from src.bot.utils.telegram import escape_html, safe_reply
+from src.database.dao import stats_dao, subscription_dao
 from src.services import ai_service, tts_service
 from src.services.content_service import moderation_warning
-from src.database.dao import stats_dao, subscription_dao
 
 logger = logging.getLogger(__name__)
 router = Router(name="user_pronunciation")
@@ -25,7 +24,7 @@ async def process_pronunciation(
     accent: str = "us",
     level: str = "A1",
 ) -> None:
-    """Core pronunciation logic — AI guide + TTS audio + HTML report."""
+    """Core pronunciation logic - AI guide + TTS audio + HTML report."""
 
     warning = moderation_warning(text)
     if warning:
@@ -39,7 +38,7 @@ async def process_pronunciation(
         await safe_reply(
             message,
             f"⚠️ Kunlik talaffuz limiti tugadi ({limit} ta).\n"
-            "Obunangizni yangilang: /subscribe"
+            "Obunangizni yangilang: /subscribe",
         )
         return
 
@@ -49,8 +48,12 @@ async def process_pronunciation(
 
     result = await ai_service.ask_json(text, mode="pronunciation", level=level, user_id=user_id)
 
-    ipa_us = ipa_uk = syllables = ""
-    tips = examples = mistakes = []
+    ipa_us = ""
+    ipa_uk = ""
+    syllables = ""
+    tips: list[str] = []
+    examples: list[str] = []
+    mistakes: list[str] = []
 
     if result:
         word = escape_html(result.get("word", text))
@@ -62,7 +65,7 @@ async def process_pronunciation(
         mistakes = result.get("common_mistakes", [])
 
         lines = [
-            f"🔊 <b>Talaffuz qo'llanmasi</b>\n",
+            "🔊 <b>Talaffuz qo'llanmasi</b>\n",
             f"📝 So'z: <b>{word}</b>",
         ]
         if ipa_us:
@@ -81,14 +84,13 @@ async def process_pronunciation(
                 lines.append(f"  • <i>{escape_html(ex)}</i>")
         if mistakes:
             lines.append("\n⚠️ <b>Keng tarqalgan xatolar:</b>")
-            for m in mistakes[:3]:
-                lines.append(f"  • {escape_html(m)}")
+            for mistake in mistakes[:3]:
+                lines.append(f"  • {escape_html(mistake)}")
 
         guide_text = "\n".join(lines)
     else:
         guide_text = f"🔊 <b>Talaffuz:</b> <i>{escape_html(text)}</i>"
 
-    # ── Build HTML report keyboard (Private / Public) ──
     username = ""
     if message.from_user:
         username = message.from_user.username or message.from_user.first_name or ""
@@ -96,6 +98,7 @@ async def process_pronunciation(
     html_kb = None
     try:
         from src.bot.handlers.user.check import build_report_keyboard
+
         html_kb = build_report_keyboard(
             text=text,
             corrected="",
@@ -105,18 +108,19 @@ async def process_pronunciation(
             username=username,
             rtype="pron",
             extra={
-                "ipa_us": ipa_us, "ipa_uk": ipa_uk,
-                "syllables": syllables, "tips": tips,
-                "examples": examples, "mistakes": mistakes,
+                "ipa_us": ipa_us,
+                "ipa_uk": ipa_uk,
+                "syllables": syllables,
+                "tips": tips,
+                "examples": examples,
+                "mistakes": mistakes,
             },
         )
     except Exception as e:
         logger.warning("pronunciation HTML report keyboard error: %s", e)
 
-    # Send guide text + HTML share keyboard
     await safe_reply(message, guide_text, reply_markup=html_kb)
 
-    # ── TTS Audio — always send directly to user ──
     await message.chat.do("upload_voice")
     try:
         audio_bytes = await tts_service.synthesize_pronunciation(text, accent=accent)
@@ -124,47 +128,46 @@ async def process_pronunciation(
         logger.warning("TTS synthesis error: %s", e)
         audio_bytes = None
 
-    if audio_bytes:
-        audio_caption = f"🔊 <b>{escape_html(text)}</b> ({accent.upper()} accent)"
-
-        # Send audio directly to user
-        try:
-            sent_voice = await message.answer_voice(
-                voice=BufferedInputFile(audio_bytes, filename=f"{text[:30]}.ogg"),
-                caption=audio_caption,
-                parse_mode="HTML",
-            )
-        except Exception as e:
-            logger.warning("Failed to send voice: %s", e)
-            sent_voice = None
-
-        # Cache audio + show Audio Private/Public share keyboard
-        try:
-            import hashlib
-            from src.bot.handlers.inline.inline_handler import _AUDIO_CACHE
-
-            key = hashlib.md5(audio_bytes[:256] if len(audio_bytes) > 256 else audio_bytes).hexdigest()[:16]
-            _AUDIO_CACHE[key] = (
-                audio_bytes,
-                f"{text[:20]}.ogg",
-                f"🔊 {text} ({accent.upper()}) | 👤 @{username}" if username else f"🔊 {text} ({accent.upper()})"
-            )
-
-            audio_share_kb = InlineKeyboardMarkup(inline_keyboard=[[
-                InlineKeyboardButton(text="🔒 Audio (Private)", callback_data=f"aud_prv:{key}"),
-                InlineKeyboardButton(text="📢 Audio (Public)",  callback_data=f"aud_pub:{key}"),
-            ]])
-
-            await message.answer(
-                "🎙 <b>Audio ulashish:</b>",
-                reply_markup=audio_share_kb,
-                parse_mode="HTML",
-            )
-        except Exception as e:
-            logger.warning("Audio cache/share keyboard error: %s", e)
-    else:
+    if not audio_bytes:
         await safe_reply(
             message,
             "⚠️ Audio generatsiya qilib bo'lmadi.\n"
-            "<i>TTS xizmati vaqtincha ishlamayapti yoki so'z qo'llab-quvvatlanmaydi.</i>"
+            "<i>TTS xizmati vaqtincha ishlamayapti yoki so'z qo'llab-quvvatlanmaydi.</i>",
         )
+        return
+
+    audio_caption = f"🔊 <b>{escape_html(text)}</b> ({accent.upper()} accent)"
+
+    try:
+        await message.answer_audio(
+            audio=BufferedInputFile(audio_bytes, filename=f"{text[:30]}.mp3"),
+            caption=audio_caption,
+            parse_mode="HTML",
+        )
+    except Exception as e:
+        logger.warning("Failed to send pronunciation audio: %s", e)
+
+    try:
+        import hashlib
+
+        from src.bot.handlers.inline.inline_handler import _AUDIO_CACHE
+
+        key = hashlib.md5(audio_bytes[:256] if len(audio_bytes) > 256 else audio_bytes).hexdigest()[:16]
+        _AUDIO_CACHE[key] = (
+            audio_bytes,
+            f"{text[:20]}.mp3",
+            f"🔊 {text} ({accent.upper()}) | 👤 @{username}" if username else f"🔊 {text} ({accent.upper()})",
+        )
+
+        audio_share_kb = InlineKeyboardMarkup(inline_keyboard=[[
+            InlineKeyboardButton(text="🔒 Audio (Private)", callback_data=f"aud_prv:{key}"),
+            InlineKeyboardButton(text="📢 Audio (Public)", callback_data=f"aud_pub:{key}"),
+        ]])
+
+        await message.answer(
+            "🎙 <b>Audio ulashish:</b>",
+            reply_markup=audio_share_kb,
+            parse_mode="HTML",
+        )
+    except Exception as e:
+        logger.warning("Audio cache/share keyboard error: %s", e)

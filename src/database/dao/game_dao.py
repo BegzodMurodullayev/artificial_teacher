@@ -26,7 +26,8 @@ async def create_game_session(
     payload_json = json.dumps(payload or {}, ensure_ascii=False)
     cursor = await db.execute(
         """INSERT INTO game_sessions (chat_id, game_type, status, payload, created_by)
-           VALUES (?, ?, 'waiting', ?, ?)""",
+           VALUES (?, ?, 'waiting', ?, ?)
+           RETURNING id""",
         (chat_id, game_type, payload_json, created_by),
     )
     await db.commit()

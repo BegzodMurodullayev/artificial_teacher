@@ -1,24 +1,25 @@
 """
-Check handler — grammar checking in private and group modes.
+Check handler - grammar checking in private and group modes.
 Includes HTML report generation with Private/Public share options.
 """
 
-import logging
 import hashlib
+import logging
 
-from aiogram import Router, F
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram import F, Router
+from aiogram.exceptions import TelegramForbiddenError
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from src.bot.utils.telegram import safe_reply, escape_html
+from src.bot.utils.telegram import escape_html, safe_reply
+from src.database.dao import stats_dao, subscription_dao
 from src.services import ai_service
 from src.services.content_service import moderation_warning
 from src.services.level_service import record_signal
-from src.database.dao import stats_dao, subscription_dao
 
 logger = logging.getLogger(__name__)
 router = Router(name="user_check")
 
-# ── In-memory cache: short_key → (html_bytes, filename, caption) ──
+# In-memory cache: short_key -> (html_bytes, filename, caption)
 _REPORT_CACHE: dict[str, tuple[bytes, str, str]] = {}
 
 
@@ -32,7 +33,7 @@ async def process_grammar_check(
     user_id: int,
     level: str = "A1",
 ) -> None:
-    """Core grammar check logic — private and group handlers."""
+    """Core grammar check logic for private and group handlers."""
 
     warning = moderation_warning(text)
     if warning:
@@ -46,7 +47,7 @@ async def process_grammar_check(
         await safe_reply(
             message,
             f"⚠️ Kunlik limit tugadi ({limit} ta tekshiruv).\n"
-            "Obunangizni yangilang: /subscribe"
+            "Obunangizni yangilang: /subscribe",
         )
         return
 
@@ -55,7 +56,6 @@ async def process_grammar_check(
     await message.chat.do("typing")
 
     result = await ai_service.ask_json(text, mode="check", level=level, user_id=user_id)
-
     if not result:
         await safe_reply(message, "❌ Grammatikani tekshirib bo'lmadi. Qayta urinib ko'ring.")
         return
@@ -73,7 +73,7 @@ async def process_grammar_check(
             "✅ <b>Xato topilmadi!</b>\n\n"
             f"📝 <i>{escape_html(text)}</i>\n\n"
             f"📊 Taxminiy daraja: <b>{estimated_level or '?'}</b>\n"
-            f"{summary}"
+            f"{escape_html(summary)}"
         )
     else:
         lines = [
@@ -97,11 +97,14 @@ async def process_grammar_check(
 
         response = "\n".join(lines)
 
-    # ── Build HTML report + Private/Public keyboard ──
     username = message.from_user.username or message.from_user.first_name or "" if message.from_user else ""
     kb = _build_share_keyboard(
-        text=text, corrected=corrected, analysis=analysis,
-        summary=summary, level=estimated_level, username=username,
+        text=text,
+        corrected=corrected,
+        analysis=analysis,
+        summary=summary,
+        level=estimated_level,
+        username=username,
         rtype="check",
     )
     await safe_reply(message, response, reply_markup=kb)
@@ -115,69 +118,75 @@ def _build_share_keyboard(
     level: str,
     username: str,
     rtype: str = "check",
-    extra: dict = None,
-) -> InlineKeyboardMarkup:
-    """Build HTML report, cache it, return Private/Public inline keyboard."""
+    extra: dict | None = None,
+) -> InlineKeyboardMarkup | None:
+    """Build HTML report, cache it, and return the share keyboard."""
     try:
         from src.bot.utils.html_report import (
-            build_check_report, build_translate_report,
+            build_check_report,
             build_pronunciation_report,
+            build_translate_report,
         )
 
         if rtype == "check":
             html_content = build_check_report(
-                original=text, corrected=corrected, analysis=analysis,
-                summary=summary, level=level, username=username,
+                original=text,
+                corrected=corrected,
+                analysis=analysis,
+                summary=summary,
+                level=level,
+                username=username,
             )
             filename = "grammatika_hisobot.html"
             caption = f"📄 Grammatika Tekshiruv Hisoboti\n👤 @{username}" if username else "📄 Grammatika Hisoboti"
         elif rtype == "translate":
-            d = extra or {}
+            details = extra or {}
             html_content = build_translate_report(
-                original=text, translation=corrected,
-                direction=d.get("direction", "uz_to_en"),
-                notes=summary, username=username,
+                original=text,
+                translation=corrected,
+                direction=details.get("direction", "uz_to_en"),
+                notes=summary,
+                username=username,
             )
             filename = "tarjima_hisobot.html"
             caption = f"🌐 Tarjima Hisoboti\n👤 @{username}" if username else "🌐 Tarjima Hisoboti"
         elif rtype == "pron":
-            d = extra or {}
+            details = extra or {}
             html_content = build_pronunciation_report(
-                word=text, ipa_us=d.get("ipa_us",""), ipa_uk=d.get("ipa_uk",""),
-                syllables=d.get("syllables",""), tips=d.get("tips",[]),
-                examples=d.get("examples",[]), mistakes=d.get("mistakes",[]),
+                word=text,
+                ipa_us=details.get("ipa_us", ""),
+                ipa_uk=details.get("ipa_uk", ""),
+                syllables=details.get("syllables", ""),
+                tips=details.get("tips", []),
+                examples=details.get("examples", []),
+                mistakes=details.get("mistakes", []),
                 username=username,
             )
             filename = "talaffuz_hisobot.html"
-            caption = f"🔊 Talaffuz Hisoboti — {text}\n👤 @{username}" if username else f"🔊 Talaffuz Hisoboti — {text}"
+            caption = f"🔊 Talaffuz Hisoboti - {text}\n👤 @{username}" if username else f"🔊 Talaffuz Hisoboti - {text}"
         else:
             return None
 
-        html_bytes = html_content.encode("utf-8")
         key = _cache_key(html_content)
-        _REPORT_CACHE[key] = (html_bytes, filename, caption)
+        _REPORT_CACHE[key] = (html_content.encode("utf-8"), filename, caption)
 
-        buttons = [[
-            InlineKeyboardButton(text="🔒 Private", callback_data=f"rpt_prv:{key}"),
-            InlineKeyboardButton(text="📢 Public",  callback_data=f"rpt_pub:{key}"),
-        ]]
-        return InlineKeyboardMarkup(inline_keyboard=buttons)
-
+        return InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text="🔒 Private", callback_data=f"rpt_prv:{key}"),
+                InlineKeyboardButton(text="📢 Public", callback_data=f"rpt_pub:{key}"),
+            ]]
+        )
     except Exception as e:
         logger.warning("_build_share_keyboard error: %s", e)
         return None
 
-
-# ══════════════════════════════════════════════════════════
-# CALLBACK HANDLERS — Private / Public
-# ══════════════════════════════════════════════════════════
 
 _cb_router = Router(name="report_callbacks")
 
 
 @_cb_router.callback_query(F.data.startswith("rpt_prv:"))
 async def callback_report_private(callback: CallbackQuery):
-    """Send HTML report privately to the user."""
+    """Send HTML report to the user's private chat."""
     key = callback.data.split(":")[1]
     entry = _REPORT_CACHE.get(key)
     if not entry:
@@ -187,13 +196,16 @@ async def callback_report_private(callback: CallbackQuery):
     html_bytes, filename, caption = entry
     try:
         from aiogram.types import BufferedInputFile
-        doc = BufferedInputFile(html_bytes, filename=filename)
-        await callback.message.answer_document(
-            document=doc,
+
+        await callback.bot.send_document(
+            chat_id=callback.from_user.id,
+            document=BufferedInputFile(html_bytes, filename=filename),
             caption=f"🔒 <b>Shaxsiy hisobot</b>\n{caption}",
             parse_mode="HTML",
         )
         await callback.answer("✅ Hisobot yuborildi!")
+    except TelegramForbiddenError:
+        await callback.answer("⚠️ Avval botning private chatida /start bosing.", show_alert=True)
     except Exception as e:
         logger.warning("report_private send failed: %s", e)
         await callback.answer("❌ Yuborib bo'lmadi.", show_alert=True)
@@ -201,7 +213,7 @@ async def callback_report_private(callback: CallbackQuery):
 
 @_cb_router.callback_query(F.data.startswith("rpt_pub:"))
 async def callback_report_public(callback: CallbackQuery):
-    """Post HTML report to public INLINE_HTML_CHANNEL with user ID label."""
+    """Post HTML report to the configured public channel and send a file-link button."""
     key = callback.data.split(":")[1]
     entry = _REPORT_CACHE.get(key)
     if not entry:
@@ -214,40 +226,41 @@ async def callback_report_public(callback: CallbackQuery):
     uname = f"@{user.username}" if user and user.username else (user.first_name if user else "")
 
     try:
-        from src.config import settings
-        from src.bot.loader import bot as _bot
         from aiogram.types import BufferedInputFile
+
+        from src.bot.loader import bot as shared_bot
+        from src.config import settings
 
         channel = settings.INLINE_HTML_CHANNEL
         if not channel or channel in (0, "0", ""):
             await callback.answer("⚠️ Kanal sozlanmagan.", show_alert=True)
             return
 
-        # Add user ID label to channel caption
         pub_caption = (
             f"📂 <b>Hisobot</b>\n"
             f"{caption}\n"
             f"🆔 <code>#{uid}</code> | {uname}"
         )
 
-        doc = BufferedInputFile(html_bytes, filename=filename)
-        msg = await _bot.send_document(
+        msg = await shared_bot.send_document(
             chat_id=channel,
-            document=doc,
+            document=BufferedInputFile(html_bytes, filename=filename),
             caption=pub_caption,
             parse_mode="HTML",
         )
-        # Build link to channel message with ID label
-        channel_str = str(channel).lstrip("@")
+
         if msg and hasattr(msg, "message_id"):
-            mid = msg.message_id
-            link = f"https://t.me/{channel_str}/{mid}"
+            channel_str = str(channel).lstrip("@")
+            link = f"https://t.me/{channel_str}/{msg.message_id}"
             await callback.message.answer(
                 f"📢 <b>Kanalga joylashtirildi!</b>\n"
-                f"🔗 <a href='{link}'>👆 Ko'rish (#{mid})</a>\n"
+                f"🔗 <a href='{link}'>👉 Ko'rish (#{msg.message_id})</a>\n"
                 f"🆔 Sizning ID: <code>#{uid}</code>",
                 parse_mode="HTML",
                 disable_web_page_preview=True,
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                    InlineKeyboardButton(text=f"📄 {filename}", url=link),
+                ]]),
             )
         await callback.answer("✅ Kanalga joylashtirildi!")
     except Exception as e:
@@ -259,5 +272,4 @@ def get_check_callback_router():
     return _cb_router
 
 
-# Export share keyboard builder for reuse in other handlers
 build_report_keyboard = _build_share_keyboard

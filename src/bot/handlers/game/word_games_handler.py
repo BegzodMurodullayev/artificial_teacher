@@ -12,7 +12,31 @@ from src.bot.utils.telegram import safe_reply
 logger = logging.getLogger(__name__)
 router = Router(name="word_games")
 
-# Removed static databases, using AI now
+FALLBACK_WORD_CHALLENGES = [
+    {"word": "happy", "type": "sinonim", "answers": ["glad", "joyful", "cheerful"]},
+    {"word": "big", "type": "sinonim", "answers": ["large", "huge", "great"]},
+    {"word": "difficult", "type": "antonim", "answers": ["easy", "simple"]},
+    {"word": "fast", "type": "antonim", "answers": ["slow"]},
+]
+
+FALLBACK_TRANSLATION_CHALLENGES = [
+    {"uz": "Men har kuni ingliz tilini mashq qilaman.", "answers": ["i practice english every day", "i practise english every day"]},
+    {"uz": "U hozir kitob o'qiyapti.", "answers": ["she is reading a book now", "he is reading a book now"]},
+    {"uz": "Biz ertaga maktabga boramiz.", "answers": ["we will go to school tomorrow", "we are going to school tomorrow"]},
+    {"uz": "Bu savol juda qiziq ekan.", "answers": ["this question is very interesting", "it is a very interesting question"]},
+]
+
+
+def _normalize_answers(items: list[str]) -> list[str]:
+    return [str(ans).lower().replace(".", "").replace("?", "").replace("!", "").strip() for ans in items]
+
+
+def _fallback_word_challenge() -> dict:
+    return random.choice(FALLBACK_WORD_CHALLENGES).copy()
+
+
+def _fallback_translation_challenge() -> dict:
+    return random.choice(FALLBACK_TRANSLATION_CHALLENGES).copy()
 
 # ══════════════════════════════════════════════════════════
 # SO'Z TOPISH
@@ -38,13 +62,12 @@ async def cmd_soz_topish(message: Message, bot: Bot):
     word_data = await ai_service.ask_json("Give me a word game challenge.", mode="game_word")
     
     if not word_data or "word" not in word_data or "answers" not in word_data:
-        await safe_edit(msg, "❌ O'yin tayyorlashda xatolik yuz berdi. Qayta urinib ko'ring.")
-        return
+        word_data = _fallback_word_challenge()
         
     payload = {
         "word": word_data["word"],
         "type": word_data.get("type", "sinonim"),
-        "answers": [str(ans).lower().strip() for ans in word_data["answers"]]
+        "answers": _normalize_answers(word_data["answers"])
     }
     
     session_id = await game_dao.create_game_session(
@@ -97,12 +120,11 @@ async def cmd_tarjima_poyga(message: Message, bot: Bot):
     phrase_data = await ai_service.ask_json("Give me a translation game challenge.", mode="game_translation")
     
     if not phrase_data or "uz" not in phrase_data or "answers" not in phrase_data:
-        await safe_edit(msg, "❌ O'yin tayyorlashda xatolik yuz berdi. Qayta urinib ko'ring.")
-        return
+        phrase_data = _fallback_translation_challenge()
         
     payload = {
         "uz": phrase_data["uz"],
-        "answers": [str(ans).lower().replace(".", "").replace("?", "").replace("!", "").strip() for ans in phrase_data["answers"]]
+        "answers": _normalize_answers(phrase_data["answers"])
     }
     
     session_id = await game_dao.create_game_session(

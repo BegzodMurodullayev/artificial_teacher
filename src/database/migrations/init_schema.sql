@@ -392,6 +392,7 @@ CREATE TABLE IF NOT EXISTS materials (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     material_type TEXT NOT NULL, -- 'book', 'fact', 'quiz', 'quiz_variant'
     category TEXT,
+    tier TEXT DEFAULT 'free',
     title TEXT NOT NULL,
     author TEXT,
     description TEXT,

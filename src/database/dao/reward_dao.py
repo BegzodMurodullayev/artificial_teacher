@@ -113,7 +113,8 @@ async def create_promo_code(
     db = await get_db()
     cursor = await db.execute(
         """INSERT INTO promo_codes (code, plan_name, days, max_uses, created_by, is_active)
-           VALUES (?, ?, ?, ?, ?, 1)""",
+           VALUES (?, ?, ?, ?, ?, 1)
+           RETURNING id""",
         (code.upper(), plan_name, days, max_uses, created_by),
     )
     await db.commit()

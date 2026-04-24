@@ -1,0 +1,234 @@
+[
+  {
+    "material_type": "book",
+    "category": "grammar",
+    "title": "Grammar Starter Roadmap",
+    "author": "Artificial Teacher",
+    "description": "Free foydalanuvchilar uchun asosiy grammar yo'l xaritasi va mini practice pack.",
+    "content": {
+      "tier": "free",
+      "preview": "A1-A2 uchun eng ko'p xato qilinadigan 5 mavzu, yodlash jadvali va 3 kunlik mashq rejasi.",
+      "bullets": [
+        "Present Simple vs Present Continuous",
+        "Articles: a / an / the",
+        "Basic question patterns"
+      ],
+      "cta": "Ko'proq real worksheet va speaking drills uchun Pro ochiladi."
+    }
+  },
+  {
+    "material_type": "book",
+    "category": "speaking",
+    "title": "Speaking Booster Dialogues",
+    "author": "Artificial Teacher",
+    "description": "Real hayotdagi dialoglar va speaking warm-up kartalar to'plami.",
+    "content": {
+      "tier": "standard",
+      "preview": "Cafe, airport, interview va classroom vaziyatlari uchun 20 ta tayyor dialog ramkasi.",
+      "bullets": [
+        "Daily speaking prompts",
+        "Useful fillers and connectors",
+        "Confidence building practice"
+      ],
+      "cta": "Standard va undan yuqori obunada to'liq ochiladi."
+    }
+  },
+  {
+    "material_type": "book",
+    "category": "exam",
+    "title": "IELTS Writing Upgrade Pack",
+    "author": "Artificial Teacher",
+    "description": "Essay structure, linking devices va band oshirish uchun qo'llanma.",
+    "content": {
+      "tier": "pro",
+      "preview": "Task 1 va Task 2 uchun skeleton, sample hook va paragraph blueprintlar.",
+      "bullets": [
+        "Band 6 to 7 transition tips",
+        "Intro/body/conclusion templates",
+        "Common task response mistakes"
+      ],
+      "cta": "Bu pack Pro va Premium foydalanuvchilar uchun."
+    }
+  },
+  {
+    "material_type": "book",
+    "category": "exam",
+    "title": "Premium Exam Intensive Library",
+    "author": "Artificial Teacher",
+    "description": "Mock analysis, advanced vocabulary bank va exam strategy playbook.",
+    "content": {
+      "tier": "premium",
+      "preview": "CEFR B2-C1 darajadagi premium exam prep materiallari va murakkab analysis checklist.",
+      "bullets": [
+        "Advanced collocations",
+        "Exam timing strategy",
+        "Band-focused feedback rubric"
+      ],
+      "cta": "Premium rejada to'liq ochiladi."
+    }
+  },
+  {
+    "material_type": "fact",
+    "category": "science",
+    "title": "Eureka: Why We Forget New Words",
+    "author": "Brain Note",
+    "description": "Vocabulary retention nega sustlashishini oddiy tilda tushuntiradi.",
+    "content": {
+      "tier": "free",
+      "year": "2026",
+      "region": "Global",
+      "summary": "Repetition, emotion va active recall bo'lmasa yangi so'zlar tez unutiladi.",
+      "cta": "Pro foydalanuvchilar uchun memory systems bo'limi bor."
+    }
+  },
+  {
+    "material_type": "fact",
+    "category": "language",
+    "title": "Eureka: Native Accent vs Clear Accent",
+    "author": "Speech Lab",
+    "description": "Perfect native accent emas, clear pronunciation ko'proq muhimligini ko'rsatadi.",
+    "content": {
+      "tier": "standard",
+      "year": "2026",
+      "region": "UK/US",
+      "summary": "Tushunarli talaffuz va stress control aksentdan ko'ra tezroq natija beradi.",
+      "cta": "Standard+ da pronunciation drills tavsiya qilinadi."
+    }
+  },
+  {
+    "material_type": "fact",
+    "category": "motivation",
+    "title": "Eureka: 15-Minute Study Effect",
+    "author": "Learning Ops",
+    "description": "Har kuni qisqa sessiyalar bilan katta natija yig'ilishini isbotlaydi.",
+    "content": {
+      "tier": "pro",
+      "year": "2025",
+      "region": "Asia",
+      "summary": "Short focused sessions + review loop o'qishni uzoq marafondan foydaliroq qiladi.",
+      "cta": "Pro pack ichida 21 kunlik focused plan mavjud."
+    }
+  },
+  {
+    "material_type": "quiz",
+    "category": "grammar",
+    "title": "Zakovat Warm-up #1",
+    "author": "Artificial Teacher",
+    "description": "Beginner foydalanuvchilar uchun yengil mantiqiy grammar savoli.",
+    "content": {
+      "tier": "free",
+      "savol": "Choose the correct form: She ___ coffee every morning.",
+      "variantlar": ["drink", "drinks", "drinking", "drank"],
+      "javob": "drinks",
+      "izoh": "Third person singular in Present Simple needs -s."
+    }
+  },
+  {
+    "material_type": "quiz",
+    "category": "translation",
+    "title": "Zakovat Sprint #2",
+    "author": "Artificial Teacher",
+    "description": "Translation logic va tense tanlashni sinaydi.",
+    "content": {
+      "tier": "standard",
+      "savol": "Best translation: 'U hozir dars qilmoqda.'",
+      "variantlar": [
+        "He does lesson now.",
+        "He is studying now.",
+        "He studied now.",
+        "He studies now."
+      ],
+      "javob": "He is studying now.",
+      "izoh": "Current ongoing action needs Present Continuous."
+    }
+  },
+  {
+    "material_type": "quiz",
+    "category": "exam",
+    "title": "Zakovat Pro Challenge",
+    "author": "Artificial Teacher",
+    "description": "IELTS style inference savoli va grammar trap.",
+    "content": {
+      "tier": "pro",
+      "savol": "Which sentence is the most natural academic option?",
+      "variantlar": [
+        "Many student is think this is useful.",
+        "Many students think this approach is effective.",
+        "Many students is thinking this approach effective.",
+        "Many student think this is effectiveness."
+      ],
+      "javob": "Many students think this approach is effective.",
+      "izoh": "Plural subject, correct verb form and natural academic phrasing are required."
+    }
+  },
+  {
+    "material_type": "quiz",
+    "category": "advanced",
+    "title": "Zakovat Premium Logic",
+    "author": "Artificial Teacher",
+    "description": "Advanced reading and inference challenge.",
+    "content": {
+      "tier": "premium",
+      "savol": "If the report was submitted before review and no reviewer approved it, what is definitely true?",
+      "variantlar": [
+        "The report was approved.",
+        "The report still needs review.",
+        "The reviewer rejected it.",
+        "The author deleted it."
+      ],
+      "javob": "The report still needs review.",
+      "izoh": "Submission alone does not imply approval."
+    }
+  },
+  {
+    "material_type": "guide",
+    "category": "roadmap",
+    "title": "Free 7-Day English Reset",
+    "author": "Artificial Teacher",
+    "description": "Free userlarni qizdirish uchun qisqa, ammo foydali 7 kunlik plan.",
+    "content": {
+      "tier": "free",
+      "modules": [
+        "Kun 1: grammar audit",
+        "Kun 2: 20 ta active word",
+        "Kun 3: shadowing practice",
+        "Kun 4-7: repeat + review"
+      ],
+      "cta": "Ko'proq drill, checklist va mock tasks uchun Pro kerak bo'ladi."
+    }
+  },
+  {
+    "material_type": "guide",
+    "category": "pro-system",
+    "title": "Pro Grammar System",
+    "author": "Artificial Teacher",
+    "description": "Grammar Pro bundle asosida tuzilgan chuqurroq yo'nalish.",
+    "content": {
+      "tier": "pro",
+      "modules": [
+        "Sentence pattern map",
+        "Tense comparison sheets",
+        "Error correction ladder",
+        "Weekly consolidation test"
+      ],
+      "cta": "Pro yoki Premium rejada to'liq ochiladi."
+    }
+  },
+  {
+    "material_type": "guide",
+    "category": "premium-system",
+    "title": "Premium Fluency Engine",
+    "author": "Artificial Teacher",
+    "description": "Premium userlar uchun speaking, writing va examni birlashtirgan system.",
+    "content": {
+      "tier": "premium",
+      "modules": [
+        "Daily speaking sprints",
+        "Advanced writing loops",
+        "Mock exam review matrix",
+        "Personal weak-point tracker"
+      ],
+      "cta": "Premium foydalanuvchilar uchun to'liq access."
+    }
+  }
+]

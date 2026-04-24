@@ -25,7 +25,8 @@ async def create_payment(
     cursor = await db.execute(
         """INSERT INTO payments (user_id, plan_name, amount, duration_days,
            currency, method, status, receipt_file_id, note)
-           VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?)""",
+           VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?)
+           RETURNING id""",
         (user_id, plan_name, amount, duration_days, currency, method, receipt_file_id, note),
     )
     await db.commit()
@@ -108,5 +109,15 @@ async def update_receipt(payment_id: int, file_id: str) -> None:
     await db.execute(
         "UPDATE payments SET receipt_file_id = ? WHERE id = ?",
         (file_id, payment_id),
+    )
+    await db.commit()
+
+
+async def set_payment_method(payment_id: int, method: str) -> None:
+    """Update the chosen payment method for a payment."""
+    db = await get_db()
+    await db.execute(
+        "UPDATE payments SET method = ? WHERE id = ?",
+        (method, payment_id),
     )
     await db.commit()

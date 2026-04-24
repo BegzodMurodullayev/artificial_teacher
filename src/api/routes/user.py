@@ -2,45 +2,29 @@
 User & Dashboard API routes — /api/user/*, /api/dashboard
 """
 
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request
 
+from src.api.auth import get_request_user, get_tg_user
 from src.api.schemas.models import UserOut, StatsOut, UsageOut, PlanOut, DashboardOut, ProgressOut
 from src.database.dao import user_dao, stats_dao, subscription_dao, webapp_dao
 
 router = APIRouter(prefix="/api/user", tags=["User"])
 
 
-def _get_tg_user(request: Request) -> dict:
-    """Extract authenticated Telegram user from request state."""
-    tg_user = getattr(request.state, "tg_user", None)
-    if not tg_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    return tg_user
-
-
 @router.get("/me", response_model=UserOut)
 async def get_me(request: Request):
     """Get current authenticated user."""
-    tg = _get_tg_user(request)
-    user = await user_dao.get_user(tg["id"])
-    if not user:
-        user = await user_dao.upsert_user(
-            user_id=tg["id"],
-            username=tg.get("username", ""),
-            first_name=tg.get("first_name", ""),
-        )
+    user = await get_request_user(request)
     return UserOut(**user)
 
 
 @router.get("/dashboard", response_model=DashboardOut)
 async def get_dashboard(request: Request):
     """Get full dashboard data for WebApp home screen."""
-    tg = _get_tg_user(request)
+    tg = get_tg_user(request)
     uid = tg["id"]
 
-    user = await user_dao.get_user(uid)
-    if not user:
-        user = await user_dao.upsert_user(uid, tg.get("username", ""), tg.get("first_name", ""))
+    user = await get_request_user(request)
 
     stats = await stats_dao.get_stats(uid)
     usage = await stats_dao.get_usage_today(uid)
@@ -64,7 +48,7 @@ async def get_dashboard(request: Request):
 @router.get("/stats", response_model=StatsOut)
 async def get_stats(request: Request):
     """Get user statistics."""
-    tg = _get_tg_user(request)
+    tg = get_tg_user(request)
     stats = await stats_dao.get_stats(tg["id"])
     return StatsOut(**{k: stats.get(k, 0) for k in StatsOut.model_fields})
 
@@ -72,6 +56,6 @@ async def get_stats(request: Request):
 @router.get("/usage", response_model=UsageOut)
 async def get_usage(request: Request):
     """Get today's usage counters."""
-    tg = _get_tg_user(request)
+    tg = get_tg_user(request)
     usage = await stats_dao.get_usage_today(tg["id"])
     return UsageOut(**{k: usage.get(k, 0) for k in UsageOut.model_fields})

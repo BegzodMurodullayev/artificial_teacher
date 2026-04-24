@@ -15,6 +15,16 @@ async def get_active_sponsors() -> list[dict]:
     return [dict(r) for r in rows]
 
 
+async def get_all_sponsors() -> list[dict]:
+    """Get all sponsor channels, active and inactive."""
+    db = await get_db()
+    cursor = await db.execute(
+        "SELECT * FROM sponsor_channels ORDER BY is_active DESC, id ASC"
+    )
+    rows = await cursor.fetchall()
+    return [dict(r) for r in rows]
+
+
 async def add_sponsor(channel_id: int, username: str = "", title: str = "") -> int:
     """Add a sponsor channel. Returns row ID."""
     db = await get_db()
@@ -38,6 +48,16 @@ async def remove_sponsor(channel_id: int) -> None:
     await db.execute(
         "UPDATE sponsor_channels SET is_active = 0 WHERE channel_id = ?",
         (channel_id,),
+    )
+    await db.commit()
+
+
+async def set_sponsor_active(channel_id: int, is_active: int) -> None:
+    """Toggle sponsor channel state."""
+    db = await get_db()
+    await db.execute(
+        "UPDATE sponsor_channels SET is_active = ? WHERE channel_id = ?",
+        (is_active, channel_id),
     )
     await db.commit()
 

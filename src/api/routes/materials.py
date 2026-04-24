@@ -9,7 +9,7 @@ def _get_uid(request: Request) -> int:
         raise HTTPException(status_code=401, detail="Not authenticated")
     return tg["id"]
 
-router = APIRouter(prefix="/materials", tags=["Materials"])
+router = APIRouter(prefix="/api/materials", tags=["Materials"])
 
 @router.get("")
 async def get_materials(
@@ -42,11 +42,4 @@ async def get_material(
     material = await material_dao.get_material_by_id(material_id)
     if not material:
         raise HTTPException(status_code=404, detail="Material not found")
-    # For content field, we can parse it to JSON if it's a string, but the frontend can also parse it.
-    import json
-    if material.get("content"):
-        try:
-            material["content"] = json.loads(material["content"])
-        except Exception:
-            pass
     return material

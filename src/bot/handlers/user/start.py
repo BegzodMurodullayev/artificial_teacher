@@ -91,6 +91,15 @@ async def cmd_help(message: Message, db_user: dict | None = None):
     await safe_reply(message, help_text)
 
 
+@router.message(F.text == "🎁 Bonuslar")
+async def btn_bonus(message: Message, db_user: dict | None = None):
+    """Open referral and bonus panel from reply keyboard."""
+    if not db_user:
+        return
+    from src.bot.handlers.user.profile import send_bonus_panel
+    await send_bonus_panel(message, db_user)
+
+
 @router.message(Command("library"))
 async def cmd_library(message: Message, db_user: dict | None = None):
     """Handle /library command to open the Library WebApp."""

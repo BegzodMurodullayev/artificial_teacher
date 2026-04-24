@@ -13,6 +13,7 @@ import hashlib
 import logging
 
 from aiogram import Router, F
+from aiogram.exceptions import TelegramForbiddenError
 from aiogram.types import (
     InlineQuery,
     InlineQueryResultArticle,
@@ -556,9 +557,11 @@ async def callback_audio_private(callback: CallbackQuery):
     audio_bytes, filename, caption = entry
     try:
         from aiogram.types import BufferedInputFile
-        voice = BufferedInputFile(audio_bytes, filename=filename)
-        await callback.message.answer_voice(voice=voice, caption=f"🔒 {caption}")
+        audio = BufferedInputFile(audio_bytes, filename=filename)
+        await callback.bot.send_audio(chat_id=callback.from_user.id, audio=audio, caption=f"🔒 {caption}")
         await callback.answer("✅ Audio yuborildi!")
+    except TelegramForbiddenError:
+        await callback.answer("⚠️ Avval botning private chatida /start bosing.", show_alert=True)
     except Exception as e:
         logger.warning("audio private send failed: %s", e)
         await callback.answer("❌ Yuborib bo'lmadi.", show_alert=True)
@@ -594,10 +597,10 @@ async def callback_audio_public(callback: CallbackQuery):
             f"🆔 <code>#{uid}</code> | {uname}"
         )
 
-        voice = BufferedInputFile(audio_bytes, filename=filename)
-        msg = await _bot.send_voice(
+        audio = BufferedInputFile(audio_bytes, filename=filename)
+        msg = await _bot.send_audio(
             chat_id=channel,
-            voice=voice,
+            audio=audio,
             caption=pub_caption,
             parse_mode="HTML",
         )

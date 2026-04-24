@@ -89,6 +89,14 @@ async def callback_plan_select(callback: CallbackQuery, db_user: dict | None = N
 
     user_id = db_user["user_id"]
     display = plan.get("display_name", plan_name.title())
+    payment_config = await reward_dao.get_all_config("payment_config")
+    manual_enabled = payment_config.get("manual_enabled", "1") != "0"
+    stars_enabled = payment_config.get("stars_enabled", "1") != "0"
+    provider_name = payment_config.get("provider_name", "Karta (Click/Payme)")
+    payment_config = await reward_dao.get_all_config("payment_config")
+    manual_enabled = payment_config.get("manual_enabled", "1") != "0"
+    stars_enabled = payment_config.get("stars_enabled", "1") != "0"
+    provider_name = payment_config.get("provider_name", "Karta (Click/Payme)")
 
     # Duration selection
     monthly_price = plan.get("price_monthly", 0)
@@ -191,9 +199,7 @@ async def callback_pay_manual(callback: CallbackQuery, db_user: dict | None = No
         await safe_answer_callback(callback, "❌ To'lov topilmadi", show_alert=True)
         return
 
-    # Update method
-    await payment_dao._db.execute("UPDATE payments SET method = 'manual' WHERE id = ?", (payment_id,))
-    await payment_dao._db.commit()
+    await payment_dao.set_payment_method(payment_id, "manual")
 
     from src.database.dao.reward_dao import get_config
     card_number = await get_config("payment_config", "card_number", "")
@@ -236,14 +242,17 @@ async def callback_pay_stars(callback: CallbackQuery, db_user: dict | None = Non
         await safe_answer_callback(callback, "❌ To'lov topilmadi", show_alert=True)
         return
 
+    stars_enabled = (await reward_dao.get_config("payment_config", "stars_enabled", "1")) != "0"
+    if not stars_enabled:
+        await safe_answer_callback(callback, "âŒ Telegram Stars vaqtincha o'chirilgan", show_alert=True)
+        return
+
     stars_amount = int(payment['amount'] / 150)
     if stars_amount <= 0:
         await safe_answer_callback(callback, "❌ Xato", show_alert=True)
         return
 
-    # Update method
-    await payment_dao._db.execute("UPDATE payments SET method = 'stars' WHERE id = ?", (payment_id,))
-    await payment_dao._db.commit()
+    await payment_dao.set_payment_method(payment_id, "stars")
 
     from aiogram.types import LabeledPrice
     from src.bot.loader import bot

@@ -99,12 +99,14 @@ def create_api_app():
     from src.api.routes.leaderboard import router as leaderboard_router
     from src.api.routes.games import router as games_router
     from src.api.routes.materials import router as materials_router
+    from src.api.routes.admin import router as admin_router
 
     app.include_router(user_router)
     app.include_router(progress_router)
     app.include_router(leaderboard_router)
     app.include_router(games_router)
     app.include_router(materials_router)
+    app.include_router(admin_router)
 
     logger.info("FastAPI app created with %d routes", len(app.routes))
     return app
@@ -125,8 +127,8 @@ async def main():
 
     # 1.1 Seed materials if needed (runs synchronously, which is fine on startup)
     try:
-        from scripts.seed_materials import seed_materials
-        seed_materials()
+        from scripts.seed_materials import seed_materials_async
+        seeded_count = await seed_materials_async()
         logger.info("✅ Materials seeded")
     except Exception as e:
         logger.error(f"Error seeding materials: {e}")
@@ -161,7 +163,11 @@ async def main():
     try:
         logger.info("🤖 Starting bot polling...")
         await bot.delete_webhook(drop_pending_updates=True)
-        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+        await dp.start_polling(
+            bot,
+            allowed_updates=dp.resolve_used_update_types(),
+            tasks_concurrency_limit=settings.UPDATE_CONCURRENCY,
+        )
     except (KeyboardInterrupt, SystemExit):
         logger.info("Bot stopped by user")
     finally:

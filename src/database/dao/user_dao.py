@@ -93,6 +93,11 @@ async def find_user_by_username(username: str) -> dict | None:
     return dict(row) if row else None
 
 
+async def get_user_by_username(username: str) -> dict | None:
+    """Backward-compatible alias used by older handlers."""
+    return await find_user_by_username(username)
+
+
 async def get_admins() -> list[dict]:
     """Get all users with admin or owner role."""
     db = await get_db()

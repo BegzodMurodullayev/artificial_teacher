@@ -18,12 +18,24 @@ logger = logging.getLogger(__name__)
 # Concurrency limiter
 _semaphore: asyncio.Semaphore | None = None
 
+MODE_ALIASES = {
+    "translate_uz_to_en": "translate_uz_en",
+    "translate_en_to_uz": "translate_en_uz",
+    "translate_ru_to_en": "translate_ru_en",
+    "translate_en_to_ru": "translate_en_ru",
+}
+
 
 def _get_semaphore() -> asyncio.Semaphore:
     global _semaphore
     if _semaphore is None:
         _semaphore = asyncio.Semaphore(settings.AI_CONCURRENCY)
     return _semaphore
+
+
+def _normalize_mode(mode: str) -> str:
+    """Map handler-facing mode names to the registered prompt names."""
+    return MODE_ALIASES.get(mode, mode)
 
 
 # ── System Prompts ──────────────────────────────────────────
@@ -139,6 +151,7 @@ async def ask_ai(
 ) -> str:
     """Send a prompt to OpenRouter and get a text response."""
     sem = _get_semaphore()
+    mode = _normalize_mode(mode)
     system_prompt = SYSTEM_PROMPTS.get(mode, SYSTEM_PROMPTS["bot"])
 
     # Inject level into system prompt
@@ -198,7 +211,7 @@ async def ask_json(
     user_id: int = 0,
 ) -> dict | None:
     """Send a prompt and parse the response as JSON."""
-    raw = await ask_ai(text, mode=mode, level=level, user_id=user_id, temperature=0.3)
+    raw = await ask_ai(text, mode=_normalize_mode(mode), level=level, user_id=user_id, temperature=0.3)
 
     # Try to extract JSON from response
     try:

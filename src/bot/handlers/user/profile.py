@@ -6,13 +6,46 @@ import logging
 
 from aiogram import Router
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from src.bot.utils.telegram import safe_reply, escape_html, fmt_num
+from src.config import settings
 from src.database.dao import stats_dao, subscription_dao, user_dao, reward_dao
 
 logger = logging.getLogger(__name__)
 router = Router(name="user_profile")
+
+
+async def send_bonus_panel(message: Message, db_user: dict) -> None:
+    """Show referral and bonus wallet information."""
+    user_id = db_user["user_id"]
+    wallet = await reward_dao.get_wallet(user_id)
+    referral_code = wallet.get("referral_code", "")
+    bot_username = settings.BOT_USERNAME.lstrip("@")
+    invite_link = f"https://t.me/{bot_username}?start=ref_{referral_code}" if bot_username and referral_code else ""
+
+    text = (
+        "🎁 <b>Bonuslar va referral</b>\n\n"
+        f"🎯 Ballar: <b>{fmt_num(int(wallet.get('points', 0)))}</b>\n"
+        f"👥 Taklif qilingan userlar: <b>{fmt_num(wallet.get('total_referrals', 0))}</b>\n"
+        f"🏷 Referral kod: <code>{escape_html(referral_code or 'yaratilmoqda')}</code>\n"
+        "💸 Har bir referral uchun sizga <b>25 ball</b> qo'shiladi.\n\n"
+    )
+    if invite_link:
+        text += f"🔗 Taklif havolasi:\n<code>{escape_html(invite_link)}</code>\n\n"
+    text += (
+        "Do'stingiz botga sizning havolangiz orqali kirsa, bonus balansingiz oshadi. "
+        "Keyin bu tizim promo va premium imkoniyatlar bilan yanada kengayadi."
+    )
+
+    reply_markup = None
+    if invite_link:
+        reply_markup = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(text="🚀 Taklif linkini ochish", url=invite_link)]
+            ]
+        )
+    await safe_reply(message, text, reply_markup=reply_markup)
 
 
 @router.message(Command("mystats"))
@@ -92,6 +125,14 @@ async def cmd_mystats(message: Message, db_user: dict | None = None):
     )
 
     await safe_reply(message, text)
+
+
+@router.message(Command("bonus"))
+async def cmd_bonus(message: Message, db_user: dict | None = None):
+    """Show referral wallet and invite link."""
+    if not db_user:
+        return
+    await send_bonus_panel(message, db_user)
 
 
 @router.message(Command("clear"))

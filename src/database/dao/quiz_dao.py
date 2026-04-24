@@ -29,7 +29,8 @@ async def create_quiz_session(
     cursor = await db.execute(
         """INSERT INTO quiz_sessions
            (user_id, qtype, level, language, total_questions, question_timeout, chat_id, status)
-           VALUES (?, ?, ?, ?, ?, ?, ?, 'active')""",
+           VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+           RETURNING id""",
         (user_id, qtype, level, language, total_questions, question_timeout, chat_id),
     )
     await db.commit()
@@ -105,7 +106,8 @@ async def record_quiz_attempt(
     cursor = await db.execute(
         """INSERT INTO quiz_attempts
            (user_id, qtype, total, correct, wrong, mode, level_before, level_after, iq_score)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+           RETURNING id""",
         (user_id, qtype, total, correct, wrong, mode, level_before, level_after, iq_score),
     )
     await db.commit()

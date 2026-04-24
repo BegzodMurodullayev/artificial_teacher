@@ -1,34 +1,34 @@
 /**
- * AdminLayout — sidebar + header shell for admin panel.
+ * AdminLayout - sidebar + header shell for admin panel.
  */
 
 import { useState } from 'react'
-import { Link, useLocation, Outlet, Navigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { clsx } from 'clsx'
+
 import { useIsAdmin } from '@/store/useStore'
 
 const NAV_ITEMS = [
-  { path: '/admin',           icon: '📊', label: 'Dashboard'  },
-  { path: '/admin/payments',  icon: '💳', label: 'To\'lovlar' },
-  { path: '/admin/users',     icon: '👥', label: 'Foydalanuvchilar' },
-  { path: '/admin/broadcast', icon: '📢', label: 'Broadcast'  },
-  { path: '/admin/plans',     icon: '⭐', label: 'Rejalar'    },
+  { path: '/admin', icon: '📊', label: 'Dashboard' },
+  { path: '/admin/users', icon: '👥', label: 'Foydalanuvchilar' },
+  { path: '/admin/plans', icon: '⭐', label: 'Rejalar' },
+  { path: '/admin/settings', icon: '⚙️', label: 'Sozlamalar' },
+  { path: '/admin/broadcast', icon: '📢', label: 'Broadcast' },
 ]
 
 export function AdminLayout() {
-  const isAdmin    = useIsAdmin()
-  const location   = useLocation()
+  const isAdmin = useIsAdmin()
+  const location = useLocation()
   const [open, setOpen] = useState(false)
 
   if (!isAdmin) return <Navigate to="/" replace />
 
   return (
     <div className="flex min-h-screen bg-space-black">
-      {/* Sidebar */}
       <aside className="hidden md:flex w-56 flex-col glass-dark border-r border-space-border p-4 gap-2">
         <div className="text-gradient font-bold text-lg mb-4 px-2">🎓 Admin</div>
-        {NAV_ITEMS.map(item => (
+        {NAV_ITEMS.map((item) => (
           <Link
             key={item.path}
             to={item.path}
@@ -45,20 +45,14 @@ export function AdminLayout() {
         ))}
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col">
-        {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 glass-dark border-b border-space-border">
           <span className="text-gradient font-bold">🎓 Admin</span>
-          <button
-            onClick={() => setOpen(v => !v)}
-            className="text-text-secondary p-2"
-          >
+          <button onClick={() => setOpen((v) => !v)} className="text-text-secondary p-2">
             ☰
           </button>
         </header>
 
-        {/* Mobile Drawer */}
         <AnimatePresence>
           {open && (
             <motion.div
@@ -76,7 +70,7 @@ export function AdminLayout() {
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               >
                 <div className="text-gradient font-bold text-lg mb-4">🎓 Admin</div>
-                {NAV_ITEMS.map(item => (
+                {NAV_ITEMS.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}

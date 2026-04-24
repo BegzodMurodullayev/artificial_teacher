@@ -81,12 +81,14 @@ async def _run_migrations(db) -> None:
 
     # Payments table migrations
     await _add_column_if_missing("payments", "duration_days", "INTEGER DEFAULT 30")
+    await _add_column_if_missing("materials", "tier", "TEXT DEFAULT 'free'")
 
     # Ensure defaults
     await db.execute("UPDATE users SET role='user' WHERE role IS NULL OR role=''")
     await db.execute("UPDATE users SET is_banned=0 WHERE is_banned IS NULL")
     await db.execute("UPDATE subscriptions SET granted_days=30 WHERE granted_days IS NULL OR granted_days=0")
     await db.execute("UPDATE payments SET duration_days=30 WHERE duration_days IS NULL OR duration_days=0")
+    await db.execute("UPDATE materials SET tier='free' WHERE tier IS NULL OR tier=''")
 
 
 async def _seed_default_plans(db) -> None:

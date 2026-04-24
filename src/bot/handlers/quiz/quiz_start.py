@@ -18,6 +18,7 @@ from src.database.dao import quiz_dao, stats_dao, subscription_dao, user_dao
 
 logger = logging.getLogger(__name__)
 router = Router(name="quiz")
+_QUIZ_TIMEOUT_TASKS: dict[int, asyncio.Task] = {}
 
 # Fallback question bank
 FALLBACK_QUESTIONS_EN = [
@@ -41,6 +42,76 @@ def _get_display_name(user) -> str:
     if user.username:
         return f"@{user.username}"
     return user.first_name or "Student"
+
+
+def _cancel_question_timeout(session_id: int) -> None:
+    task = _QUIZ_TIMEOUT_TASKS.pop(session_id, None)
+    if task and not task.done():
+        task.cancel()
+
+
+async def _question_timeout_worker(chat_id: int, session_id: int, message_id: int, timeout: int):
+    try:
+        await asyncio.sleep(timeout)
+    except asyncio.CancelledError:
+        return
+
+    session = await quiz_dao.get_quiz_session(session_id)
+    if not session or session["status"] != "active":
+        return
+    if session.get("message_id") != message_id:
+        return
+    if session["answered"] >= session["asked"]:
+        return
+
+    question = json.loads(session.get("current_question", "{}"))
+    correct_answer = question.get("answer", "")
+    explanation = question.get("explanation", "")
+    history = json.loads(session.get("history", "[]"))
+    answered = session["answered"] + 1
+
+    history.append({
+        "question": question.get("question", ""),
+        "user_answer": "skip",
+        "correct_answer": correct_answer,
+        "is_correct": False,
+    })
+
+    await quiz_dao.update_quiz_session(
+        session_id,
+        answered=answered,
+        history=json.dumps(history, ensure_ascii=False),
+    )
+
+    from src.bot.loader import bot
+
+    timeout_text = f"⏰ <b>Vaqt tugadi.</b> Javob: <b>{correct_answer}</b>"
+    if explanation:
+        timeout_text += f"\n💡 {escape_html(explanation)}"
+
+    try:
+        edited = await bot.edit_message_text(
+            chat_id=chat_id,
+            message_id=message_id,
+            text=timeout_text,
+            parse_mode="HTML",
+        )
+    except Exception:
+        edited = None
+
+    if answered >= session["total_questions"]:
+        pivot = edited if isinstance(edited, Message) else await bot.send_message(chat_id, "🏁 Quiz yakunlanmoqda...")
+        await _finish_quiz(pivot, session_id)
+    else:
+        pivot = edited if isinstance(edited, Message) else await bot.send_message(chat_id, "⏭ Keyingi savol...")
+        await _send_next_question(pivot, session_id, session["user_id"], session["level"], session["language"])
+
+
+def _schedule_question_timeout(chat_id: int, session_id: int, message_id: int, timeout: int) -> None:
+    _cancel_question_timeout(session_id)
+    _QUIZ_TIMEOUT_TASKS[session_id] = asyncio.create_task(
+        _question_timeout_worker(chat_id, session_id, message_id, timeout)
+    )
 
 
 @router.message(Command("quiz"))
@@ -235,6 +306,7 @@ async def _send_next_question(message: Message, session_id: int, user_id: int, l
     sent = await safe_reply(message, text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
     if sent:
         await quiz_dao.update_quiz_session(session_id, message_id=sent.message_id)
+        _schedule_question_timeout(sent.chat.id, session_id, sent.message_id, timeout)
 
 
 @router.callback_query(F.data.startswith("qans:"))
@@ -256,6 +328,7 @@ async def callback_quiz_answer(callback: CallbackQuery, db_user: dict | None = N
     correct_answer = question.get("answer", "")
     explanation = question.get("explanation", "")
     history = json.loads(session.get("history", "[]"))
+    _cancel_question_timeout(session_id)
 
     answered = session["answered"] + 1
     correct = session["correct"]
@@ -306,6 +379,7 @@ async def _finish_quiz(message: Message, session_id: int, tg_user=None):
     if not session:
         return
 
+    _cancel_question_timeout(session_id)
     await quiz_dao.finish_quiz_session(session_id)
 
     user_id = session["user_id"]
