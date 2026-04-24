@@ -571,3 +571,171 @@ async def send_audio_to_channel(
     except Exception as e:
         logger.warning("send_audio_to_channel failed: %s", e)
     return None
+
+
+def build_admin_stats_report(
+    summary: dict,
+    growth: list[dict],
+    top_users: list[dict],
+    generated_by: str = "",
+) -> str:
+    """Build HTML report for admin dashboard snapshot."""
+    user_line = f"ðŸ‘¤ {_h(generated_by)}" if generated_by else "Artificial Teacher Admin"
+
+    growth_html = ""
+    if growth:
+        growth_html = '<div class="section"><div class="section-title">ðŸ“ˆ Oxirgi 7 kunlik user qo\'shilishi</div>'
+        peak = max((int(item.get("count", 0)) for item in growth), default=1) or 1
+        for item in growth:
+            day = _h(item.get("day", ""))
+            count = int(item.get("count", 0))
+            pct = int((count / peak) * 100) if peak else 0
+            growth_html += f"""
+            <div class="stat-row">
+              <span class="stat-label">{day}</span>
+              <span class="stat-value">{count}</span>
+            </div>
+            <div class="progress-bar" style="margin:6px 0 10px 0;">
+              <div class="progress-fill" style="width:{pct}%"></div>
+            </div>
+            """
+        growth_html += "</div>"
+
+    top_users_html = ""
+    if top_users:
+        top_users_html = '<div class="section"><div class="section-title">ðŸ† Top faol userlar</div>'
+        for index, item in enumerate(top_users[:20], 1):
+            name = _h(item.get("name", "-"))
+            uid = _h(item.get("user_id", ""))
+            xp = int(item.get("xp", 0) or 0)
+            checks = int(item.get("checks_total", 0) or 0)
+            quiz = int(item.get("quiz_played", 0) or 0)
+            top_users_html += f"""
+            <div class="quiz-q">
+              <div><b>{index}.</b> {name} <span style="color:rgba(255,255,255,0.5)">#{uid}</span></div>
+              <div style="color:rgba(255,255,255,0.65);font-size:0.82rem;">
+                XP: <b>{xp}</b> Â· Checks: <b>{checks}</b> Â· Quiz: <b>{quiz}</b>
+              </div>
+            </div>
+            """
+        top_users_html += "</div>"
+
+    return f"""<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Statistika â€” Artificial Teacher</title>
+{_BASE_STYLE}
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="header-icon">ðŸ›¡</div>
+    <div>
+      <div class="header-title">Admin Statistika Snapshot</div>
+      <div class="header-sub">{user_line} Â· {_now_str()}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">ðŸ“Š Umumiy ko'rsatkichlar</div>
+    <div class="stat-row"><span class="stat-label">Jami userlar</span><span class="stat-value">{int(summary.get("total_users", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Pulli userlar</span><span class="stat-value">{int(summary.get("paid_users", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Konversiya</span><span class="stat-value">{_h(summary.get("conversion", "0%"))}</span></div>
+    <div class="stat-row"><span class="stat-label">Kutilayotgan to'lovlar</span><span class="stat-value">{int(summary.get("pending_payments", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Jami tushum</span><span class="stat-value">{_h(summary.get("revenue", "0"))}</span></div>
+  </div>
+
+  {growth_html}
+  {top_users_html}
+
+  <div class="footer">
+    ðŸ¤– Artificial Teacher Bot Â· @Artificial_teacher_bot
+  </div>
+</div>
+</body>
+</html>"""
+
+
+def build_admin_user_report(
+    user: dict,
+    stats: dict,
+    plan_name: str,
+    remaining_days: int,
+    usage_today: dict | None = None,
+    generated_by: str = "",
+) -> str:
+    """Build HTML report for a single user profile in admin panel."""
+    usage_today = usage_today or {}
+    user_line = f"ðŸ‘¤ {_h(generated_by)}" if generated_by else "Artificial Teacher Admin"
+
+    name = _h(user.get("first_name") or "-")
+    username = _h(user.get("username") or "-")
+    uid = _h(user.get("user_id") or "-")
+    role = _h(user.get("role") or "user")
+    level = _h(user.get("level") or "A1")
+    joined = _h(str(user.get("joined_at", ""))[:19] or "-")
+    status = "BAN" if user.get("is_banned") else "ACTIVE"
+
+    return f"""<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>User Hisoboti â€” #{uid}</title>
+{_BASE_STYLE}
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="header-icon">ðŸ‘¤</div>
+    <div>
+      <div class="header-title">Foydalanuvchi Hisoboti <span class="badge {'badge-red' if status == 'BAN' else 'badge-green'}">{status}</span></div>
+      <div class="header-sub">{user_line} Â· {_now_str()}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Asosiy ma'lumotlar</div>
+    <div class="stat-row"><span class="stat-label">User ID</span><span class="stat-value">#{uid}</span></div>
+    <div class="stat-row"><span class="stat-label">Ism</span><span class="stat-value">{name}</span></div>
+    <div class="stat-row"><span class="stat-label">Username</span><span class="stat-value">@{username}</span></div>
+    <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">{role}</span></div>
+    <div class="stat-row"><span class="stat-label">Daraja</span><span class="stat-value">{level}</span></div>
+    <div class="stat-row"><span class="stat-label">Qo'shilgan</span><span class="stat-value">{joined}</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Obuna</div>
+    <div class="stat-row"><span class="stat-label">Reja</span><span class="stat-value">{_h(plan_name)}</span></div>
+    <div class="stat-row"><span class="stat-label">Qolgan kun</span><span class="stat-value">{remaining_days}</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Umumiy faollik</div>
+    <div class="stat-row"><span class="stat-label">Checks</span><span class="stat-value">{int(stats.get("checks_total", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Translations</span><span class="stat-value">{int(stats.get("translations_total", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Pronunciation</span><span class="stat-value">{int(stats.get("pron_total", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Messages</span><span class="stat-value">{int(stats.get("messages_total", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Voice</span><span class="stat-value">{int(stats.get("voice_total", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Quiz played</span><span class="stat-value">{int(stats.get("quiz_played", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Quiz correct</span><span class="stat-value">{int(stats.get("quiz_correct", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Streak</span><span class="stat-value">{int(stats.get("streak_days", 0))} kun</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Bugungi limitlardan foydalanish</div>
+    <div class="stat-row"><span class="stat-label">Checks</span><span class="stat-value">{int(usage_today.get("checks", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Quiz</span><span class="stat-value">{int(usage_today.get("quiz", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Lessons</span><span class="stat-value">{int(usage_today.get("lessons", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">AI messages</span><span class="stat-value">{int(usage_today.get("ai_messages", 0))}</span></div>
+    <div class="stat-row"><span class="stat-label">Pron audio</span><span class="stat-value">{int(usage_today.get("pron_audio", 0))}</span></div>
+  </div>
+
+  <div class="footer">
+    ðŸ¤– Artificial Teacher Bot Â· @Artificial_teacher_bot
+  </div>
+</div>
+</body>
+</html>"""

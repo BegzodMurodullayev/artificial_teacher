@@ -6,6 +6,7 @@ Routes button presses to the right user/admin handlers.
 import logging
 
 from aiogram import Router
+from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, WebAppInfo
 
 from src.bot.keyboards.user_menu import (
@@ -105,7 +106,7 @@ async def _send_webapp_entry(message: Message, title: str, body: str, path: str,
 
 
 @router.message(is_menu_action)
-async def menu_button_handler(message: Message, db_user: dict | None = None):
+async def menu_button_handler(message: Message, db_user: dict | None = None, state: FSMContext | None = None):
     try:
         db_user = await _ensure_db_user(message, db_user)
         if not db_user or not message.text or not message.from_user:
@@ -140,7 +141,6 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
             handler_map = {
                 "adm_payments": admin_dashboard._btn_adm_payments,
                 "adm_users": admin_dashboard._btn_adm_users,
-                "adm_broadcast": admin_dashboard._btn_adm_broadcast,
                 "adm_stats": admin_dashboard._btn_adm_stats,
                 "adm_plans": admin_dashboard._btn_adm_plans,
                 "adm_leaderboard": admin_dashboard._btn_adm_leaderboard,
@@ -148,7 +148,10 @@ async def menu_button_handler(message: Message, db_user: dict | None = None):
                 "adm_payment_settings": admin_management._btn_adm_payment_settings,
                 "adm_sponsors": admin_management._btn_adm_sponsors,
             }
-            await handler_map[action](message, db_user)
+            if action == "adm_broadcast":
+                await admin_dashboard._btn_adm_broadcast(message, db_user, state)
+            else:
+                await handler_map[action](message, db_user)
             return
 
         if action == "edu_menu":

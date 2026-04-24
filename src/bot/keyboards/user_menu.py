@@ -124,7 +124,7 @@ USER_MENU_ALIASES = {
     "lessons": ["📚 Darslar", "📚 Lessons", "lessons", "darslar"],
     "grammar": ["📖 Grammatika", "📖 Grammar", "grammar", "grammatika"],
     "daily_word": ["🗓 Kunlik so'z"],
-    "stats": ["📊 Statistika", "📈 Darajam", "stats", "statistika", "darajam", "📈 Statistika"],
+    "stats": ["📊 Statistika", "📈 Darajam", "stats", "statistika", "darajam"],
     "subscribe": ["⭐ Obuna", "⭐ Subscribe", "subscribe", "obuna"],
     "settings": ["⚙️ Sozlamalar", "⚙️ Settings", "settings", "sozlamalar"],
     "help": ["ℹ️ Yordam", "ℹ️ Aloqa", "help", "yordam", "aloqa"],
