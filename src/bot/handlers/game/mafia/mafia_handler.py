@@ -99,6 +99,24 @@ def _count_alive(payload: dict) -> dict:
     return {"mafia": mafia, "town": town, "total": mafia + town}
 
 
+def _vote_summary(payload: dict) -> str:
+    """Return a formatted vote count string for the day phase."""
+    day_votes  = payload.get("day_votes", {})
+    names      = payload.get("names", {})
+    alive      = payload.get("alive", {})
+    vote_counts: dict[int, int] = {}
+    for _, t in day_votes.items():
+        vote_counts[t] = vote_counts.get(t, 0) + 1
+    lines = []
+    for uid_str in alive:
+        uid_int = int(uid_str)
+        cnt  = vote_counts.get(uid_int, 0)
+        name = names.get(uid_str, "?")
+        bar  = "🟥" * cnt + (" " + str(cnt) + " ta" if cnt else "")
+        lines.append(f"  👤 {name}: {bar}")
+    return "\n".join(lines)
+
+
 async def _get_game_by_session(session_id: int) -> dict | None:
     db = await get_db()
     cursor = await db.execute("SELECT * FROM game_sessions WHERE id = ?", (session_id,))
@@ -111,6 +129,27 @@ async def _get_game_by_session(session_id: int) -> dict | None:
     except (json.JSONDecodeError, TypeError):
         game["payload"] = {}
     return game
+
+
+async def _award_mafia_points(chat_id: int, payload: dict, winner: str) -> None:
+    """Award game points to winners and losers. winner = 'mafia' | 'town'"""
+    names  = payload.get("names", {})
+    orig   = payload.get("original_roles", {})
+    alive  = payload.get("alive", {})
+    for uid_str, role in orig.items():
+        uid    = int(uid_str)
+        name   = names.get(uid_str, "Player")
+        is_alv = uid_str in alive
+        if winner == "mafia" and role == "mafia":
+            pts, won = (30 if is_alv else 15), 1
+        elif winner == "town" and role != "mafia":
+            pts, won = (25 if is_alv else 10), 1
+        else:
+            pts, won = 5, 0
+        try:
+            await game_dao.add_game_points(chat_id, uid, name, points=pts, won=won)
+        except Exception as e:
+            logger.warning("add_game_points failed for %s: %s", uid, e)
 
 
 async def _show_roles(bot: Bot, chat_id: int, payload: dict):
@@ -201,6 +240,31 @@ async def cmd_mafia(message: Message, db_user: dict | None = None):
         f"⏳ {JOIN_SECONDS}s ichida qo'shiling!\n"
         f"Kamida <b>{MIN_PLAYERS}</b> ta o'yinchi kerak.",
         reply_markup=kb,
+    )
+
+
+@router.message(Command("mstatus"))
+async def cmd_mafia_status(message: Message):
+    """Show current mafia game status."""
+    if message.chat.type == "private":
+        return
+    game = await game_dao.get_active_game(message.chat.id)
+    if not game or game["game_type"] != "mafia":
+        await safe_reply(message, "❌ Faol Mafiya o'yini yo'q.")
+        return
+    payload = game["payload"]
+    counts  = _count_alive(payload)
+    names   = payload.get("names", {})
+    alive   = payload.get("alive", {})
+    status  = game["status"]
+    rnd     = payload.get("round", 1)
+    phase   = {"night": "🌙 Kecha", "day": "☀️ Kunduz", "waiting": "⏳ Kutish"}.get(status, status)
+    alive_list = "\n".join(f"  ⚪ {names.get(u, '?')}" for u in alive)
+    await safe_reply(
+        message,
+        f"🔪 <b>Mafiya O'yini — {phase} #{rnd}</b>\n\n"
+        f"👥 Tirik: {counts['total']} | 🔪 Mafiya: {counts['mafia']} | 🏘 Shahar: {counts['town']}\n\n"
+        f"<b>Tirik o'yinchilar:</b>\n{alive_list}",
     )
 
 
@@ -515,6 +579,7 @@ async def _resolve_night(bot: Bot, chat_id: int, session_id: int):
     # Win checks
     if counts["mafia"] == 0:
         await game_dao.finish_game_session(session_id)
+        await _award_mafia_points(chat_id, payload, "town")
         lines.append("\n🎉 <b>SHAHAR G'ALABA QOZONDI!</b> 🏘")
         await bot.send_message(chat_id, "\n".join(lines))
         await _show_roles(bot, chat_id, payload)
@@ -522,6 +587,7 @@ async def _resolve_night(bot: Bot, chat_id: int, session_id: int):
 
     if counts["mafia"] >= counts["town"]:
         await game_dao.finish_game_session(session_id)
+        await _award_mafia_points(chat_id, payload, "mafia")
         lines.append("\n🔪 <b>MAFIYA G'ALABA QOZONDI!</b>")
         await bot.send_message(chat_id, "\n".join(lines))
         await _show_roles(bot, chat_id, payload)
@@ -574,6 +640,22 @@ async def cb_day_vote(callback: CallbackQuery):
     target_name = payload.get("names", {}).get(str(target_id), "?")
     await safe_answer_callback(callback, f"🗳 {target_name} uchun ovoz berdingiz!")
 
+    # Live vote count — edit the group message
+    try:
+        counts    = _count_alive(payload)
+        voted_cnt = len(payload.get("day_votes", {}))
+        rnd       = payload.get("round", 1)
+        summary   = _vote_summary(payload)
+        kb        = _alive_keyboard(payload, "vote", exclude_id=0)
+        await callback.message.edit_text(
+            f"☀️ <b>Kunduz #{rnd}</b> — Ovoz berish ({voted_cnt}/{counts['total']})\n\n"
+            f"{summary}\n\n"
+            "🗳 Kimni chiqarasiz?",
+            reply_markup=kb,
+        )
+    except Exception as e:
+        logger.debug("Vote live-edit failed: %s", e)
+
 
 async def _resolve_day(bot: Bot, chat_id: int, session_id: int):
     game = await _get_game_by_session(session_id)
@@ -610,6 +692,7 @@ async def _resolve_day(bot: Bot, chat_id: int, session_id: int):
 
     if counts["mafia"] == 0:
         await game_dao.finish_game_session(session_id)
+        await _award_mafia_points(chat_id, payload, "town")
         msg += "\n🎉 <b>SHAHAR G'ALABA QOZONDI!</b> 🏘"
         await bot.send_message(chat_id, msg)
         await _show_roles(bot, chat_id, payload)
@@ -617,6 +700,7 @@ async def _resolve_day(bot: Bot, chat_id: int, session_id: int):
 
     if counts["mafia"] >= counts["town"]:
         await game_dao.finish_game_session(session_id)
+        await _award_mafia_points(chat_id, payload, "mafia")
         msg += "\n🔪 <b>MAFIYA G'ALABA QOZONDI!</b>"
         await bot.send_message(chat_id, msg)
         await _show_roles(bot, chat_id, payload)

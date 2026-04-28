@@ -104,6 +104,11 @@ Generate a natural, intermediate-level sentence in Uzbek. Then provide a list of
 Return JSON: {"uz": "...", "answers": ["...", "..."]}
 Respond ONLY with valid JSON.""",
 
+    "game_error": """You are an English grammar error game generator.
+Generate a single English sentence WITH exactly one grammar mistake. Then provide the corrected version and a short explanation in Uzbek.
+Return JSON: {"wrong": "sentence with error", "correct": "corrected sentence", "explain": "explanation in Uzbek with the corrected word in <b>bold</b>"}
+Respond ONLY with valid JSON.""",
+
     "daily_word": """You are a vocabulary teacher.
 Generate a random English word suitable for intermediate learners.
 Return JSON: {"word": "...", "part_of_speech": "noun/verb/adj/...", "definition": "...", "example": "example sentence", "synonyms": ["..."], "uzbek": "uzbek translation"}
