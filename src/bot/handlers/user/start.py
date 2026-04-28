@@ -33,7 +33,7 @@ async def _send_materials_panel(message: Message, plan_name: str) -> None:
         await safe_reply(
             message,
             "⚠️ Qo'shimcha material sahifalari hali ulanmagan.\n\n"
-            "Netlify linklarini `MATERIALS_URL*` env orqali kiriting.",
+            "Netlify linklarini `MATERIALS_URL*` yoki `WEB_APP_URL*` env orqali kiriting.",
         )
         return
 

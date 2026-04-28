@@ -42,26 +42,45 @@ def resolve_webapp_url(plan_name: str = "free") -> str:
 def resolve_materials_launch(plan_name: str = "free") -> tuple[str, str]:
     """Resolve the hosted materials URL with a safe fallback to lower tiers."""
     plan = normalize_plan_name(plan_name)
-    plan_url_map = {
+    materials_url_map = {
         "free": settings.MATERIALS_URL_FREE,
         "standard": settings.MATERIALS_URL_STANDARD,
         "pro": settings.MATERIALS_URL_PRO,
         "premium": settings.MATERIALS_URL_PREMIUM,
     }
+    webapp_url_map = {
+        "free": settings.WEB_APP_URL_FREE,
+        "standard": settings.WEB_APP_URL_STANDARD,
+        "pro": settings.WEB_APP_URL_PRO,
+        "premium": settings.WEB_APP_URL_PREMIUM,
+    }
 
-    direct_url = (plan_url_map.get(plan) or "").strip()
-    if direct_url:
-        return direct_url, plan
+    direct_materials_url = (materials_url_map.get(plan) or "").strip()
+    if direct_materials_url:
+        return direct_materials_url, plan
 
-    generic_url = (settings.MATERIALS_URL or "").strip()
-    if generic_url:
-        return generic_url, plan
+    generic_materials_url = (settings.MATERIALS_URL or "").strip()
+    if generic_materials_url:
+        return generic_materials_url, plan
+
+    # Backward-compatible fallback: if dedicated MATERIALS_URL* is not set,
+    # reuse plan-specific WEB_APP_URL* so users can still open hosted packs.
+    direct_webapp_url = (webapp_url_map.get(plan) or "").strip()
+    if direct_webapp_url:
+        return direct_webapp_url, plan
+
+    generic_webapp_url = (settings.WEB_APP_URL or "").strip()
+    if generic_webapp_url:
+        return generic_webapp_url, plan
 
     plan_index = PLAN_ORDER.index(plan)
     for candidate in reversed(PLAN_ORDER[:plan_index]):
-        fallback_url = (plan_url_map.get(candidate) or "").strip()
-        if fallback_url:
-            return fallback_url, candidate
+        fallback_materials_url = (materials_url_map.get(candidate) or "").strip()
+        if fallback_materials_url:
+            return fallback_materials_url, candidate
+        fallback_webapp_url = (webapp_url_map.get(candidate) or "").strip()
+        if fallback_webapp_url:
+            return fallback_webapp_url, candidate
 
     return "", plan
 
