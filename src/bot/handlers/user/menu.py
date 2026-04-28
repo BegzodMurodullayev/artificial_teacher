@@ -482,6 +482,12 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
             await cmd_tarjima_poyga(message, bot)
             return
 
+        if action == "game_error":
+            from src.bot.handlers.game.group_games_handler import cmd_xato_topish
+
+            await cmd_xato_topish(message, bot)
+            return
+
         if action == "game_webapp":
             await _send_webapp_entry(
                 message,
