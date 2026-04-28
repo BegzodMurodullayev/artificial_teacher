@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+  />
+  <meta name="theme-color" content="#0a0e1a" />
+  <title>English Mastery (Free Edition)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            midnight: "#0a0e1a",
+            panel: "#141c2e",
+            accent: "#3b82f6",
+            neon: "#60a5fa",
+            ink: "#e6eefc",
+            muted: "#8ea3c8",
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            display: ["Space Grotesk", "sans-serif"],
+          },
+          boxShadow: {
+            neon: "0 0 0 1px rgba(96,165,250,0.24), 0 16px 48px rgba(11,18,32,0.52), 0 0 32px rgba(59,130,246,0.16)",
+            soft: "0 12px 38px rgba(3,7,18,0.34)",
+          },
+          keyframes: {
+            floaty: {
+              "0%, 100%": { transform: "translateY(0px)" },
+              "50%": { transform: "translateY(-6px)" },
+            },
+            pulseLine: {
+              "0%, 100%": { opacity: "0.5", transform: "scaleX(0.96)" },
+              "50%": { opacity: "1", transform: "scaleX(1)" },
+            },
+            riseIn: {
+              from: { opacity: "0", transform: "translateY(18px)" },
+              to: { opacity: "1", transform: "translateY(0)" },
+            },
+          },
+          animation: {
+            floaty: "floaty 7s ease-in-out infinite",
+            pulseLine: "pulseLine 2.8s ease-in-out infinite",
+            riseIn: "riseIn 420ms ease-out",
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.22), transparent 26%),
+        radial-gradient(circle at 85% 0%, rgba(34, 211, 238, 0.12), transparent 24%),
+        linear-gradient(180deg, #09111f 0%, #0a0e1a 52%, #08101d 100%);
+      color: #e6eefc;
+      font-family: "Inter", sans-serif;
+      overscroll-behavior-y: none;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      border-radius: 999px;
+      filter: blur(70px);
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      width: 180px;
+      height: 180px;
+      top: 14%;
+      left: -52px;
+      background: rgba(59, 130, 246, 0.5);
+    }
+
+    body::after {
+      width: 220px;
+      height: 220px;
+      right: -90px;
+      bottom: 8%;
+      background: rgba(34, 211, 238, 0.24);
+    }
+
+    .glass-card {
+      background: linear-gradient(180deg, rgba(20, 28, 46, 0.92), rgba(11, 18, 32, 0.88));
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(96, 165, 250, 0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 35%, transparent 65%, rgba(96, 165, 250, 0.08));
+      pointer-events: none;
+    }
+
+    .neon-border {
+      box-shadow:
+        inset 0 0 0 1px rgba(96, 165, 250, 0.12),
+        0 12px 30px rgba(3, 7, 18, 0.42),
+        0 0 24px rgba(59, 130, 246, 0.12);
+    }
+
+    .progress-line {
+      background: linear-gradient(90deg, #3b82f6, #60a5fa, #22d3ee);
+      box-shadow: 0 0 22px rgba(59, 130, 246, 0.42);
+    }
+
+    .topic-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .topic-scroll::-webkit-scrollbar-thumb {
+      background: rgba(96, 165, 250, 0.34);
+      border-radius: 999px;
+    }
+
+    .option-btn[data-selected="true"] {
+      border-color: rgba(96, 165, 250, 0.88);
+      background: rgba(59, 130, 246, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .option-btn[data-correct="true"] {
+      border-color: rgba(74, 222, 128, 0.92);
+      background: rgba(34, 197, 94, 0.14);
+    }
+
+    .option-btn[data-wrong="true"] {
+      border-color: rgba(248, 113, 113, 0.88);
+      background: rgba(239, 68, 68, 0.16);
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const APP_DATA = {
+      appName: "English Mastery",
+      edition: "Free Edition",
+      premiumLabel: "Premiumda ko'proq ishlash",
+      premiumDescription:
+        "Premium versiyada ko'proq mavzular, cheksiz quiz va chuqur feedback mavjud.",
+      levels: [
+        {
+          id: "A1",
+          title: "A1",
+          subtitle: "Boshlang'ich start",
+          badge: "Foundation",
+          description: "Asosiy gap tuzilishi, oddiy fe'llar va kundalik ifodalar.",
+          topics: [
+            {
+              id: "a1-to-be",
+              title: "To be fe'li",
+              focus: "am / is / are",
+              summary: "O'zingizni, narsalarni va holatlarni sodda tarzda aytish.",
+              learn: {
+                intro:
+                  "`To be` shaxs, joy yoki holat haqida gapirganda ishlatiladi. Bu A1 dagi eng asosiy konstruksiyalardan biri.",
+                formula: "I am, You/We/They are, He/She/It is",
+                points: [
+                  "Tasdiq gap: subject + am/is/are + complement",
+                  "Inkor gap: am not / is not / are not",
+                  "Savol: Am/Is/Are + subject ... ?",
+                ],
+                examples: [
+                  "I am a student.",
+                  "She is happy today.",
+                  "Are they at home?",
+                ],
+                tip: "He, she va it bilan doimo `is` ishlatiladi.",
+              },
+              quiz: [
+                {
+                  q: "To'g'ri variantni tanlang: She ___ my teacher.",
+                  options: ["am", "is", "are", "be"],
+                  answer: 1,
+                  explain: "`She` bilan `is` ishlatiladi.",
+                },
+                {
+                  q: "Savol shakli qaysi?",
+                  options: [
+                    "You are ready?",
+                    "Are you ready?",
+                    "You is ready?",
+                    "Ready are you?",
+                  ],
+                  answer: 1,
+                  explain: "Savolda fe'l boshida keladi: `Are you ... ?`",
+                },
+                {
+                  q: "Inkor gapni toping.",
+                  options: [
+                    "I am from Tashkent.",
+                    "They are late.",
+                    "He is not tired.",
+                    "We is happy.",
+                  ],
+                  answer: 2,
+                  explain: "`is not` inkor shakl.",
+                },
+                {
+                  q: "`We ___ friends.`",
+                  options: ["am", "is", "are", "be"],
+                  answer: 2,
+                  explain: "`We` bilan `are` keladi.",
+                },
+                {
+                  q: "Qaysi gap noto'g'ri?",
+                  options: [
+                    "I am busy.",
+                    "It is cold.",
+                    "They is here.",
+                    "You are kind.",
+                  ],
+                  answer: 2,
+                  explain: "`They` bilan `are` ishlatiladi, `is` emas.",
+                },
+              ],
+            },
+            {
+              id: "a1-present-simple",
+              title: "Present Simple",
+              focus: "kundalik odatlar",
+              summary: "Har kuni qilinadigan ishlar va odatlar haqida gapirish.",
+              learn: {
+                intro:
+                  "Present Simple odatlar, faktlar va muntazam takrorlanadigan ishlar uchun ishlatiladi.",
+                formula: "I/You/We/They work, He/She/It works",
+                points: [
+                  "3-shaxs birlikda fe'lga odatda `-s/-es` qo'shiladi",
+                  "Inkor: do not / does not",
+                  "Savol: Do / Does + subject + base verb",
+                ],
+                examples: [
+                  "I study English every day.",
+                  "He plays football on Sundays.",
+                  "Does she live here?",
+                ],
+                tip: "He, she, it bilan asosiy fe'lga `s` qo'shilishini unutmang.",
+              },
+              quiz: [
+                {
+                  q: "To'g'ri gapni tanlang.",
+                  options: [
+                    "He play tennis.",
+                    "He plays tennis.",
+                    "He playing tennis.",
+                    "He is play tennis.",
+                  ],
+                  answer: 1,
+                  explain: "3-shaxs birlikda `plays` bo'ladi.",
+                },
+                {
+                  q: "Inkor shakli qaysi?",
+                  options: [
+                    "She doesn't like coffee.",
+                    "She don't likes coffee.",
+                    "She not like coffee.",
+                    "She isn't like coffee.",
+                  ],
+                  answer: 0,
+                  explain: "`She` bilan `doesn't + base verb` ishlatiladi.",
+                },
+                {
+                  q: "`___ they work on Saturdays?`",
+                  options: ["Do", "Does", "Are", "Is"],
+                  answer: 0,
+                  explain: "`They` bilan `Do` ishlatiladi.",
+                },
+                {
+                  q: "Qaysi gap faktni bildiradi?",
+                  options: [
+                    "I am watching TV now.",
+                    "Water boils at 100°C.",
+                    "She was tired yesterday.",
+                    "We will travel next week.",
+                  ],
+                  answer: 1,
+                  explain: "Umumiy faktlar Present Simple bilan aytiladi.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "They live in Samarkand.",
+                    "My brother drives fast.",
+                    "She go to school early.",
+                    "I drink tea in the morning.",
+                  ],
+                  answer: 2,
+                  explain: "`She` bilan `goes` bo'lishi kerak.",
+                },
+              ],
+            },
+            {
+              id: "a1-there-is-are",
+              title: "There is / There are",
+              focus: "mavjudlikni aytish",
+              summary: "Xona, joy va predmetlar bor-yo'qligini aytish.",
+              learn: {
+                intro:
+                  "`There is` va `there are` biror joyda nima borligini aytishda ishlatiladi.",
+                formula: "There is + singular, There are + plural",
+                points: [
+                  "Birlik ot bilan `there is`",
+                  "Ko'plik ot bilan `there are`",
+                  "Savol: Is there / Are there ... ?",
+                ],
+                examples: [
+                  "There is a book on the table.",
+                  "There are two chairs in the room.",
+                  "Is there a bank near here?",
+                ],
+                tip: "Ko'plikda son yoki `many` bo'lsa, odatda `there are` ishlatiladi.",
+              },
+              quiz: [
+                {
+                  q: "`___ a cat in the garden.`",
+                  options: ["There are", "There is", "It is", "They are"],
+                  answer: 1,
+                  explain: "Bir dona `cat` bo'lgani uchun `There is`.",
+                },
+                {
+                  q: "`There ___ three windows.`",
+                  options: ["is", "are", "be", "am"],
+                  answer: 1,
+                  explain: "Ko'plik uchun `are` ishlatiladi.",
+                },
+                {
+                  q: "Savol shaklini toping.",
+                  options: [
+                    "There is a shop?",
+                    "Are there any shops?",
+                    "There are any shops?",
+                    "Is there any shops?",
+                  ],
+                  answer: 1,
+                  explain: "Ko'plikdagi savol `Are there ... ?` bo'ladi.",
+                },
+                {
+                  q: "Noto'g'ri gapni tanlang.",
+                  options: [
+                    "There is an apple.",
+                    "There are five students.",
+                    "There are a car outside.",
+                    "There is some milk.",
+                  ],
+                  answer: 2,
+                  explain: "`a car` birlik, shuning uchun `There is` kerak.",
+                },
+                {
+                  q: "Qaysi gap to'g'ri?",
+                  options: [
+                    "There is two books.",
+                    "There are two books.",
+                    "There are a book.",
+                    "There is many books.",
+                  ],
+                  answer: 1,
+                  explain: "`two books` ko'plik, `There are` to'g'ri.",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "A2",
+          title: "A2",
+          subtitle: "Kundalik muloqot",
+          badge: "Everyday Use",
+          description: "O'tgan zamon, rejalar va solishtirishlar bilan ishonchli gapirish.",
+          topics: [
+            {
+              id: "a2-past-simple",
+              title: "Past Simple",
+              focus: "o'tgan ish-harakat",
+              summary: "Kecha, o'tgan hafta yoki yakunlangan voqealar haqida gapirish.",
+              learn: {
+                intro:
+                  "Past Simple o'tmishda sodir bo'lib tugagan ishlar uchun ishlatiladi.",
+                formula: "Regular verb + ed, did / didn't + base verb",
+                points: [
+                  "Regular fe'llarda odatda `-ed` qo'shiladi",
+                  "Irregular fe'llar alohida shaklga ega: go -> went",
+                  "Savol va inkorda asosiy fe'l base formga qaytadi",
+                ],
+                examples: [
+                  "I visited my aunt yesterday.",
+                  "She went to school late.",
+                  "Did they call you?",
+                ],
+                tip: "Savol va inkorda `did` ishlatilsa, asosiy fe'l o'zgarmaydi.",
+              },
+              quiz: [
+                {
+                  q: "To'g'ri gapni tanlang.",
+                  options: [
+                    "He go to Bukhara last week.",
+                    "He went to Bukhara last week.",
+                    "He gone to Bukhara last week.",
+                    "He goes to Bukhara last week.",
+                  ],
+                  answer: 1,
+                  explain: "`go` ning Past Simple shakli `went`.",
+                },
+                {
+                  q: "Qaysi inkor shakli to'g'ri?",
+                  options: [
+                    "I didn't saw him.",
+                    "I didn't see him.",
+                    "I don't saw him.",
+                    "I wasn't see him.",
+                  ],
+                  answer: 1,
+                  explain: "`didn't` dan keyin base verb ishlatiladi.",
+                },
+                {
+                  q: "`___ you finish the homework?`",
+                  options: ["Do", "Did", "Are", "Were"],
+                  answer: 1,
+                  explain: "Past Simple savolida `Did` ishlatiladi.",
+                },
+                {
+                  q: "Regular fe'l qatnashgan gapni toping.",
+                  options: [
+                    "She wrote a letter.",
+                    "We spoke English.",
+                    "They cleaned the room.",
+                    "I took the bus.",
+                  ],
+                  answer: 2,
+                  explain: "`cleaned` regular fe'l.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "We watched a film.",
+                    "She didn't come.",
+                    "Did he played well?",
+                    "I met my friend.",
+                  ],
+                  answer: 2,
+                  explain: "`Did he play` bo'lishi kerak.",
+                },
+              ],
+            },
+            {
+              id: "a2-future-plans",
+              title: "Future: will / be going to",
+              focus: "reja va taxmin",
+              summary: "Kelajak rejasi, tez qaror va bashoratni ifodalash.",
+              learn: {
+                intro:
+                  "`be going to` ko'proq reja va niyat uchun, `will` esa tez qaror, va'da yoki taxmin uchun ishlatiladi.",
+                formula: "Subject + will + verb / Subject + am-is-are going to + verb",
+                points: [
+                  "Oldindan reja: `I'm going to study tonight.`",
+                  "Shu yerning o'zida qaror: `I'll help you.`",
+                  "Taxmin: `It will rain.`",
+                ],
+                examples: [
+                  "We are going to visit Khiva this summer.",
+                  "I will answer the phone.",
+                  "She is going to buy a new laptop.",
+                ],
+                tip: "Reja aniq bo'lsa, `going to` ko'proq tabiiy eshitiladi.",
+              },
+              quiz: [
+                {
+                  q: "Oldindan tuzilgan reja uchun qaysi biri mos?",
+                  options: [
+                    "I will probably hungry.",
+                    "I'm going to meet my coach at 6.",
+                    "I will meeting my coach.",
+                    "I going to meet my coach.",
+                  ],
+                  answer: 1,
+                  explain: "Oldindan reja uchun `going to` mos.",
+                },
+                {
+                  q: "Tez qarorni bildirgan gapni toping.",
+                  options: [
+                    "She is going to become a doctor.",
+                    "We are going to move next year.",
+                    "The phone is ringing. I'll get it.",
+                    "I am going to sleep early tonight.",
+                  ],
+                  answer: 2,
+                  explain: "Shu zahoti qabul qilingan qaror `will` bilan keladi.",
+                },
+                {
+                  q: "`Look at those clouds! It ___ rain.`",
+                  options: ["will", "is going", "is going to", "going to"],
+                  answer: 2,
+                  explain: "Ko'rinib turgan dalil asosidagi taxmin: `is going to rain`.",
+                },
+                {
+                  q: "Noto'g'ri gapni tanlang.",
+                  options: [
+                    "I will call you later.",
+                    "They are going to study medicine.",
+                    "He going to travel tomorrow.",
+                    "We will see.",
+                  ],
+                  answer: 2,
+                  explain: "`He is going to travel` bo'lishi kerak.",
+                },
+                {
+                  q: "To'g'ri variantni tanlang.",
+                  options: [
+                    "She will to help me.",
+                    "She will help me.",
+                    "She is will help me.",
+                    "She going to help me now.",
+                  ],
+                  answer: 1,
+                  explain: "`will` dan keyin base verb keladi.",
+                },
+              ],
+            },
+            {
+              id: "a2-comparatives",
+              title: "Comparatives & Superlatives",
+              focus: "solishtirish",
+              summary: "Ikki yoki undan ko'p narsani taqqoslash.",
+              learn: {
+                intro:
+                  "Comparative ikki narsani, superlative esa guruh ichida eng yuqori darajani ko'rsatadi.",
+                formula: "taller than / more interesting than / the tallest / the most interesting",
+                points: [
+                  "Qisqa sifatlarga `-er / -est` qo'shiladi",
+                  "Uzun sifatlarga `more / most` ishlatiladi",
+                  "Irregular: good -> better -> the best",
+                ],
+                examples: [
+                  "This task is easier than the last one.",
+                  "Math is more difficult for me than history.",
+                  "She is the best player in the team.",
+                ],
+                tip: "Comparative bilan ko'pincha `than` keladi.",
+              },
+              quiz: [
+                {
+                  q: "`My bag is ___ than yours.`",
+                  options: ["heavy", "heavier", "heaviest", "more heavy"],
+                  answer: 1,
+                  explain: "Qisqa sifat uchun comparative `heavier`.",
+                },
+                {
+                  q: "To'g'ri superlative gapni tanlang.",
+                  options: [
+                    "It is most beautiful place.",
+                    "It is the more beautiful place.",
+                    "It is the most beautiful place.",
+                    "It is the beautifulest place.",
+                  ],
+                  answer: 2,
+                  explain: "Uzun sifat uchun `the most` ishlatiladi.",
+                },
+                {
+                  q: "Irregular comparative qaysi?",
+                  options: ["gooder", "more good", "better", "best"],
+                  answer: 2,
+                  explain: "`good` ning comparative shakli `better`.",
+                },
+                {
+                  q: "Noto'g'ri gapni toping.",
+                  options: [
+                    "Ali is taller than Bek.",
+                    "This test is more easier.",
+                    "Spring is the best season for me.",
+                    "My room is smaller than yours.",
+                  ],
+                  answer: 1,
+                  explain: "`easier` yoki `more easy` emas, `more easier` noto'g'ri.",
+                },
+                {
+                  q: "`Who is ___ student in the class?`",
+                  options: ["smart", "smarter", "the smartest", "most smart"],
+                  answer: 2,
+                  explain: "Guruh ichidagi eng yuqori daraja uchun `the smartest`.",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "B1",
+          title: "B1",
+          subtitle: "Mustaqil foydalanuvchi",
+          badge: "Core Fluency",
+          description: "Tajriba, ehtimol va maslahatlarni tabiiyroq ifodalash.",
+          topics: [
+            {
+              id: "b1-present-perfect",
+              title: "Present Perfect",
+              focus: "tajriba va natija",
+              summary: "O'tgan voqea bilan hozirgi natijani bog'lash.",
+              learn: {
+                intro:
+                  "Present Perfect aniq vaqt aytilmaganda, tajriba yoki hozirgacha davom etayotgan holatlar uchun ishlatiladi.",
+                formula: "have/has + past participle",
+                points: [
+                  "Tajriba: `I have visited Turkey.`",
+                  "Natija: `She has lost her key.`",
+                  "Ko'p ishlatiladigan signallar: ever, never, already, yet, just",
+                ],
+                examples: [
+                  "We have finished the project.",
+                  "Has he ever tried sushi?",
+                  "I haven't seen that film yet.",
+                ],
+                tip: "Aniq o'tgan vaqt bo'lsa, ko'pincha Past Simple ishlatiladi.",
+              },
+              quiz: [
+                {
+                  q: "To'g'ri gapni tanlang.",
+                  options: [
+                    "I have went there.",
+                    "I have been there.",
+                    "I has been there.",
+                    "I have go there.",
+                  ],
+                  answer: 1,
+                  explain: "`been` past participle shakli to'g'ri.",
+                },
+                {
+                  q: "`She ___ her homework already.`",
+                  options: ["finished", "has finished", "have finished", "finishes"],
+                  answer: 1,
+                  explain: "`already` bilan `has finished` mos.",
+                },
+                {
+                  q: "Qaysi gap tajribani bildiradi?",
+                  options: [
+                    "I visited London in 2022.",
+                    "I have visited London twice.",
+                    "I was visiting London.",
+                    "I visit London every year.",
+                  ],
+                  answer: 1,
+                  explain: "Aniq vaqt yo'q, tajriba aytilmoqda.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "Have you ever eaten Korean food?",
+                    "They haven't arrived yet.",
+                    "He has just called.",
+                    "She has saw the message.",
+                  ],
+                  answer: 3,
+                  explain: "`seen` bo'lishi kerak, `saw` emas.",
+                },
+                {
+                  q: "Present Perfect formulasi qaysi?",
+                  options: [
+                    "have/has + verb-ing",
+                    "have/has + past participle",
+                    "did + base verb",
+                    "be + adjective",
+                  ],
+                  answer: 1,
+                  explain: "Asosiy formula `have/has + V3`.",
+                },
+              ],
+            },
+            {
+              id: "b1-first-conditional",
+              title: "First Conditional",
+              focus: "real ehtimol",
+              summary: "Kelajakdagi real shart va natijani aytish.",
+              learn: {
+                intro:
+                  "First Conditional kelajakda sodir bo'lishi mumkin bo'lgan real vaziyatlar uchun ishlatiladi.",
+                formula: "If + present simple, will + base verb",
+                points: [
+                  "`If` qismida Present Simple ishlatiladi",
+                  "Natijada odatda `will` keladi",
+                  "Qismlar o'rni almashishi mumkin",
+                ],
+                examples: [
+                  "If it rains, we will stay home.",
+                  "I will call you if I finish early.",
+                  "If you practice, you will improve.",
+                ],
+                tip: "`if` qismida `will` ishlatmaslikka harakat qiling.",
+              },
+              quiz: [
+                {
+                  q: "To'g'ri shaklni tanlang.",
+                  options: [
+                    "If she will come, I call her.",
+                    "If she comes, I will call her.",
+                    "If she came, I will call her.",
+                    "If she comes, I called her.",
+                  ],
+                  answer: 1,
+                  explain: "Shart qismida Present Simple, natijada `will`.",
+                },
+                {
+                  q: "`If we ___ now, we will catch the train.`",
+                  options: ["leave", "will leave", "left", "leaving"],
+                  answer: 0,
+                  explain: "If-clause ichida Present Simple ishlatiladi.",
+                },
+                {
+                  q: "Real ehtimolni bildirgan gapni toping.",
+                  options: [
+                    "If I were you, I would rest.",
+                    "If it snows, school will close.",
+                    "If I had money, I would travel.",
+                    "If she had studied, she would have passed.",
+                  ],
+                  answer: 1,
+                  explain: "Bu First Conditional.",
+                },
+                {
+                  q: "Noto'g'ri gapni belgilang.",
+                  options: [
+                    "If he studies, he will pass.",
+                    "We will be happy if they visit us.",
+                    "If you will hurry, we will be on time.",
+                    "If I see her, I'll tell her.",
+                  ],
+                  answer: 2,
+                  explain: "`If you hurry` bo'lishi kerak.",
+                },
+                {
+                  q: "Qaysi formula to'g'ri?",
+                  options: [
+                    "If + past simple, would + verb",
+                    "If + present simple, will + verb",
+                    "If + had + V3, would have + V3",
+                    "If + will, present simple",
+                  ],
+                  answer: 1,
+                  explain: "First Conditional formulasi shu.",
+                },
+              ],
+            },
+            {
+              id: "b1-modals",
+              title: "Modals: should / must / have to",
+              focus: "maslahat va majburiyat",
+              summary: "Maslahat berish va qoidalarni ifodalash.",
+              learn: {
+                intro:
+                  "`should` maslahat uchun, `must` kuchli majburiyat uchun, `have to` esa tashqi talab yoki qoida uchun ishlatiladi.",
+                formula: "should / must / have to + base verb",
+                points: [
+                  "`should` yumshoq tavsiya beradi",
+                  "`must` spikerning kuchli talabi yoki qoidasini bildiradi",
+                  "`have to` tashqi majburiyat: schedule, law, rule",
+                ],
+                examples: [
+                  "You should sleep earlier.",
+                  "Passengers must wear seat belts.",
+                  "I have to submit the form today.",
+                ],
+                tip: "Negative shaklda `mustn't` taqiqni bildiradi.",
+              },
+              quiz: [
+                {
+                  q: "Maslahat uchun qaysi modal mos?",
+                  options: ["must", "should", "have to", "can"],
+                  answer: 1,
+                  explain: "Maslahat odatda `should` bilan beriladi.",
+                },
+                {
+                  q: "Qoidani bildirgan gapni toping.",
+                  options: [
+                    "You should drink more water.",
+                    "Students must wear ID cards.",
+                    "I can help you.",
+                    "She might be late.",
+                  ],
+                  answer: 1,
+                  explain: "Kuchli qoida va majburiyat `must` bilan.",
+                },
+                {
+                  q: "`I ___ go to the dentist at 5 because I booked it.`",
+                  options: ["should", "mustn't", "have to", "may"],
+                  answer: 2,
+                  explain: "Oldindan belgilangan tashqi majburiyat uchun `have to`.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "You should call your mother.",
+                    "We must be quiet here.",
+                    "He has to finish this today.",
+                    "She shoulds study harder.",
+                  ],
+                  answer: 3,
+                  explain: "Modaldan keyin fe'l base formda bo'ladi: `should study`.",
+                },
+                {
+                  q: "`mustn't` nimani bildiradi?",
+                  options: [
+                    "Majburiyat",
+                    "Taqiq",
+                    "Taxmin",
+                    "Taklif",
+                  ],
+                  answer: 1,
+                  explain: "`mustn't` qilish mumkin emas degani.",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "B2",
+          title: "B2",
+          subtitle: "Ishonchli ifoda",
+          badge: "Upper Intermediate",
+          description: "Murakkab gaplar, formalroq ifoda va grammatik aniqlik.",
+          topics: [
+            {
+              id: "b2-passive",
+              title: "Passive Voice",
+              focus: "e'tiborni natijaga qaratish",
+              summary: "Kim bajarganidan ko'ra, nima sodir bo'lganini urg'ulash.",
+              learn: {
+                intro:
+                  "Passive Voice ishni bajargan shaxs muhim bo'lmaganda yoki noma'lum bo'lganda ishlatiladi.",
+                formula: "be + past participle",
+                points: [
+                  "Active: `They built the bridge.`",
+                  "Passive: `The bridge was built.`",
+                  "Zamon `be` fe'li orqali ko'rsatiladi",
+                ],
+                examples: [
+                  "English is spoken in many countries.",
+                  "The report was sent yesterday.",
+                  "The task has been completed.",
+                ],
+                tip: "Passive gapda object ko'pincha subject o'rniga chiqadi.",
+              },
+              quiz: [
+                {
+                  q: "Passive shaklni tanlang.",
+                  options: [
+                    "They clean the office every day.",
+                    "The office is cleaned every day.",
+                    "The office cleaned every day.",
+                    "The office is clean every day.",
+                  ],
+                  answer: 1,
+                  explain: "Passive formulasi `be + V3`.",
+                },
+                {
+                  q: "`The email ___ yesterday.`",
+                  options: ["sent", "was sent", "is sent", "has send"],
+                  answer: 1,
+                  explain: "Past Passive: `was sent`.",
+                },
+                {
+                  q: "Qaysi gap Present Passive?",
+                  options: [
+                    "The room was painted.",
+                    "The room is painted every year.",
+                    "They paint the room.",
+                    "The room has painted.",
+                  ],
+                  answer: 1,
+                  explain: "`is painted` Present Passive.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "The book was written in 1998.",
+                    "Lunch is served at noon.",
+                    "The roads were repaired last month.",
+                    "This phone is make in Korea.",
+                  ],
+                  answer: 3,
+                  explain: "`is made` bo'lishi kerak.",
+                },
+                {
+                  q: "Passive nima uchun ishlatiladi?",
+                  options: [
+                    "Faqat hozirgi zamonda",
+                    "Kim bajargani emas, ishning o'zi muhim bo'lsa",
+                    "Faqat savollarda",
+                    "Faqat odatlar uchun",
+                  ],
+                  answer: 1,
+                  explain: "Passive e'tiborni natija yoki jarayonga qaratadi.",
+                },
+              ],
+            },
+            {
+              id: "b2-relative-clauses",
+              title: "Relative Clauses",
+              focus: "qo'shimcha aniqlik",
+              summary: "Narsalar va odamlarni aniqroq tariflash.",
+              learn: {
+                intro:
+                  "Relative clause asosiy gapga qo'shimcha ma'lumot beradi va gapni boyitadi.",
+                formula: "who / which / that / where / whose",
+                points: [
+                  "`who` odamlarga nisbatan",
+                  "`which` narsalar va hayvonlarga nisbatan",
+                  "`that` ko'p holatda `who/which` o'rnida ishlashi mumkin",
+                ],
+                examples: [
+                  "The woman who called you is my aunt.",
+                  "This is the book that changed my mind.",
+                  "I know a cafe where they serve great coffee.",
+                ],
+                tip: "Non-defining clause odatda vergul bilan ajratiladi.",
+              },
+              quiz: [
+                {
+                  q: "To'g'ri variantni tanlang: The man ___ lives next door is a pilot.",
+                  options: ["which", "who", "where", "whose"],
+                  answer: 1,
+                  explain: "Odam haqida gap ketyapti, `who` kerak.",
+                },
+                {
+                  q: "Narsa uchun qaysi relative pronoun mos?",
+                  options: ["who", "whose", "which", "where"],
+                  answer: 2,
+                  explain: "Narsa uchun `which` ishlatiladi.",
+                },
+                {
+                  q: "`This is the school ___ I studied.`",
+                  options: ["who", "which", "where", "whose"],
+                  answer: 2,
+                  explain: "Joyni ko'rsatish uchun `where` mos.",
+                },
+                {
+                  q: "Noto'g'ri gapni toping.",
+                  options: [
+                    "I met a girl who speaks Japanese.",
+                    "This is the phone which I bought.",
+                    "He has a friend where lives in Paris.",
+                    "The artist that painted this is famous.",
+                  ],
+                  answer: 2,
+                  explain: "Odam uchun `who`, joy uchun `where` ishlatiladi.",
+                },
+                {
+                  q: "`whose` nimani bildiradi?",
+                  options: ["joy", "egalik", "vaqt", "taqqoslash"],
+                  answer: 1,
+                  explain: "`whose` egalikni bildiradi.",
+                },
+              ],
+            },
+            {
+              id: "b2-reported-speech",
+              title: "Reported Speech",
+              focus: "birovning gapini yetkazish",
+              summary: "Aytib o'tilgan gapni bevosita iqtibossiz qayta aytish.",
+              learn: {
+                intro:
+                  "Reported Speech boshqaning gapini o'z so'zlaringiz bilan yetkazish imkonini beradi.",
+                formula: "say/tell + that-clause",
+                points: [
+                  "Zamon ko'pincha bir pog'ona orqaga siljiydi",
+                  "Pronoun va time markerlar ham o'zgarishi mumkin",
+                  "`tell` odatda object bilan ishlatiladi",
+                ],
+                examples: [
+                  'She said, "I am tired." -> She said that she was tired.',
+                  'He told me, "I will come." -> He told me that he would come.',
+                  'They said, "We finished it." -> They said that they had finished it.',
+                ],
+                tip: "Har doim ham tense backshift shart emas, ayniqsa faktlar hali ham to'g'ri bo'lsa.",
+              },
+              quiz: [
+                {
+                  q: '`"I am busy," she said.` ning reported shakli qaysi?',
+                  options: [
+                    "She said that she is busy.",
+                    "She said that she was busy.",
+                    "She told that she was busy.",
+                    "She said she busy.",
+                  ],
+                  answer: 1,
+                  explain: "`am` ko'pincha `was` ga o'zgaradi.",
+                },
+                {
+                  q: "`He told me that he ___ help.`",
+                  options: ["will", "would", "can", "is"],
+                  answer: 1,
+                  explain: "`will` reported speechda ko'pincha `would` bo'ladi.",
+                },
+                {
+                  q: "Qaysi variantda `tell` to'g'ri ishlatilgan?",
+                  options: [
+                    "He told that he was late.",
+                    "He told me that he was late.",
+                    "He told he was late.",
+                    "He told to me he was late.",
+                  ],
+                  answer: 1,
+                  explain: "`tell` ko'pincha kimga aytilganini talab qiladi.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "She said that she had finished.",
+                    "They told us that they were leaving.",
+                    "Ali said me that he was tired.",
+                    "He said that the lesson was useful.",
+                  ],
+                  answer: 2,
+                  explain: "`said to me` yoki `told me` bo'lishi kerak.",
+                },
+                {
+                  q: "Reported Speech nima uchun qulay?",
+                  options: [
+                    "Faqat imtihon uchun",
+                    "Birovning gapini qayta yetkazish uchun",
+                    "Faqat buyruq berish uchun",
+                    "Faqat yozma ish uchun",
+                  ],
+                  answer: 1,
+                  explain: "Asosiy vazifasi boshqaning gapini yetkazish.",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "C1",
+          title: "C1",
+          subtitle: "Murakkab fikrlash",
+          badge: "Advanced Control",
+          description: "Nozik ma'no, registr va murakkab bog'lanishlarni boshqarish.",
+          topics: [
+            {
+              id: "c1-advanced-conditionals",
+              title: "Wish / If only / Mixed Conditionals",
+              focus: "afsus va murakkab shartlar",
+              summary: "O'tmish va hozirgi natijalarni bir-biriga bog'lash.",
+              learn: {
+                intro:
+                  "`wish`, `if only` va mixed conditionals ma'noning nozik qatlamlarini beradi: afsus, orzu va murakkab sabab-natija.",
+                formula: "wish + past simple / wish + had + V3 / If + past perfect, would + verb",
+                points: [
+                  "Hozirgi vaziyatdan norozi bo'lsak: `I wish I were taller.`",
+                  "O'tmishdan afsus: `I wish I had studied more.`",
+                  "Mixed conditional: o'tgan sabab + hozirgi natija",
+                ],
+                examples: [
+                  "If I had gone to bed earlier, I wouldn't be so tired now.",
+                  "I wish we lived closer to the city center.",
+                  "If only I had checked the email yesterday.",
+                ],
+                tip: "`If only` odatda kuchliroq emotsional urg'u beradi.",
+              },
+              quiz: [
+                {
+                  q: "Hozirgi holatdan afsusni bildirgan gapni toping.",
+                  options: [
+                    "I wish I had called him yesterday.",
+                    "I wish I were more confident.",
+                    "If only I will see her.",
+                    "I wish I am more confident.",
+                  ],
+                  answer: 1,
+                  explain: "Hozirgi holat uchun `wish + past simple`.",
+                },
+                {
+                  q: "O'tmishdagi afsus uchun qaysi shakl kerak?",
+                  options: [
+                    "wish + base verb",
+                    "wish + present simple",
+                    "wish + had + V3",
+                    "wish + will",
+                  ],
+                  answer: 2,
+                  explain: "O'tmish afsusi `wish + had + V3` bilan ifodalanadi.",
+                },
+                {
+                  q: "Mixed conditional gapni toping.",
+                  options: [
+                    "If I study, I will pass.",
+                    "If I had studied medicine, I would be a doctor now.",
+                    "If I were rich, I would travel.",
+                    "If it rains, we stay home.",
+                  ],
+                  answer: 1,
+                  explain: "O'tgan sabab + hozirgi natija bor.",
+                },
+                {
+                  q: "Noto'g'ri variantni belgilang.",
+                  options: [
+                    "If only I had listened to you.",
+                    "I wish I knew the answer.",
+                    "I wish I would knew the answer.",
+                    "If I had left earlier, I would be there now.",
+                  ],
+                  answer: 2,
+                  explain: "`wish I knew` bo'lishi kerak.",
+                },
+                {
+                  q: "`If I had taken that job, I ___ in London now.`",
+                  options: ["am", "would be", "will be", "was"],
+                  answer: 1,
+                  explain: "Mixed conditional natijasi `would be` bilan keladi.",
+                },
+              ],
+            },
+            {
+              id: "c1-inversion",
+              title: "Inversion & Emphasis",
+              focus: "formal urg'u",
+              summary: "Rasmiy uslubda kuchli urg'u berish va stilistik ta'sir yaratish.",
+              learn: {
+                intro:
+                  "Inversion odatda formal yozuv va nutqda kuchli urg'u yaratadi. So'z tartibi odatdagi shakldan farq qiladi.",
+                formula: "Rarely / Never / Only then + auxiliary + subject + verb",
+                points: [
+                  "Negative adverbials bilan inversion ishlatiladi",
+                  "`Not only ... but also` konstruksiyasida ham ko'rinadi",
+                  "Formal essay va advanced speakingda kuchli ta'sir beradi",
+                ],
+                examples: [
+                  "Never have I seen such a calm speaker.",
+                  "Only after the meeting did we understand the issue.",
+                  "Not only was the task difficult, but it was also urgent.",
+                ],
+                tip: "Auxiliary fe'lni subject dan oldinga olib chiqish inversionning kalitidir.",
+              },
+              quiz: [
+                {
+                  q: "To'g'ri inversion gapni tanlang.",
+                  options: [
+                    "Never I have seen this.",
+                    "Never have I seen this.",
+                    "Never seen I have this.",
+                    "I never have seen this.",
+                  ],
+                  answer: 1,
+                  explain: "Auxiliary `have` subject dan oldin keladi.",
+                },
+                {
+                  q: "`Only then ___ the answer.`",
+                  options: ["we understood", "did we understand", "we did understand", "understood we"],
+                  answer: 1,
+                  explain: "`Only then` bilan inversion kerak.",
+                },
+                {
+                  q: "Qaysi gap formal urg'u beradi?",
+                  options: [
+                    "I didn't realize it until later.",
+                    "Only later did I realize it.",
+                    "I later realized it.",
+                    "It realized later.",
+                  ],
+                  answer: 1,
+                  explain: "Inversion rasmiy va kuchli urg'u beradi.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "Rarely do they complain.",
+                    "Not until midnight did he arrive.",
+                    "Seldom she visits us.",
+                    "Only after class did I ask the question.",
+                  ],
+                  answer: 2,
+                  explain: "`Seldom does she visit us` bo'lishi kerak.",
+                },
+                {
+                  q: "`Not only ___ late, but he also forgot the file.`",
+                  options: ["he was", "was he", "he is", "did he"],
+                  answer: 1,
+                  explain: "`Not only` bilan inversion: `was he`.",
+                },
+              ],
+            },
+            {
+              id: "c1-discourse-markers",
+              title: "Discourse Markers",
+              focus: "mantiqiy oqim",
+              summary: "Gaplar va g'oyalarni professional tarzda bog'lash.",
+              learn: {
+                intro:
+                  "Discourse markerlar nutq va yozuvda fikr oqimini silliq qiladi, kontrast, xulosa va qo'shimcha ma'no beradi.",
+                formula: "however, moreover, therefore, nevertheless, in contrast, as a result",
+                points: [
+                  "Kontrast: however, nevertheless, on the other hand",
+                  "Qo'shimcha: moreover, furthermore, in addition",
+                  "Natija: therefore, as a result, consequently",
+                ],
+                examples: [
+                  "The task was difficult; nevertheless, the team completed it.",
+                  "The app is simple. Moreover, it is fast.",
+                  "She practiced daily; therefore, her score improved.",
+                ],
+                tip: "Marker tanlash gaplar orasidagi aniq munosabatga qarab bo'ladi.",
+              },
+              quiz: [
+                {
+                  q: "Kontrast bildiruvchi marker qaysi?",
+                  options: ["therefore", "moreover", "however", "as a result"],
+                  answer: 2,
+                  explain: "`however` kontrast bildiradi.",
+                },
+                {
+                  q: "Qo'shimcha ma'no uchun mos marker qaysi?",
+                  options: ["in addition", "therefore", "otherwise", "instead"],
+                  answer: 0,
+                  explain: "`in addition` qo'shimcha ma'no beradi.",
+                },
+                {
+                  q: "`He trained hard; ___, he won the championship.`",
+                  options: ["however", "therefore", "meanwhile", "instead"],
+                  answer: 1,
+                  explain: "Bu yerda natija bor, shuning uchun `therefore` mos.",
+                },
+                {
+                  q: "Noto'g'ri juftlikni toping.",
+                  options: [
+                    "contrast - nevertheless",
+                    "result - as a result",
+                    "addition - moreover",
+                    "contrast - therefore",
+                  ],
+                  answer: 3,
+                  explain: "`therefore` natijani bildiradi, kontrastni emas.",
+                },
+                {
+                  q: "Professional yozuvni kuchaytirishda discourse markerlarning roli nima?",
+                  options: [
+                    "Faqat uzun gap yozish",
+                    "Fikrlar orasidagi mantiqiy aloqani ko'rsatish",
+                    "Faqat grammatika tekshirish",
+                    "Faqat sinonim topish",
+                  ],
+                  answer: 1,
+                  explain: "Ular g'oyalar oqimini ravon va aniq qiladi.",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "C2",
+          title: "C2",
+          subtitle: "Mastery zone",
+          badge: "Near Native",
+          description: "Nozik uslub, yuqori aniqlik va akademik ifoda.",
+          topics: [
+            {
+              id: "c2-cleft-sentences",
+              title: "Cleft Sentences",
+              focus: "aniq fokus va urg'u",
+              summary: "Gapning muhim qismini ajratib ko'rsatish.",
+              learn: {
+                intro:
+                  "Cleft sentence ma'lum bir qismni alohida urg'ulash uchun gapni qayta quradi.",
+                formula: "It was ... that / What ... is ...",
+                points: [
+                  "`It was X that ...` fokusni kuchaytiradi",
+                  "`What I need is ...` struktura g'oyani markazlashtiradi",
+                  "Nutqda va yozuvda stilistik aniqlik beradi",
+                ],
+                examples: [
+                  "It was Sara that solved the issue.",
+                  "What I need is a clear deadline.",
+                  "It was yesterday that they announced the results.",
+                ],
+                tip: "Urg'u bermoqchi bo'lgan bo'lakni `it was` yoki `what` konstruksiyasiga olib chiqing.",
+              },
+              quiz: [
+                {
+                  q: "Cleft sentence qaysi?",
+                  options: [
+                    "Sara solved the issue.",
+                    "It was Sara that solved the issue.",
+                    "Sara was solving the issue.",
+                    "The issue solved Sara.",
+                  ],
+                  answer: 1,
+                  explain: "`It was ... that ...` cleft sentence.",
+                },
+                {
+                  q: "`What I need ___ more practice.`",
+                  options: ["is", "are", "be", "been"],
+                  answer: 0,
+                  explain: "Bu yerda to'g'ri bog'lovchi `is`.",
+                },
+                {
+                  q: "Cleft sentence nima beradi?",
+                  options: [
+                    "Faqat qisqalik",
+                    "Urg'u va fokus",
+                    "Faqat rasmiylik",
+                    "Faqat savol shakli",
+                  ],
+                  answer: 1,
+                  explain: "Asosiy vazifasi fokus va urg'u yaratish.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "It was the manager that approved it.",
+                    "What surprised me was the speed.",
+                    "It was approved the manager that it.",
+                    "It was on Monday that we met.",
+                  ],
+                  answer: 2,
+                  explain: "Bu gap cleft sentence qoidalariga mos emas.",
+                },
+                {
+                  q: "`___ changed everything was the feedback.`",
+                  options: ["It", "What", "That", "Which"],
+                  answer: 1,
+                  explain: "`What changed everything was ...` to'g'ri.",
+                },
+              ],
+            },
+            {
+              id: "c2-modal-deduction",
+              title: "Advanced Modal Deduction",
+              focus: "taxmin va ehtimol",
+              summary: "Hozirgi va o'tgan holat bo'yicha kuchli taxminlar qilish.",
+              learn: {
+                intro:
+                  "Advanced modal deduction ehtimol, deyarli aniq xulosa va o'tgan voqealarga taxmin bildirish uchun ishlatiladi.",
+                formula: "must / might / can't + base verb; must have / might have / can't have + V3",
+                points: [
+                  "`must` kuchli ehtimolni bildiradi",
+                  "`might` yoki `may` noaniqroq taxminni bildiradi",
+                  "`can't` kuchli inkor taxminini bildiradi",
+                ],
+                examples: [
+                  "She must be exhausted after that trip.",
+                  "They might have missed the train.",
+                  "He can't have known the answer.",
+                ],
+                tip: "Past deduction uchun `have + V3` ishlatiladi.",
+              },
+              quiz: [
+                {
+                  q: "Kuchli ehtimolni bildirgan variantni tanlang.",
+                  options: [
+                    "She must be at work.",
+                    "She can be at work.",
+                    "She should be at work.",
+                    "She would be at work.",
+                  ],
+                  answer: 0,
+                  explain: "`must be` kuchli ehtimol beradi.",
+                },
+                {
+                  q: "Past deduction shakli qaysi?",
+                  options: [
+                    "might have left",
+                    "might leaving",
+                    "might left",
+                    "might have leave",
+                  ],
+                  answer: 0,
+                  explain: "Past modal deduction: `might have + V3`.",
+                },
+                {
+                  q: "`He ___ have forgotten; I reminded him twice.`",
+                  options: ["must", "might", "can't", "should"],
+                  answer: 2,
+                  explain: "Kuchli inkor taxmini uchun `can't have` ishlatiladi.",
+                },
+                {
+                  q: "Noto'g'ri variantni toping.",
+                  options: [
+                    "They must be tired.",
+                    "She might have lost it.",
+                    "He can't have seen us.",
+                    "We must have to leave early.",
+                  ],
+                  answer: 3,
+                  explain: "Bu deduction emas, va konstruktsiya noto'g'ri.",
+                },
+                {
+                  q: "`The lights are off. They ___ be home.`",
+                  options: ["must", "can't", "might have", "should have"],
+                  answer: 1,
+                  explain: "Hozirgi holatdan kuchli inkor taxmini: `can't be home`.",
+                },
+              ],
+            },
+            {
+              id: "c2-nominalisation",
+              title: "Nominalisation & Hedging",
+              focus: "akademik uslub",
+              summary: "Formal yozuvni ixcham va ehtiyotkor ohangda qurish.",
+              learn: {
+                intro:
+                  "Nominalisation fe'l va sifatlardan ot yasab, matnni formalroq qiladi. Hedging esa fikrni yumshoqroq va akademikroq beradi.",
+                formula: "decide -> decision, improve -> improvement, may / appears to / tends to",
+                points: [
+                  "Nominalisation matnni rasmiylashtiradi",
+                  "Hedging qat'iy hukmdan saqlaydi",
+                  "Akademik va professional yozuvda juda foydali",
+                ],
+                examples: [
+                  "The improvement in scores was significant.",
+                  "The results appear to support the theory.",
+                  "There is a tendency for users to prefer shorter tasks.",
+                ],
+                tip: "Hedging fikrni zaiflashtirmaydi, balki uni ehtiyotkor va ishonchli ko'rsatadi.",
+              },
+              quiz: [
+                {
+                  q: "Nominalisation misolini toping.",
+                  options: [
+                    "We improved the process.",
+                    "The improvement was noticeable.",
+                    "We are improving it now.",
+                    "Improve the process quickly.",
+                  ],
+                  answer: 1,
+                  explain: "`improvement` nominalisation.",
+                },
+                {
+                  q: "Hedging uchun mos variant qaysi?",
+                  options: [
+                    "This proves everything.",
+                    "This may suggest a better approach.",
+                    "This definitely solves all issues.",
+                    "This never fails.",
+                  ],
+                  answer: 1,
+                  explain: "`may suggest` ehtiyotkor akademik ifoda.",
+                },
+                {
+                  q: "Formal yozuvga yaqinroq variantni tanlang.",
+                  options: [
+                    "People improved a lot.",
+                    "There was a significant improvement.",
+                    "It got way better.",
+                    "Things changed much.",
+                  ],
+                  answer: 1,
+                  explain: "Nominalisation formalroq ohang beradi.",
+                },
+                {
+                  q: "Noto'g'ri hukmni toping.",
+                  options: [
+                    "Hedging fikrni yumshatadi.",
+                    "Nominalisation matnni formal qiladi.",
+                    "Hedging faqat noaniq gapirish uchun kerak.",
+                    "Academic writingda ikkalasi ham foydali.",
+                  ],
+                  answer: 2,
+                  explain: "Hedging noaniqlik emas, ehtiyotkor aniqlik beradi.",
+                },
+                {
+                  q: "`The data ___ indicate a seasonal trend.`",
+                  options: ["may", "must definitely", "can never", "always fully"],
+                  answer: 0,
+                  explain: "Akademik ehtiyotkorlik uchun `may indicate` mos.",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const DAILY_LIMITS = { checks: 12, quiz: 5 };
+    const STORAGE_KEY = "english-mastery-free-state-v1";
+    const TELEGRAM = window.Telegram?.WebApp ?? null;
+    const TODAY = new Date().toISOString().slice(0, 10);
+    const app = document.getElementById("app");
+    const levelMap = Object.fromEntries(APP_DATA.levels.map((level) => [level.id, level]));
+
+    let usage = loadUsage();
+    let telegramBackHooked = false;
+    let state = {
+      view: "home",
+      levelId: APP_DATA.levels[0].id,
+      topicId: null,
+      activeTab: "learn",
+      quizIndex: 0,
+      selectedOption: null,
+      answers: [],
+      result: null,
+      quizFinished: false,
+      toast: "",
+    };
+    const historyStack = [];
+
+    function loadUsage() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (!saved || saved.date !== TODAY) {
+          return {
+            date: TODAY,
+            checksUsed: 0,
+            quizUsed: 0,
+            seenTopics: [],
+          };
+        }
+        return {
+          date: TODAY,
+          checksUsed: Math.min(saved.checksUsed || 0, DAILY_LIMITS.checks),
+          quizUsed: Math.min(saved.quizUsed || 0, DAILY_LIMITS.quiz),
+          seenTopics: Array.isArray(saved.seenTopics) ? saved.seenTopics : [],
+        };
+      } catch (error) {
+        return { date: TODAY, checksUsed: 0, quizUsed: 0, seenTopics: [] };
+      }
+    }
+
+    function saveUsage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(usage));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function currentLevel() {
+      return levelMap[state.levelId];
+    }
+
+    function currentTopic() {
+      return currentLevel().topics.find((topic) => topic.id === state.topicId) || null;
+    }
+
+    function cloneState() {
+      return JSON.parse(JSON.stringify(state));
+    }
+
+    function pushHistory() {
+      historyStack.push(cloneState());
+    }
+
+    function setState(patch, options = {}) {
+      if (options.pushHistory) {
+        pushHistory();
+      }
+      state = { ...state, ...patch };
+      render();
+    }
+
+    function resetToHome() {
+      state = {
+        ...state,
+        view: "home",
+        topicId: null,
+        activeTab: "learn",
+        quizIndex: 0,
+        selectedOption: null,
+        answers: [],
+        result: null,
+        quizFinished: false,
+        toast: "",
+      };
+      render();
+    }
+
+    function handleBack() {
+      if (historyStack.length) {
+        state = historyStack.pop();
+        render();
+        return;
+      }
+      resetToHome();
+    }
+
+    function markCheck(topicId) {
+      if (!usage.seenTopics.includes(topicId)) {
+        usage.seenTopics.push(topicId);
+        usage.checksUsed = Math.min(DAILY_LIMITS.checks, usage.checksUsed + 1);
+        saveUsage();
+      }
+    }
+
+    function markQuizUsage() {
+      usage.quizUsed = Math.min(DAILY_LIMITS.quiz, usage.quizUsed + 1);
+      saveUsage();
+    }
+
+    function progressPercent(value, total) {
+      return Math.max(0, Math.min(100, Math.round((value / total) * 100)));
+    }
+
+    function syncTelegram() {
+      if (!TELEGRAM) return;
+      TELEGRAM.ready();
+      TELEGRAM.expand();
+      TELEGRAM.setBackgroundColor("#0a0e1a");
+      TELEGRAM.setHeaderColor("#0a0e1a");
+      if (!telegramBackHooked) {
+        TELEGRAM.BackButton.onClick(handleBack);
+        telegramBackHooked = true;
+      }
+      if (state.view === "home") {
+        TELEGRAM.BackButton.hide();
+      } else {
+        TELEGRAM.BackButton.show();
+      }
+    }
+
+    function telegramUserName() {
+      if (!TELEGRAM?.initDataUnsafe?.user) return "Do'stim";
+      const user = TELEGRAM.initDataUnsafe.user;
+      return user.first_name || user.username || "Do'stim";
+    }
+
+    function sendQuizResult(topic, score, total) {
+      const payload = {
+        type: "quiz_result",
+        app: APP_DATA.appName,
+        edition: APP_DATA.edition,
+        level: state.levelId,
+        topicId: topic.id,
+        topicTitle: topic.title,
+        score,
+        total,
+        date: TODAY,
+        user: TELEGRAM?.initDataUnsafe?.user
+          ? {
+              id: TELEGRAM.initDataUnsafe.user.id,
+              username: TELEGRAM.initDataUnsafe.user.username || null,
+              first_name: TELEGRAM.initDataUnsafe.user.first_name || null,
+            }
+          : null,
+      };
+
+      if (TELEGRAM?.sendData) {
+        TELEGRAM.sendData(JSON.stringify(payload));
+        state.toast = "Natija botga yuborildi.";
+      } else {
+        state.toast = "Preview rejimi: sendData faqat Telegram ichida ishlaydi.";
+      }
+    }
+
+    function sendPremiumIntent() {
+      const payload = {
+        type: "premium_interest",
+        app: APP_DATA.appName,
+        edition: APP_DATA.edition,
+        level: state.levelId,
+        topicId: state.topicId,
+        date: TODAY,
+      };
+      if (TELEGRAM?.sendData) {
+        TELEGRAM.sendData(JSON.stringify(payload));
+        state.toast = "Premium qiziqish signali botga yuborildi.";
+      } else {
+        state.toast = "Preview rejimi: Premium tugmasi Telegram ichida botga signal yuboradi.";
+      }
+      render();
+    }
+
+    function renderDashboard() {
+      const checks = usage.checksUsed;
+      const quiz = usage.quizUsed;
+      const telegramStatus = TELEGRAM ? "Telegram WebApp ulandi" : "Brauzer preview rejimi";
+      return `
+        <section class="glass-card neon-border rounded-[28px] p-4 shadow-neon animate-riseIn">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-sky-200/70">Daily Limits Dashboard</p>
+              <h1 class="mt-2 font-display text-[26px] leading-none text-white">${escapeHtml(APP_DATA.appName)}</h1>
+              <p class="mt-2 text-sm text-muted">${escapeHtml(telegramUserName())}, bugungi bepul limitlaringiz shu yerda boshqariladi.</p>
+            </div>
+            <div class="rounded-2xl border border-sky-400/20 bg-sky-400/10 px-3 py-2 text-right text-[11px] text-sky-100">
+              <div class="font-semibold">${escapeHtml(APP_DATA.edition)}</div>
+              <div class="mt-1 text-sky-200/70">${escapeHtml(telegramStatus)}</div>
+            </div>
+          </div>
+
+          <div class="mt-4 grid gap-3">
+            ${renderMetricCard("Tekshiruv", checks, DAILY_LIMITS.checks, "Learn kartalari ko'rildi")}
+            ${renderMetricCard("Quiz", quiz, DAILY_LIMITS.quiz, "Yakunlangan testlar")}
+          </div>
+
+          <div class="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="rounded-2xl border border-white/6 bg-white/5 px-3 py-2">
+              <div class="text-sky-200/70">Darajalar</div>
+              <div class="mt-1 font-display text-lg text-white">${APP_DATA.levels.length}</div>
+            </div>
+            <div class="rounded-2xl border border-white/6 bg-white/5 px-3 py-2">
+              <div class="text-sky-200/70">Mavzular</div>
+              <div class="mt-1 font-display text-lg text-white">${APP_DATA.levels.reduce((total, level) => total + level.topics.length, 0)}</div>
+            </div>
+            <div class="rounded-2xl border border-white/6 bg-white/5 px-3 py-2">
+              <div class="text-sky-200/70">Bugun</div>
+              <div class="mt-1 font-display text-lg text-white">${escapeHtml(TODAY)}</div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderMetricCard(label, value, total, caption) {
+      const percent = progressPercent(value, total);
+      return `
+        <div class="rounded-3xl border border-sky-400/12 bg-white/5 p-3">
+          <div class="flex items-center justify-between text-sm">
+            <div>
+              <div class="font-semibold text-white">${escapeHtml(label)}</div>
+              <div class="mt-1 text-xs text-sky-200/70">${escapeHtml(caption)}</div>
+            </div>
+            <div class="font-display text-xl text-white">${value}/${total}</div>
+          </div>
+          <div class="mt-3 h-2.5 overflow-hidden rounded-full bg-white/8">
+            <div class="progress-line h-full rounded-full animate-pulseLine" style="width: ${percent}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLevelSelector() {
+      return `
+        <section class="glass-card neon-border rounded-[28px] p-4 shadow-soft">
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-sky-200/70">Level Selector</p>
+              <h2 class="mt-2 font-display text-xl text-white">A1 dan C2 gacha yo'l xaritasi</h2>
+            </div>
+            <div class="rounded-full border border-sky-400/15 bg-sky-400/10 px-3 py-1 text-xs font-medium text-sky-100">Mobile Telegram UI</div>
+          </div>
+          <div class="hide-scrollbar mt-4 flex gap-3 overflow-x-auto pb-1">
+            ${APP_DATA.levels
+              .map((level) => {
+                const active = level.id === state.levelId;
+                return `
+                  <button
+                    data-action="select-level"
+                    data-level-id="${level.id}"
+                    class="min-w-[148px] rounded-[24px] border px-4 py-3 text-left transition ${active
+                      ? "border-sky-300/70 bg-sky-400/14 shadow-neon"
+                      : "border-white/8 bg-white/5 hover:border-sky-400/30 hover:bg-white/8"}"
+                  >
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="font-display text-2xl text-white">${level.title}</span>
+                      <span class="rounded-full bg-white/8 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-sky-100">${escapeHtml(level.badge)}</span>
+                    </div>
+                    <div class="mt-2 text-sm font-semibold text-sky-100">${escapeHtml(level.subtitle)}</div>
+                    <div class="mt-1 text-xs leading-relaxed text-muted">${escapeHtml(level.description)}</div>
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderHome() {
+      const level = currentLevel();
+      return `
+        <section class="glass-card neon-border rounded-[28px] p-4 shadow-soft">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-sky-200/70">Topic Explorer</p>
+              <h3 class="mt-2 font-display text-xl text-white">${escapeHtml(level.title)} • ${escapeHtml(level.subtitle)}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-muted">${escapeHtml(level.description)}</p>
+            </div>
+            <div class="animate-floaty rounded-3xl border border-sky-400/20 bg-sky-400/10 px-3 py-2 text-center text-xs text-sky-100">
+              <div class="font-display text-lg">${level.topics.length}</div>
+              <div>mavzu</div>
+            </div>
+          </div>
+
+          <div class="topic-scroll mt-4 max-h-[47vh] space-y-3 overflow-y-auto pr-1">
+            ${level.topics
+              .map(
+                (topic, index) => `
+                  <button
+                    data-action="open-topic"
+                    data-topic-id="${topic.id}"
+                    class="group w-full rounded-[24px] border border-white/8 bg-white/5 p-4 text-left transition hover:border-sky-300/40 hover:bg-sky-400/8"
+                  >
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <div class="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-200/65">Topic ${index + 1}</div>
+                        <div class="mt-2 font-display text-lg text-white">${escapeHtml(topic.title)}</div>
+                        <div class="mt-2 inline-flex rounded-full border border-sky-400/18 bg-sky-400/10 px-2.5 py-1 text-[11px] text-sky-100">${escapeHtml(topic.focus)}</div>
+                        <p class="mt-3 text-sm leading-relaxed text-muted">${escapeHtml(topic.summary)}</p>
+                      </div>
+                      <div class="mt-1 rounded-2xl border border-white/8 bg-white/5 px-3 py-2 text-xs font-medium text-white">
+                        Learn + Quiz
+                      </div>
+                    </div>
+                  </button>
+                `
+              )
+              .join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderTopicDetail() {
+      const topic = currentTopic();
+      if (!topic) return "";
+      return `
+        <section class="glass-card neon-border rounded-[28px] p-4 shadow-neon animate-riseIn">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-[0.28em] text-sky-200/70">${escapeHtml(state.levelId)} Topic</div>
+              <h2 class="mt-2 font-display text-2xl leading-tight text-white">${escapeHtml(topic.title)}</h2>
+              <p class="mt-2 text-sm leading-relaxed text-muted">${escapeHtml(topic.summary)}</p>
+            </div>
+            <div class="flex gap-2">
+              <button data-action="go-back" class="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white">Back</button>
+              <button data-action="go-home" class="rounded-2xl border border-sky-400/18 bg-sky-400/10 px-3 py-2 text-sm font-medium text-sky-100">Menyu</button>
+            </div>
+          </div>
+
+          <div class="mt-4 flex gap-2 rounded-[22px] border border-white/6 bg-white/5 p-1">
+            <button
+              data-action="switch-tab"
+              data-tab="learn"
+              class="flex-1 rounded-[18px] px-4 py-3 text-sm font-semibold transition ${state.activeTab === "learn" ? "bg-sky-400/18 text-white shadow-soft" : "text-sky-100/70"}"
+            >
+              📖 Learn
+            </button>
+            <button
+              data-action="switch-tab"
+              data-tab="quiz"
+              class="flex-1 rounded-[18px] px-4 py-3 text-sm font-semibold transition ${state.activeTab === "quiz" ? "bg-sky-400/18 text-white shadow-soft" : "text-sky-100/70"}"
+            >
+              🧠 Quiz
+            </button>
+          </div>
+
+          <div class="mt-4">${state.activeTab === "learn" ? renderLearnTab(topic) : renderQuizTab(topic)}</div>
+        </section>
+      `;
+    }
+
+    function renderLearnTab(topic) {
+      return `
+        <div class="space-y-3">
+          <div class="rounded-[24px] border border-sky-400/16 bg-white/5 p-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-200/65">Quick Explain</div>
+            <p class="mt-2 text-sm leading-7 text-slate-100">${escapeHtml(topic.learn.intro)}</p>
+          </div>
+          <div class="rounded-[24px] border border-white/8 bg-slate-950/20 p-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-200/65">Formula</div>
+            <div class="mt-3 rounded-2xl border border-sky-400/20 bg-sky-400/10 px-3 py-3 font-display text-lg leading-snug text-sky-50">${escapeHtml(topic.learn.formula)}</div>
+          </div>
+          <div class="grid gap-3">
+            ${topic.learn.points
+              .map(
+                (point, index) => `
+                  <div class="rounded-[22px] border border-white/8 bg-white/5 p-4">
+                    <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-200/60">Qoida ${index + 1}</div>
+                    <div class="mt-2 text-sm leading-6 text-slate-100">${escapeHtml(point)}</div>
+                  </div>
+                `
+              )
+              .join("")}
+          </div>
+          <div class="rounded-[24px] border border-white/8 bg-white/5 p-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-200/65">Misollar</div>
+            <div class="mt-3 grid gap-3">
+              ${topic.learn.examples
+                .map(
+                  (example) => `
+                    <div class="rounded-2xl border border-sky-400/14 bg-sky-400/8 px-3 py-3 text-sm font-medium text-sky-50">
+                      ${escapeHtml(example)}
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          </div>
+          <div class="rounded-[24px] border border-emerald-400/16 bg-emerald-400/8 p-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-200/75">Eslatma</div>
+            <div class="mt-2 text-sm leading-6 text-emerald-50">${escapeHtml(topic.learn.tip)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuizTab(topic) {
+      if (state.quizFinished && state.result) {
+        return renderQuizResult(topic);
+      }
+
+      const currentQuestion = topic.quiz[state.quizIndex];
+      const progress = progressPercent(state.quizIndex + 1, topic.quiz.length);
+
+      return `
+        <div class="space-y-3">
+          <div class="rounded-[24px] border border-white/8 bg-white/5 p-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-200/65">Quiz Progress</div>
+                <div class="mt-2 font-display text-xl text-white">Savol ${state.quizIndex + 1} / ${topic.quiz.length}</div>
+              </div>
+              <button data-action="restart-quiz" class="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-slate-100">Qayta boshlash</button>
+            </div>
+            <div class="mt-3 h-2.5 overflow-hidden rounded-full bg-white/8">
+              <div class="progress-line h-full rounded-full" style="width: ${progress}%"></div>
+            </div>
+          </div>
+
+          <div class="rounded-[24px] border border-sky-400/16 bg-slate-950/20 p-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-200/65">Savol</div>
+            <p class="mt-3 text-base leading-7 text-white">${escapeHtml(currentQuestion.q)}</p>
+          </div>
+
+          <div class="grid gap-3">
+            ${currentQuestion.options
+              .map(
+                (option, index) => `
+                  <button
+                    data-action="choose-option"
+                    data-option-index="${index}"
+                    data-selected="${state.selectedOption === index}"
+                    class="option-btn rounded-[22px] border border-white/8 bg-white/5 p-4 text-left text-sm leading-6 text-slate-100 transition hover:border-sky-400/30 hover:bg-sky-400/8"
+                  >
+                    <span class="mr-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xs font-semibold text-sky-100">${String.fromCharCode(65 + index)}</span>
+                    ${escapeHtml(option)}
+                  </button>
+                `
+              )
+              .join("")}
+          </div>
+
+          <div class="flex gap-3">
+            <button data-action="switch-tab" data-tab="learn" class="flex-1 rounded-[20px] border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-100">Learn ga qaytish</button>
+            <button
+              data-action="next-question"
+              class="flex-1 rounded-[20px] border border-sky-400/18 bg-sky-400/14 px-4 py-3 text-sm font-semibold text-white ${state.selectedOption === null ? "opacity-40" : ""}"
+            >
+              ${state.quizIndex === topic.quiz.length - 1 ? "Yakunlash" : "Keyingi savol"}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuizResult(topic) {
+      const { score, total, review } = state.result;
+      const percent = progressPercent(score, total);
+      const message =
+        percent >= 80
+          ? "Zo'r natija. Siz bu mavzuni yaxshi ushlab qoldingiz."
+          : percent >= 60
+          ? "Yaxshi. Endi Learn kartalarini yana bir ko'rib chiqsangiz yanada mustahkam bo'ladi."
+          : "Boshlanish yaxshi. Premiumda ko'proq mashq va feedback bilan tezroq o'sasiz.";
+
+      return `
+        <div class="space-y-3">
+          <div class="rounded-[26px] border border-sky-400/18 bg-sky-400/10 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-200/70">Quiz Natijasi</div>
+                <div class="mt-2 font-display text-3xl text-white">${score}/${total}</div>
+                <p class="mt-2 text-sm leading-6 text-slate-100">${escapeHtml(message)}</p>
+              </div>
+              <div class="rounded-3xl border border-white/10 bg-white/5 px-4 py-3 text-center">
+                <div class="text-[10px] uppercase tracking-[0.24em] text-sky-200/60">Accuracy</div>
+                <div class="mt-1 font-display text-2xl text-white">${percent}%</div>
+              </div>
+            </div>
+            <div class="mt-4 h-2.5 overflow-hidden rounded-full bg-white/8">
+              <div class="progress-line h-full rounded-full" style="width: ${percent}%"></div>
+            </div>
+          </div>
+
+          <div class="rounded-[24px] border border-white/8 bg-white/5 p-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-200/65">Javoblar tahlili</div>
+            <div class="mt-3 space-y-3">
+              ${review
+                .map(
+                  (item, index) => `
+                    <div class="rounded-[20px] border ${item.isCorrect ? "border-emerald-400/18 bg-emerald-400/8" : "border-rose-400/18 bg-rose-400/8"} p-3">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-xs font-semibold uppercase tracking-[0.24em] ${item.isCorrect ? "text-emerald-200/80" : "text-rose-200/80"}">Savol ${index + 1}</div>
+                          <div class="mt-2 text-sm leading-6 text-white">${escapeHtml(item.question)}</div>
+                        </div>
+                        <div class="rounded-full px-2.5 py-1 text-xs font-semibold ${item.isCorrect ? "bg-emerald-500/18 text-emerald-100" : "bg-rose-500/18 text-rose-100"}">
+                          ${item.isCorrect ? "To'g'ri" : "Xato"}
+                        </div>
+                      </div>
+                      <div class="mt-3 text-xs text-slate-200/80">Sizning javobingiz: ${escapeHtml(item.selected)}</div>
+                      <div class="mt-1 text-xs text-slate-200/80">To'g'ri javob: ${escapeHtml(item.correct)}</div>
+                      <div class="mt-2 text-sm leading-6 ${item.isCorrect ? "text-emerald-50" : "text-rose-50"}">${escapeHtml(item.explain)}</div>
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          </div>
+
+          <div class="rounded-[24px] border border-amber-300/18 bg-amber-300/10 p-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.24em] text-amber-100/75">Free Edition CTA</div>
+            <p class="mt-2 text-sm leading-6 text-amber-50">${escapeHtml(APP_DATA.premiumDescription)}</p>
+            <div class="mt-4 flex gap-3">
+              <button data-action="premium" class="flex-1 rounded-[20px] border border-amber-200/20 bg-amber-200/14 px-4 py-3 text-sm font-semibold text-white">${escapeHtml(APP_DATA.premiumLabel)}</button>
+              <button data-action="restart-quiz" class="flex-1 rounded-[20px] border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-100">Yana ishlash</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderToast() {
+      if (!state.toast) return "";
+      return `
+        <div class="glass-card neon-border rounded-[22px] px-4 py-3 text-sm text-sky-50">
+          ${escapeHtml(state.toast)}
+        </div>
+      `;
+    }
+
+    function render() {
+      syncTelegram();
+      app.innerHTML = `
+        <main class="relative z-10 mx-auto flex min-h-screen w-full max-w-[430px] flex-col gap-4 px-4 pb-[calc(var(--safe-bottom)+22px)] pt-[calc(var(--safe-top)+14px)]">
+          ${renderDashboard()}
+          ${renderLevelSelector()}
+          ${state.view === "home" ? renderHome() : renderTopicDetail()}
+          ${renderToast()}
+        </main>
+      `;
+    }
+
+    function openTopic(topicId) {
+      markCheck(topicId);
+      setState(
+        {
+          view: "topic",
+          topicId,
+          activeTab: "learn",
+          quizIndex: 0,
+          selectedOption: null,
+          answers: [],
+          result: null,
+          quizFinished: false,
+          toast: "",
+        },
+        { pushHistory: true }
+      );
+    }
+
+    function switchTab(tab) {
+      if (tab === "learn" && state.topicId) {
+        markCheck(state.topicId);
+      }
+      setState(
+        {
+          activeTab: tab,
+          selectedOption: tab === "quiz" ? state.selectedOption : null,
+          toast: "",
+        },
+        { pushHistory: false }
+      );
+    }
+
+    function restartQuiz() {
+      setState(
+        {
+          activeTab: "quiz",
+          quizIndex: 0,
+          selectedOption: null,
+          answers: [],
+          result: null,
+          quizFinished: false,
+          toast: "",
+        },
+        { pushHistory: false }
+      );
+    }
+
+    function finishQuiz() {
+      const topic = currentTopic();
+      const review = topic.quiz.map((question, index) => {
+        const selectedIndex = state.answers[index];
+        return {
+          question: question.q,
+          selected:
+            typeof selectedIndex === "number"
+              ? question.options[selectedIndex]
+              : "Javob tanlanmagan",
+          correct: question.options[question.answer],
+          explain: question.explain,
+          isCorrect: selectedIndex === question.answer,
+        };
+      });
+      const score = review.filter((item) => item.isCorrect).length;
+
+      markQuizUsage();
+      sendQuizResult(topic, score, topic.quiz.length);
+
+      setState(
+        {
+          quizFinished: true,
+          result: {
+            score,
+            total: topic.quiz.length,
+            review,
+          },
+          selectedOption: null,
+        },
+        { pushHistory: false }
+      );
+    }
+
+    app.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-action]");
+      if (!target) return;
+      const action = target.dataset.action;
+
+      if (action === "select-level") {
+        const nextLevelId = target.dataset.levelId;
+        if (state.view === "topic") {
+          historyStack.length = 0;
+          state = {
+            ...state,
+            levelId: nextLevelId,
+            view: "home",
+            topicId: null,
+            activeTab: "learn",
+            quizIndex: 0,
+            selectedOption: null,
+            answers: [],
+            result: null,
+            quizFinished: false,
+            toast: "",
+          };
+          render();
+          return;
+        }
+        setState({ levelId: nextLevelId, toast: "" }, { pushHistory: false });
+        return;
+      }
+
+      if (action === "open-topic") {
+        openTopic(target.dataset.topicId);
+        return;
+      }
+
+      if (action === "go-back") {
+        handleBack();
+        return;
+      }
+
+      if (action === "go-home") {
+        historyStack.length = 0;
+        resetToHome();
+        return;
+      }
+
+      if (action === "switch-tab") {
+        switchTab(target.dataset.tab);
+        return;
+      }
+
+      if (action === "choose-option") {
+        setState({ selectedOption: Number(target.dataset.optionIndex), toast: "" }, { pushHistory: false });
+        return;
+      }
+
+      if (action === "next-question") {
+        if (state.selectedOption === null) return;
+        const topic = currentTopic();
+        const nextAnswers = [...state.answers];
+        nextAnswers[state.quizIndex] = state.selectedOption;
+
+        if (state.quizIndex === topic.quiz.length - 1) {
+          state.answers = nextAnswers;
+          finishQuiz();
+          return;
+        }
+
+        setState(
+          {
+            answers: nextAnswers,
+            quizIndex: state.quizIndex + 1,
+            selectedOption: null,
+            toast: "",
+          },
+          { pushHistory: false }
+        );
+        return;
+      }
+
+      if (action === "restart-quiz") {
+        restartQuiz();
+        return;
+      }
+
+      if (action === "premium") {
+        sendPremiumIntent();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

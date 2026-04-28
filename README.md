@@ -31,7 +31,23 @@ artificial_teacher/
 1. Web app fayllarini host qiling (masalan: Vercel/Netlify/Cloudflare Pages).
 2. Host URL ni `.env` ichiga yozing:
    - `WEB_APP_URL=https://your-webapp-url`
-3. Botda `/app` buyrug'ini bosing yoki `Web App` tugmasini oching.
+   - ixtiyoriy plan bo'yicha URLlar:
+     - `WEB_APP_URL_FREE=...`
+     - `WEB_APP_URL_STANDARD=...`
+     - `WEB_APP_URL_PRO=...`
+     - `WEB_APP_URL_PREMIUM=...`
+3. Agar `materials/` ichidagi alohida sahifalarni Netlify/Vercel ga joylasangiz, ular uchun alohida env ishlating:
+   - `MATERIALS_URL=...`
+   - `MATERIALS_URL_FREE=...`
+   - `MATERIALS_URL_STANDARD=...`
+   - `MATERIALS_URL_PRO=...`
+   - `MATERIALS_URL_PREMIUM=...`
+4. Botda `/app` buyrug'ini bosing yoki `Web App` tugmasini oching.
+
+Muhim:
+- `WEB_APP_URL*` faqat asosiy React WebApp uchun.
+- `MATERIALS_URL*` esa Netlify'dagi qo'shimcha material/prezentatsiya sahifalari uchun.
+- Ikkisini aralashtirib yuborsangiz `IQ Test`, `Pomodoro`, `Games` kabi route'lar noto'g'ri ochilishi mumkin.
 
 ## Web App -> Bot sync
 

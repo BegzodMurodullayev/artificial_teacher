@@ -252,16 +252,29 @@ async def callback_report_public(callback: CallbackQuery):
         if msg and hasattr(msg, "message_id"):
             channel_str = str(channel).lstrip("@")
             link = f"https://t.me/{channel_str}/{msg.message_id}"
-            await callback.message.answer(
+            notify_text = (
                 f"📢 <b>Kanalga joylashtirildi!</b>\n"
                 f"🔗 <a href='{link}'>👉 Ko'rish (#{msg.message_id})</a>\n"
-                f"🆔 Sizning ID: <code>#{uid}</code>",
-                parse_mode="HTML",
-                disable_web_page_preview=True,
-                reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
-                    InlineKeyboardButton(text=f"📄 {filename}", url=link),
-                ]]),
             )
+            notify_kwargs = {
+                "parse_mode": "HTML",
+                "disable_web_page_preview": True,
+                "reply_markup": InlineKeyboardMarkup(
+                    inline_keyboard=[[InlineKeyboardButton(text=f"📄 {filename}", url=link)]]
+                ),
+            }
+            if callback.message:
+                await callback.message.answer(
+                    f"{notify_text}🆔 Sizning ID: <code>#{uid}</code>",
+                    **notify_kwargs,
+                )
+            else:
+                # Inline-mode callbacks may not include callback.message
+                await callback.bot.send_message(
+                    chat_id=callback.from_user.id,
+                    text=f"{notify_text}🆔 Sizning ID: <code>#{uid}</code>",
+                    **notify_kwargs,
+                )
         await callback.answer("✅ Kanalga joylashtirildi!")
     except Exception as e:
         logger.warning("report_public send failed: %s", e)

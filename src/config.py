@@ -41,6 +41,15 @@ class Settings(BaseSettings):
 
     # ── URLs ───────────────────────────────────────────────
     WEB_APP_URL: str = ""
+    WEB_APP_URL_FREE: str = ""
+    WEB_APP_URL_STANDARD: str = ""
+    WEB_APP_URL_PRO: str = ""
+    WEB_APP_URL_PREMIUM: str = ""
+    MATERIALS_URL: str = ""
+    MATERIALS_URL_FREE: str = ""
+    MATERIALS_URL_STANDARD: str = ""
+    MATERIALS_URL_PRO: str = ""
+    MATERIALS_URL_PREMIUM: str = ""
     WEBHOOK_URL: str = ""
     SUPPORT_URL: str = ""
     WEBSITE_URL: str = ""

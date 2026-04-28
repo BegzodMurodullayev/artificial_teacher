@@ -608,13 +608,24 @@ async def callback_audio_public(callback: CallbackQuery):
         if msg and hasattr(msg, "message_id"):
             mid = msg.message_id
             link = f"https://t.me/{channel_str}/{mid}"
-            await callback.message.answer(
+            text = (
                 f"📢 <b>Audio kanalga joylashtirildi!</b>\n"
                 f"🔗 <a href='{link}'>👆 Ko'rish (#{mid})</a>\n"
-                f"🆔 Sizning ID: <code>#{uid}</code>",
-                parse_mode="HTML",
-                disable_web_page_preview=True,
+                f"🆔 Sizning ID: <code>#{uid}</code>"
             )
+            if callback.message:
+                await callback.message.answer(
+                    text,
+                    parse_mode="HTML",
+                    disable_web_page_preview=True,
+                )
+            else:
+                await callback.bot.send_message(
+                    chat_id=callback.from_user.id,
+                    text=text,
+                    parse_mode="HTML",
+                    disable_web_page_preview=True,
+                )
         await callback.answer("✅ Audio kanalga joylashtirildi!")
     except Exception as e:
         logger.warning("audio public send failed: %s", e)

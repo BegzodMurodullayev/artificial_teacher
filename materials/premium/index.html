@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#050505" />
+  <title>English Mastery: PREMIUM CROWN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian: "#050505",
+            panelDark: "#171717",
+            panelMid: "#232323",
+            gold: "#d4af37",
+            goldSoft: "#e7c96b",
+            emerald: "#22c55e",
+            ink: "#f8f4e6",
+            muted: "#b7b09a",
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            display: ["Space Grotesk", "sans-serif"],
+          },
+          keyframes: {
+            riseFast: {
+              from: { opacity: "0", transform: "translateY(12px)" },
+              to: { opacity: "1", transform: "translateY(0)" },
+            },
+            shimmer: {
+              "0%": { backgroundPosition: "-200% 50%" },
+              "100%": { backgroundPosition: "200% 50%" },
+            },
+            pulseDot: {
+              "0%,100%": { opacity: "0.45", transform: "scale(0.9)" },
+              "50%": { opacity: "1", transform: "scale(1)" },
+            },
+            glowPulse: {
+              "0%,100%": { boxShadow: "0 0 10px rgba(212,175,55,0.25)" },
+              "50%": { boxShadow: "0 0 28px rgba(212,175,55,0.5)" },
+            },
+            flowBar: {
+              "0%": { backgroundPosition: "0% 50%" },
+              "50%": { backgroundPosition: "100% 50%" },
+              "100%": { backgroundPosition: "0% 50%" },
+            },
+          },
+          animation: {
+            riseFast: "riseFast 180ms ease-out",
+            shimmer: "shimmer 3.6s linear infinite",
+            pulseDot: "pulseDot 1.8s ease-in-out infinite",
+            glowPulse: "glowPulse 2.4s ease-in-out infinite",
+            flowBar: "flowBar 4.4s ease infinite",
+          },
+          boxShadow: {
+            royal: "0 24px 60px rgba(0,0,0,0.58), 0 0 30px rgba(212,175,55,0.16)",
+            crown: "0 0 22px rgba(212,175,55,0.28)",
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(212, 175, 55, 0.12), transparent 28%),
+        radial-gradient(circle at 90% 12%, rgba(255, 235, 170, 0.08), transparent 20%),
+        radial-gradient(circle at 60% 100%, rgba(120, 98, 38, 0.10), transparent 30%),
+        #050505;
+      color: #f8f4e6;
+      font-family: "Inter", sans-serif;
+      overscroll-behavior-y: none;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(90px);
+      opacity: 0.18;
+    }
+
+    body::before {
+      width: 220px;
+      height: 220px;
+      top: 8%;
+      left: -120px;
+      background: rgba(212, 175, 55, 0.55);
+    }
+
+    body::after {
+      width: 260px;
+      height: 260px;
+      right: -140px;
+      bottom: 12%;
+      background: rgba(158, 124, 33, 0.44);
+    }
+
+    .royal-card {
+      background: linear-gradient(160deg, rgba(35, 35, 35, 0.88), rgba(23, 23, 23, 0.86));
+      border: 1px solid rgba(212, 175, 55, 0.24);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 227, 148, 0.06),
+        0 16px 46px rgba(0, 0, 0, 0.56),
+        0 0 24px rgba(212, 175, 55, 0.12);
+      backdrop-filter: blur(14px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .royal-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 248, 220, 0.06), transparent 40%, rgba(212, 175, 55, 0.04));
+      pointer-events: none;
+    }
+
+    .shimmer-gold {
+      background-image: linear-gradient(
+        110deg,
+        #8f6d1d 0%,
+        #d4af37 25%,
+        #f6e6b2 40%,
+        #d4af37 56%,
+        #8f6d1d 75%
+      );
+      background-size: 220% 100%;
+    }
+
+    .shimmer-text {
+      background-image: linear-gradient(
+        110deg,
+        #9b7c2a 0%,
+        #e0bd5f 30%,
+        #fff5ce 50%,
+        #e0bd5f 70%,
+        #9b7c2a 100%
+      );
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .view-fast {
+      animation: riseFast 180ms ease-out;
+    }
+
+    .scroll-slim::-webkit-scrollbar,
+    .chips-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    .scroll-slim::-webkit-scrollbar-thumb,
+    .chips-scroll::-webkit-scrollbar-thumb {
+      background: rgba(212, 175, 55, 0.38);
+      border-radius: 999px;
+    }
+
+    .option-btn[data-selected="true"] {
+      border-color: rgba(248, 220, 131, 0.88);
+      background: rgba(212, 175, 55, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .spark-bar {
+      background-image: linear-gradient(120deg, #8f6d1d, #d4af37, #f6e6b2, #d4af37);
+      background-size: 200% 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    function mcq(prompt, options, answer, explanation) {
+      return { type: "mcq", prompt, options, answer, explanation };
+    }
+    function reorder(prompt, answer, explanation) {
+      return { type: "reorder", tokens: [...answer], answer, explanation };
+    }
+
+    const CROWN_DATABASE = {
+      appName: "English Mastery",
+      edition: "PREMIUM CROWN",
+      premiumBadge: "Premium 👑",
+      unlimitedStatus: "Barcha funksiyalar faollashtirilgan",
+      limits: [
+        { key: "checks", label: "Tekshiruv", value: "999/kun", icon: "✅" },
+        { key: "quiz", label: "Quiz", value: "999/kun", icon: "🧠" },
+        { key: "ai", label: "AI xabar", value: "Cheksiz", icon: "💬" },
+        { key: "pronunciation", label: "Talaffuz", value: "999/kun", icon: "🔊" },
+        { key: "voice", label: "Ovozli mashq", value: "Cheksiz", icon: "🎙️" },
+        { key: "exam", label: "Exam simulyatsiya", value: "Cheksiz", icon: "🧪" },
+      ],
+      levels: [
+        {
+          id: "A1",
+          title: "A1 Foundation",
+          crown: "Premium",
+          overview: "Asosiy tanishtirish, kundalik gaplar va boshlang'ich grammatika skeletini mukammal qurish.",
+          grammar: [
+            { topic: "To be fe'li", formula: "Subject + am/is/are", note: "Shaxs, holat va identifikatsiya uchun." },
+            { topic: "Present Simple", formula: "Subject + base verb", note: "Odat, jadval va umumiy faktlar." },
+            { topic: "Articles", formula: "a/an/the", note: "Narsa aniq-noma'lum bo'lishini belgilaydi." },
+            { topic: "There is/are", formula: "There is/are + noun", note: "Joydagi mavjudlikni ifodalaydi." },
+            { topic: "Possessive adjectives", formula: "my/your/his/her/our/their", note: "Egalik munosabatlarini ko'rsatadi." },
+            { topic: "Questions", formula: "Am/Is/Are + subject", note: "Sodda savol konstruktsiyasi." },
+          ],
+          vocabulary: [
+            { domain: "Family & Identity", words: ["mother", "father", "student", "teacher", "engineer", "friend"] },
+            { domain: "Daily Routines", words: ["wake up", "study", "work", "cook", "travel", "rest"] },
+            { domain: "Places", words: ["home", "school", "office", "market", "park", "street"] },
+          ],
+          lessons: [
+            {
+              id: "a1-crown-core",
+              title: "Royal Start: Identity and Daily Speech",
+              summary: "To be, Present Simple va boshlang'ich kommunikativ modulni mukammal asosga qo'yish.",
+              learn: {
+                goal: "A1 foydalanuvchi o'zini tanishtirish, odatini aytish va oddiy savol-javobni ishonchli bajarishi.",
+                principles: [
+                  "Har bir gapni avval subject + verb asosida tekshirish odatini shakllantiring.",
+                  "He/she/it bilan fe'l shaklini avtomatik to'g'rilash A1da eng katta yutuq beradi.",
+                  "Qisqa, tiniq gaplar ko'proq ishlatilsa, nutq tezroq mustahkamlanadi.",
+                ],
+                examples: [
+                  "I am from Tashkent and I study English every evening.",
+                  "She works in a clinic and she likes reading books.",
+                  "Are you ready for today's lesson?",
+                ],
+                videoPlaceholder: "A1 Royal Intro video bu yerga ulanadi.",
+                pdfs: ["A1 Crown Grammar Starter.pdf", "Daily Conversation Mini Pack.pdf"],
+              },
+              quiz: [
+                mcq("To'g'ri variantni tanlang: She ___ my mentor.", ["am", "is", "are", "be"], 1, "`She` bilan `is` ishlatiladi."),
+                mcq("Qaysi gap odatni bildiradi?", ["I am sleeping now.", "He studies every day.", "They were late.", "We will call."], 1, "Takrorlanadigan odat Present Simple bilan keladi."),
+                mcq("Noto'g'ri gapni toping.", ["I am ready.", "She are kind.", "They are here.", "We are students."], 1, "`She is kind` bo'lishi kerak."),
+                mcq("Savol shakli qaysi?", ["You are busy?", "Are you busy?", "Busy are you?", "You busy are?"], 1, "Savolda be fe'li gap boshiga chiqadi."),
+                mcq("Qaysi gap fakt?", ["I am drinking tea.", "Water boils at 100°C.", "She was tired.", "They will travel."], 1, "Umumiy fakt Present Simple bilan aytiladi."),
+                mcq("`We ___ friends.`", ["am", "is", "are", "be"], 2, "`We` bilan `are` ishlatiladi."),
+                reorder("Tanishtirish gapini tuzing.", ["I", "am", "a", "student"], "Subject + be + noun tartibi."),
+                reorder("Kundalik odat gapini tuzing.", ["He", "works", "every", "day"], "Present Simple odatlarni ko'rsatadi."),
+                reorder("Savol gapini tuzing.", ["Are", "they", "at", "home"], "Savolda `Are` oldinda keladi."),
+                reorder("Inkor gapini tuzing.", ["She", "doesn't", "drink", "coffee"], "Doesn't dan keyin base verb ishlatiladi."),
+              ],
+            },
+          ],
+        },
+        {
+          id: "A2",
+          title: "A2 Practical",
+          crown: "Premium",
+          overview: "O'tgan voqea, oddiy kelajak va solishtirishlar yordamida kundalik muloqotni kengaytirish.",
+          grammar: [
+            { topic: "Past Simple", formula: "Subject + V2", note: "Tugagan voqealarni ifodalaydi." },
+            { topic: "Future plans", formula: "will / be going to", note: "Qaror va oldindan reja farqi." },
+            { topic: "Comparatives", formula: "adj-er / more + adj", note: "Ikki narsa solishtiriladi." },
+            { topic: "Countable/Uncountable", formula: "many/much/some/any", note: "Miqdor tuzilmalari." },
+            { topic: "Past Time Markers", formula: "yesterday/last/week/ago", note: "Past kontekstini aniqlaydi." },
+          ],
+          vocabulary: [
+            { domain: "Travel", words: ["ticket", "station", "flight", "hotel", "journey", "passport"] },
+            { domain: "Food & Lifestyle", words: ["healthy", "meal", "recipe", "breakfast", "order", "restaurant"] },
+            { domain: "City Services", words: ["bank", "pharmacy", "clinic", "library", "museum", "office"] },
+          ],
+          lessons: [
+            {
+              id: "a2-crown-story",
+              title: "Story Builder: Past and Future Mix",
+              summary: "Kechagi voqea va ertangi rejani bir dialogda bog'lash.",
+              learn: {
+                goal: "Foydalanuvchi o'tgan voqeani aniq ayta olishi va yaqin kelajak rejasini to'g'ri ifodalashi.",
+                principles: [
+                  "Past gaplarda aniq vaqt marker ishlatish fikrni ravshan qiladi.",
+                  "Oldindan reja bo'lsa `going to`, tez qaror bo'lsa `will` tabiiyroq.",
+                  "Dialogda `yesterday` dan `tomorrow` ga o'tish muloqotni jonlantiradi.",
+                ],
+                examples: [
+                  "Yesterday we visited the museum and tomorrow we are going to discuss it.",
+                  "He didn't answer the phone, but he will call later.",
+                  "Did you finish the report last night?",
+                ],
+                videoPlaceholder: "A2 Story Flow lesson videosi shu blokka ulanadi.",
+                pdfs: ["A2 Past to Future Guide.pdf", "Comparative Patterns Quick Sheet.pdf"],
+              },
+              quiz: [
+                mcq("To'g'ri gapni tanlang.", ["He go yesterday.", "He went yesterday.", "He gone yesterday.", "He goes yesterday."], 1, "`Go` ning V2 shakli `went`."),
+                mcq("Qaysi inkor to'g'ri?", ["I didn't saw him.", "I didn't see him.", "I don't saw him.", "I wasn't see him."], 1, "`Didn't` dan keyin base verb keladi."),
+                mcq("Tez qarorni ko'rsatgan gapni toping.", ["I'm going to study medicine.", "The phone is ringing, I'll answer it.", "We are going to move.", "She is going to travel."], 1, "Shu onda qaror qabul qilindi."),
+                mcq("`Look at the clouds. It ___ rain.`", ["will", "is going to", "going", "is go"], 1, "Ko'rinib turgan dalil asosidagi taxmin."),
+                mcq("Noto'g'ri gapni toping.", ["Did she call you?", "Did he played well?", "We watched a film.", "They didn't come."], 1, "`Did` bilan `play` bo'lishi kerak."),
+                mcq("Qaysi gap comparative?", ["She is tall.", "She is taller than me.", "She was tall.", "She will be tall."], 1, "Solishtirish uchun `taller than`."),
+                reorder("Past gapni tuzing.", ["We", "watched", "a", "film", "last", "night"], "V2 + time marker shakli to'g'ri."),
+                reorder("Reja gapini tuzing.", ["I", "am", "going", "to", "study", "tonight"], "Oldindan reja konstruktsiyasi."),
+                reorder("Savol gapini tuzing.", ["Did", "you", "call", "him"], "Did + subject + base verb."),
+                reorder("Comparative gapni tuzing.", ["This", "task", "is", "easier", "than", "that", "one"], "Comparative + than model."),
+              ],
+            },
+          ],
+        },
+        {
+          id: "B1",
+          title: "B1 Independent",
+          crown: "Premium",
+          overview: "Tajriba, real shart va maslahatlarni ravon hamda mustaqil boshqarish.",
+          grammar: [
+            { topic: "Present Perfect", formula: "have/has + V3", note: "Tajriba va hozirgi natija." },
+            { topic: "First Conditional", formula: "If + present, will + verb", note: "Real ehtimoliy natija." },
+            { topic: "Modals", formula: "should/must/have to", note: "Maslahat va majburiyat." },
+            { topic: "Linkers", formula: "because/although/however", note: "Mantiqiy bog'lanishlar." },
+          ],
+          vocabulary: [
+            { domain: "Work & Career", words: ["deadline", "project", "proposal", "feedback", "manager", "teamwork"] },
+            { domain: "Health", words: ["symptom", "exercise", "treatment", "prevention", "diet", "routine"] },
+            { domain: "Technology", words: ["update", "feature", "device", "cloud", "security", "interface"] },
+          ],
+          lessons: [
+            {
+              id: "b1-crown-fluency",
+              title: "Fluency Engine: Experience and Decisions",
+              summary: "Present Perfect va real conditional bilan mulohazali gap qurish.",
+              learn: {
+                goal: "Tajriba va ehtimoliy natijani bir nutq oqimida boshqarish.",
+                principles: [
+                  "Aniq vaqt ko'rsatilsa Past Simple, tajriba bo'lsa Present Perfect afzal.",
+                  "First Conditional real vaziyatda qaror va natijani aniq beradi.",
+                  "Should/must/have to bilan tone nazoratini saqlang.",
+                ],
+                examples: [
+                  "I have finished the draft, so if you want, I will send it now.",
+                  "If she practices every day, she will improve fast.",
+                  "You should review your mistakes before the next attempt.",
+                ],
+                videoPlaceholder: "B1 Fluency coaching video shu joyga ulanadi.",
+                pdfs: ["B1 Perfect vs Past Matrix.pdf", "Conditional Coaching Notes.pdf"],
+              },
+              quiz: [
+                mcq("Tajriba gapini tanlang.", ["I visited London last year.", "I have visited London twice.", "I am visiting London.", "I visit London yearly."], 1, "Aniq vaqt yo'q, tajriba urg'ulangan."),
+                mcq("`If it rains, we ___ home.`", ["stay", "stays", "will stay", "stayed"], 2, "First Conditional natijasida `will` keladi."),
+                mcq("Qaysi gap noto'g'ri?", ["Have you ever tried sushi?", "She has saw the file.", "They haven't arrived yet.", "If you hurry, we will catch it."], 1, "`Seen` bo'lishi kerak."),
+                mcq("Maslahat beruvchi modal qaysi?", ["must", "should", "have to", "might"], 1, "Yumshoq tavsiya uchun `should`."),
+                mcq("Qaysi gap natijani bildiradi?", ["She has lost her key.", "She lost her key yesterday.", "She loses keys.", "She will lose key."], 0, "Hozirgi natija sezilib turibdi."),
+                mcq("Qaysi formula to'g'ri?", ["If + present, will + verb", "If + will, present", "If + past, would have", "If + had, will"], 0, "First Conditional formulasi."),
+                reorder("Present Perfect gapini tuzing.", ["They", "have", "completed", "the", "project"], "Have + V3 modeli."),
+                reorder("Conditional gapni tuzing.", ["If", "you", "practice", "daily", "you", "will", "improve"], "Real ehtimoliy shart."),
+                reorder("Maslahat gapini tuzing.", ["You", "should", "sleep", "earlier"], "Should bilan maslahat beriladi."),
+                reorder("Yet bilan inkor gapini tuzing.", ["We", "haven't", "started", "yet"], "Yet ko'pincha inkorda ishlatiladi."),
+              ],
+            },
+          ],
+        },
+        {
+          id: "B2",
+          title: "B2 Upper",
+          crown: "Premium",
+          overview: "Formalroq ifoda, passiv struktura va aniqlikni kuchaytiruvchi clause tizimi.",
+          grammar: [
+            { topic: "Passive Voice", formula: "be + V3", note: "Natijaga urg'u beradi." },
+            { topic: "Relative Clauses", formula: "who/which/that/where", note: "Qo'shimcha aniqlik beradi." },
+            { topic: "Reported Speech", formula: "said/told + clause", note: "Indirect yetkazish." },
+            { topic: "Advanced Linkers", formula: "therefore/nevertheless", note: "Yozuv oqimini professional qiladi." },
+          ],
+          vocabulary: [
+            { domain: "Academic Style", words: ["analysis", "evidence", "argument", "assumption", "framework", "outcome"] },
+            { domain: "Business English", words: ["strategy", "stakeholder", "negotiation", "budget", "alignment", "execution"] },
+            { domain: "Public Communication", words: ["audience", "message", "clarity", "impact", "delivery", "tone"] },
+          ],
+          lessons: [
+            {
+              id: "b2-crown-precision",
+              title: "Precision Writing and Formal Speech",
+              summary: "Passive, clause va reported konstruktsiyalar bilan yuqori aniqlik.",
+              learn: {
+                goal: "Formal va professional kontekstda aniq, ishonchli, stilistik barqaror gaplar qurish.",
+                principles: [
+                  "Passive har doim kerak emas; natija muhim bo'lsa ishlatiladi.",
+                  "Relative clause orqali ma'lumotni kengaytirib, gapni ravon ushlab turing.",
+                  "Reported speech’da tense and pronoun moslashuviga e'tibor bering.",
+                ],
+                examples: [
+                  "The report was completed by the team that joined last month.",
+                  "She said that she had already submitted the draft.",
+                  "This is the framework that improved our planning process.",
+                ],
+                videoPlaceholder: "B2 Precision workshop video placeholder.",
+                pdfs: ["B2 Passive-Relative Map.pdf", "Reported Speech Toolkit.pdf"],
+              },
+              quiz: [
+                mcq("Passive shaklni tanlang.", ["They check the file.", "The file is checked.", "The file checked.", "It check file."], 1, "Passive: be + V3."),
+                mcq("Qaysi pronoun odam uchun mos?", ["which", "where", "who", "that place"], 2, "Odamga nisbatan `who`."),
+                mcq("Noto'g'ri gapni toping.", ["The app was launched.", "He has a colleague where lives in Paris.", "This is the book that I bought.", "The email was sent."], 1, "Odam uchun `who` ishlatiladi."),
+                mcq("Reported speech to'g'ri variant qaysi?", ["He told that he was late.", "He told me that he was late.", "He said me he was late.", "He told me he late."], 1, "Told bilan object talab qilinadi."),
+                mcq("Qaysi gap formalroq?", ["They approved the plan.", "The plan was approved.", "Plan approved they.", "The plan approve."], 1, "Passive formal ohang beradi."),
+                mcq("`The office ___ we met was quiet.`", ["who", "which", "where", "that person"], 2, "Joy uchun `where`."),
+                reorder("Passive gapni tuzing.", ["The", "email", "was", "sent", "yesterday"], "Past passive to'g'ri qurilgan."),
+                reorder("Relative clause gapini tuzing.", ["The", "woman", "who", "called", "me", "is", "my", "teacher"], "Who bilan odam aniqlangan."),
+                reorder("Reported gapni tuzing.", ["She", "said", "that", "she", "was", "busy"], "Indirect report tartibi."),
+                reorder("Formal sentence tuzing.", ["The", "task", "has", "been", "completed"], "Perfect passive model."),
+              ],
+            },
+          ],
+        },
+        {
+          id: "C1",
+          title: "C1 Advanced",
+          crown: "Premium",
+          overview: "Nozik ma'no, inversion va murakkab shartlarda yuqori nazorat.",
+          grammar: [
+            { topic: "Inversion", formula: "Never/Only + auxiliary + subject", note: "Formal urg'u beradi." },
+            { topic: "Mixed Conditionals", formula: "If + had + V3, would + verb", note: "O'tgan sabab-hozirgi natija." },
+            { topic: "Discourse Markers", formula: "nevertheless/moreover/therefore", note: "Nutq oqimini professional qiladi." },
+            { topic: "Hedging", formula: "may/might/appears to", note: "Ehtiyotkor akademik ifoda." },
+          ],
+          vocabulary: [
+            { domain: "Critical Thinking", words: ["nuance", "implication", "coherence", "consistency", "bias", "inference"] },
+            { domain: "Policy & Society", words: ["regulation", "equity", "governance", "compliance", "advocacy", "framework"] },
+            { domain: "Presentation", words: ["emphasis", "transition", "perspective", "narrative", "precision", "stance"] },
+          ],
+          lessons: [
+            {
+              id: "c1-crown-nuance",
+              title: "Nuance Mastery: Inversion and Argument Control",
+              summary: "Advanced style, inversion va nuance bilan ta'sirchan fikr qurish.",
+              learn: {
+                goal: "Mantiqan kuchli, stilistik ravon va formal darajada nazoratli ifoda yaratish.",
+                principles: [
+                  "Inversionni faqat kerakli urg'u uchun qo'llang; haddan oshirmang.",
+                  "Mixed conditional sabab-natija vaqt qatlamini aniq ifodalaydi.",
+                  "Discourse markerlar fikr oqimini boshqaradi, faqat bezak emas.",
+                ],
+                examples: [
+                  "Only after the second review did we notice the issue.",
+                  "If I had prepared better, I would feel calmer now.",
+                  "Nevertheless, the data appears to support the proposal.",
+                ],
+                videoPlaceholder: "C1 Nuance clinic video placeholder.",
+                pdfs: ["C1 Inversion Pack.pdf", "Argument Control Workbook.pdf"],
+              },
+              quiz: [
+                mcq("Inversionli gapni toping.", ["I never saw this.", "Never have I seen this.", "Never I have seen this.", "I have never saw this."], 1, "Auxiliary subjectdan oldinda."),
+                mcq("Mixed conditionalni toping.", ["If I study, I will pass.", "If I had studied medicine, I would be a doctor now.", "If it rains, we stay.", "If I were rich, I travel."], 1, "O'tmish sabab-hozir natija."),
+                mcq("Qaysi marker kontrast bildiradi?", ["therefore", "moreover", "nevertheless", "as a result"], 2, "Kontrast uchun `nevertheless`."),
+                mcq("Noto'g'ri gapni toping.", ["Only then did we understand.", "Seldom she visits us.", "If only I had checked.", "This may indicate growth."], 1, "`Seldom does she visit us` bo'lishi kerak."),
+                mcq("Hedging uchun qaysi variant mos?", ["This proves everything.", "This may suggest a trend.", "This always works.", "This never fails."], 1, "`May suggest` ehtiyotkor akademik uslub."),
+                mcq("`Not only ___ late, but he also forgot the file.`", ["he was", "was he", "he is", "did he"], 1, "Inversion talab qilinadi."),
+                reorder("Inversion gapini tuzing.", ["Only", "later", "did", "we", "realize", "the", "risk"], "Only + adverbial bilan inversion."),
+                reorder("Mixed conditional gapini tuzing.", ["If", "I", "had", "left", "earlier", "I", "would", "be", "there", "now"], "Time-layering to'g'ri."),
+                reorder("Hedging sentence tuzing.", ["The", "results", "may", "indicate", "a", "pattern"], "May + verb ehtiyotkor xulosa."),
+                reorder("Formal contrast gapini tuzing.", ["The", "task", "was", "difficult", "nevertheless", "we", "completed", "it"], "Discourse marker bilan oqim kuchaydi."),
+              ],
+            },
+          ],
+        },
+        {
+          id: "C2",
+          title: "C2 Mastery",
+          crown: "Premium",
+          overview: "Yuqori stilistika, deduktsiya va deyarli native darajadagi nazorat.",
+          grammar: [
+            { topic: "Cleft Sentences", formula: "It was ... that / What ... is ...", note: "Fokus va urg'uni boshqaradi." },
+            { topic: "Modal Deduction", formula: "must/might/can't (have) + verb", note: "Mantiqiy taxmin darajalari." },
+            { topic: "Nominalisation", formula: "verb/adjective -> noun", note: "Akademik va formal yozuv uslubi." },
+            { topic: "Register Control", formula: "formal-neutral-informal shifts", note: "Auditoriyaga moslashuv." },
+          ],
+          vocabulary: [
+            { domain: "Academic Excellence", words: ["synthesis", "methodology", "validity", "constraint", "robustness", "interpretation"] },
+            { domain: "Leadership Communication", words: ["alignment", "prioritization", "trajectory", "leverage", "stakeholder", "consensus"] },
+            { domain: "Debate & Rhetoric", words: ["premise", "counterpoint", "rebuttal", "assertion", "cohesion", "emphasis"] },
+          ],
+          lessons: [
+            {
+              id: "c2-crown-elite",
+              title: "Elite Expression: Focus and Deduction",
+              summary: "Cleft structures va modal deduction yordamida yuqori darajadagi ifoda nazorati.",
+              learn: {
+                goal: "Muloqotda ma'no fokusini boshqarish va mantiqiy taxminni nozik darajalarda ifodalash.",
+                principles: [
+                  "Cleft sentence faqat bezak emas, ma'no markazini ajratish vositasi.",
+                  "Must/might/can't bilan taxmin darajasini auditoriyaga mos nazorat qiling.",
+                  "Nominalisation bilan akademik matnni ixcham va professional qiling.",
+                ],
+                examples: [
+                  "It was the final review that changed our strategy.",
+                  "She must have noticed the inconsistency in the report.",
+                  "What we need is a stronger methodological framework.",
+                ],
+                videoPlaceholder: "C2 Crown masterclass video placeholder.",
+                pdfs: ["C2 Elite Structures Atlas.pdf", "Deduction & Register Master Sheet.pdf"],
+              },
+              quiz: [
+                mcq("Cleft sentence qaysi?", ["Sara solved the issue.", "It was Sara that solved the issue.", "Sara is solving issue.", "Issue solved Sara."], 1, "It was ... that ... strukturasi."),
+                mcq("`What I need ___ more clarity.`", ["am", "is", "are", "be"], 1, "What-clause birlik sifatida olinadi."),
+                mcq("Kuchli deductionni ko'rsating.", ["She must be exhausted.", "She can be exhausted.", "She would exhausted.", "She maybe exhausted."], 0, "`Must` kuchli taxmin."),
+                mcq("Past deduction modeli qaysi?", ["might have left", "might left", "might leaving", "might have leave"], 0, "Might have + V3."),
+                mcq("Noto'g'ri gapni toping.", ["He can't have known.", "They might have missed it.", "She must have went home.", "What changed everything was feedback."], 2, "`gone` bo'lishi kerak."),
+                mcq("Nominalisation misolini toping.", ["We improved the process.", "The improvement was significant.", "Improve process now.", "We are improving now."], 1, "`improvement` nominalisation."),
+                reorder("Cleft gapni tuzing.", ["It", "was", "yesterday", "that", "they", "called"], "Vaqt fokusga chiqarilgan."),
+                reorder("Deduction gapini tuzing.", ["She", "must", "have", "seen", "the", "message"], "Must have + V3."),
+                reorder("Need focus gapini tuzing.", ["What", "we", "need", "is", "a", "clear", "plan"], "What-clause fokus beradi."),
+                reorder("Nuanced taxmin gapini tuzing.", ["They", "might", "have", "misread", "the", "brief"], "Might have ehtiyotkor deduction."),
+              ],
+            },
+          ],
+        },
+      ],
+      examSimulation: {
+        ielts: {
+          reading: {
+            title: "IELTS Academic Reading Simulation",
+            passage:
+              "Urban learning ecosystems have transformed dramatically due to digital infrastructures. While early e-learning focused on one-way content delivery, contemporary models emphasize adaptive pathways, reflective assessment and continuous learner analytics. Institutions that integrate feedback loops into curriculum design typically observe stronger retention and transfer outcomes across disciplines.",
+            questions: [
+              mcq("Matnga ko'ra zamonaviy e-learning nima bilan farq qiladi?", ["Faqat video darslar bilan", "Bir yo'nalishli kontent bilan", "Moslashuvchan yo'llar va feedback bilan", "Faqat oflayn testlar bilan"], 2, "Matnda adaptive pathways va reflective assessment tilga olingan."),
+              mcq("Qaysi omil retentionni oshiradi?", ["Faqat yakuniy imtihon", "Feedback loops ni curriculumga qo'shish", "Kamroq analytics ishlatish", "Kontentni kamaytirish"], 1, "Matnda feedback loops asosiy omil sifatida keltirilgan."),
+              mcq("Matnda qaysi soha tilga olingan?", ["Agriculture policy", "Learner analytics", "Biological taxonomy", "Transport economics"], 1, "Learner analytics bevosita tilga olingan."),
+              mcq("Transfer outcomes qachon kuchliroq kuzatiladi?", ["Analytics yo'q bo'lsa", "Faqat an'anaviy modelda", "Feedback-integrated dizaynda", "Random tarzda"], 2, "Institutions with feedback loops stronger outcomes ko'rgan."),
+              mcq("Passage umumiy g'oyasi nima?", ["Digital learning qiymatsiz", "Adaptive va analyticsga asoslangan model samaraliroq", "Faqat oflayn model ishlaydi", "Curriculum feedbackga muhtoj emas"], 1, "Asosiy tezis - zamonaviy, feedback-rich model kuchliroq."),
+            ],
+          },
+          writing: {
+            tasks: [
+              "Task 1: 2000-2025 oralig'ida onlayn ta'lim ishtiroki bo'yicha grafikni tasvirlang, asosiy trendlar va farqlarni yozing.",
+              "Task 2: 'AI personal tutor tizimlari an'anaviy o'qituvchilar rolini kamaytiradimi?' mavzusida fikr bildiring, dalillar va qarshi fikrlarni muvozanatlang.",
+            ],
+            bandHints: [
+              "Position aniq va izchil bo'lsin.",
+              "Cohesion uchun linking devices tabiiy ishlatilsin.",
+              "Lexical resource boy, ammo sun'iy bo'lmasin.",
+              "Grammar range va aniqlik parallel rivojlansin.",
+            ],
+          },
+          speaking: {
+            topics: [
+              "Part 1: Daily learning habits and language routine.",
+              "Part 2: Describe a time when feedback changed your study strategy.",
+              "Part 3: The future of AI-supported language education.",
+            ],
+            eliteTips: [
+              "Har javobda micro-structure ishlating: point -> reason -> example.",
+              "Filler so'zlarni kamaytirib, mazmunli pauza qo'llang.",
+              "Complex sentence ishlating, lekin aniqlikni yo'qotmang.",
+            ],
+          },
+        },
+        cefr: {
+          reading: {
+            title: "CEFR Integrated Reading Simulation",
+            passage:
+              "Competence descriptors in CEFR are not static labels but developmental references. Learners progress non-linearly and often display mixed profiles across interaction, mediation and production tasks. Effective assessment therefore triangulates evidence from performance, reflection and contextual task demands.",
+            questions: [
+              mcq("CEFR descriptorlar matnga ko'ra nimani anglatadi?", ["Qattiq o'zgarmas label", "Rivojlanish yo'nalishlari uchun reference", "Faqat test ballari", "Faqat speaking mezoni"], 1, "Descriptors developmental references sifatida ko'rsatilgan."),
+              mcq("Learner progress qanday tasvirlangan?", ["Faqat lineer", "Non-lineer va mixed profile bilan", "Faqat grammar orqali", "Faqat writing orqali"], 1, "Matn non-linear progressni qayd etadi."),
+              mcq("Assessment nimaga tayanadi?", ["Faqat final exam", "Triangulated evidence", "Faqat self-report", "Faqat attendance"], 1, "Performance, reflection va context birga olinadi."),
+              mcq("Qaysi trio passage'da bor?", ["interaction, mediation, production", "reading, drawing, singing", "grammar, spelling, handwriting", "AI, VR, AR"], 0, "Bu uchlik matnda bevosita bor."),
+              mcq("Passage asosiy maqsadi nima?", ["CEFRni oddiy labelga aylantirish", "Baholashni ko'p manbali qilishga undash", "Faqat grammar testini targ'ib qilish", "Assessmentni bekor qilish"], 1, "Triangulation asosiy g'oya."),
+            ],
+          },
+          writing: {
+            tasks: [
+              "Integrated task: CEFR self-assessment yozuvini tayyorlang: kuchli, rivojlanishi kerak bo'lgan va keyingi 30 kunlik reja.",
+              "Argumentative task: 'Multilingual classrooms fairnessni oshiradimi?' mavzusida nuansli position essay yozing.",
+            ],
+            bandHints: [
+              "Task response aniq va to'liq bo'lsin.",
+              "Register tanlovini auditoriyaga moslang.",
+              "Paragraph architecture mantiqiy va simmetrik bo'lsin.",
+            ],
+          },
+          speaking: {
+            topics: [
+              "Interaction: Clarifying misunderstandings in team communication.",
+              "Mediation: Summarizing complex text for a beginner audience.",
+              "Production: Defending a balanced view in a structured monologue.",
+            ],
+            eliteTips: [
+              "C1/C2 javoblarida nuance va qualification muhim.",
+              "Argumentni bir tomonlama emas, muvozanatli ko'rsating.",
+              "Intonation yordamida stance signalini aniq bering.",
+            ],
+          },
+        },
+      },
+      aiCoach: {
+        greeting:
+          "Assalomu alaykum, hurmatli o'quvchi. Men sizning Unlimited AI Coach hamrohingizman. Istalgan daraja, imtihon yoki xatolik bo'yicha cheksiz yordam bera olaman.",
+        promptStarters: [
+          "Bugungi kuchsiz joyimni aniqlab ber",
+          "IELTS Writing Task 2 uchun premium strukturani ber",
+          "C1 darajada inversionni real misollar bilan o'rgat",
+          "Mening xatolarim bo'yicha 7 kunlik reja tuz",
+        ],
+      },
+      progressBlueprint: {
+        baseMastery: 74,
+        targetMastery: 97,
+        weeklyHours: [6, 8, 7, 10, 9, 12, 11],
+        skillMap: {
+          Reading: 84,
+          Writing: 79,
+          Speaking: 76,
+          Listening: 81,
+          Grammar: 88,
+          Vocabulary: 83,
+        },
+      },
+    };
+
+    const STORAGE_KEY = "english-mastery-premium-crown-state-v1";
+    const TODAY = new Date().toISOString().slice(0, 10);
+    const TELEGRAM = window.Telegram?.WebApp ?? null;
+    const HAPTIC = TELEGRAM?.HapticFeedback ?? null;
+    const app = document.getElementById("app");
+
+    const levelMap = Object.fromEntries(CROWN_DATABASE.levels.map((level) => [level.id, level]));
+    const allLessons = CROWN_DATABASE.levels.flatMap((level) => level.lessons.map((lesson) => ({ ...lesson, levelId: level.id, levelTitle: level.title })));
+    const lessonMap = Object.fromEntries(allLessons.map((lesson) => [lesson.id, lesson]));
+
+    let telegramBackHooked = false;
+    let state = {
+      section: "hub",
+      levelId: CROWN_DATABASE.levels[0].id,
+      search: "",
+      selectedLessonId: null,
+      lessonTab: "learn",
+      lessonQuizStarted: false,
+      lessonQuizIndex: 0,
+      lessonSelectedOption: null,
+      lessonReorderAnswer: [],
+      lessonAnswers: [],
+      lessonQuizFinished: false,
+      lessonQuizResult: null,
+      examTrack: "ielts",
+      examPart: "reading",
+      examIndex: 0,
+      examAnswers: [],
+      examFinished: false,
+      examResult: null,
+      aiDraft: "",
+      aiMessages: [{ role: "assistant", text: CROWN_DATABASE.aiCoach.greeting }],
+      toast: "",
+      progress: loadProgress(),
+    };
+
+    function loadProgress() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (!raw) {
+          return {
+            lastDate: TODAY,
+            streak: 1,
+            lessonCompletions: 0,
+            examAttempts: 0,
+            aiSessions: 0,
+            totalExamScore: 0,
+            totalExamQuestions: 0,
+            masteryBoost: 0,
+          };
+        }
+        if (raw.lastDate !== TODAY) {
+          const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          const streak = raw.lastDate === yesterday ? (raw.streak || 1) + 1 : 1;
+          return { ...raw, lastDate: TODAY, streak };
+        }
+        return raw;
+      } catch (error) {
+        return {
+          lastDate: TODAY,
+          streak: 1,
+          lessonCompletions: 0,
+          examAttempts: 0,
+          aiSessions: 0,
+          totalExamScore: 0,
+          totalExamQuestions: 0,
+          masteryBoost: 0,
+        };
+      }
+    }
+
+    function saveProgress() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function hapticImpact(style = "light") {
+      try {
+        HAPTIC?.impactOccurred?.(style);
+      } catch (error) {
+      }
+    }
+
+    function sendToBot(payload, successMessage) {
+      if (TELEGRAM?.sendData) {
+        TELEGRAM.sendData(JSON.stringify(payload));
+        state.toast = successMessage;
+      } else {
+        state.toast = "Preview rejimi: Telegram botga yuborish funksiyasi WebApp ichida faol bo'ladi.";
+      }
+    }
+
+    function syncTelegram() {
+      if (!TELEGRAM) return;
+      TELEGRAM.ready();
+      TELEGRAM.expand();
+      TELEGRAM.setBackgroundColor("#050505");
+      TELEGRAM.setHeaderColor("#050505");
+      if (!telegramBackHooked) {
+        TELEGRAM.BackButton.onClick(handleBack);
+        telegramBackHooked = true;
+      }
+      const shouldShow = state.section !== "hub" || state.selectedLessonId;
+      if (shouldShow) TELEGRAM.BackButton.show();
+      else TELEGRAM.BackButton.hide();
+    }
+
+    function getUserName() {
+      const user = TELEGRAM?.initDataUnsafe?.user;
+      return user?.first_name || user?.username || "Hurmatli foydalanuvchi";
+    }
+
+    function setState(patch) {
+      state = { ...state, ...patch };
+      render();
+    }
+
+    function handleBack() {
+      if (state.selectedLessonId) {
+        closeLessonDetail();
+        return;
+      }
+      if (state.section !== "hub") {
+        setState({ section: "hub", toast: "" });
+      }
+    }
+
+    function currentLevel() {
+      return levelMap[state.levelId];
+    }
+
+    function currentLesson() {
+      return state.selectedLessonId ? lessonMap[state.selectedLessonId] : null;
+    }
+
+    function currentLessonQuestion() {
+      const lesson = currentLesson();
+      return lesson ? lesson.quiz[state.lessonQuizIndex] : null;
+    }
+
+    function currentExamTrackData() {
+      return CROWN_DATABASE.examSimulation[state.examTrack];
+    }
+
+    function currentExamQuestion() {
+      return currentExamTrackData().reading.questions[state.examIndex];
+    }
+
+    function resetLessonQuiz() {
+      state.lessonQuizStarted = false;
+      state.lessonQuizIndex = 0;
+      state.lessonSelectedOption = null;
+      state.lessonReorderAnswer = [];
+      state.lessonAnswers = [];
+      state.lessonQuizFinished = false;
+      state.lessonQuizResult = null;
+    }
+
+    function resetExamReading() {
+      state.examIndex = 0;
+      state.examAnswers = [];
+      state.examFinished = false;
+      state.examResult = null;
+    }
+
+    function closeLessonDetail() {
+      resetLessonQuiz();
+      setState({
+        selectedLessonId: null,
+        lessonTab: "learn",
+        toast: "",
+      });
+    }
+
+    function recordProgress(update) {
+      state.progress = {
+        ...state.progress,
+        ...update,
+        lastDate: TODAY,
+      };
+      saveProgress();
+    }
+
+    function openLesson(id) {
+      resetLessonQuiz();
+      setState({
+        selectedLessonId: id,
+        lessonTab: "learn",
+        toast: "",
+      });
+    }
+
+    function finishLessonQuiz() {
+      const lesson = currentLesson();
+      const review = lesson.quiz.map((question, index) => {
+        const answer = state.lessonAnswers[index];
+        const isCorrect = question.type === "mcq"
+          ? answer === question.answer
+          : Array.isArray(answer) && answer.join(" ") === question.answer.join(" ");
+        return {
+          prompt: question.prompt,
+          selected: question.type === "mcq"
+            ? (typeof answer === "number" ? question.options[answer] : "Tanlanmagan")
+            : (Array.isArray(answer) && answer.length ? answer.join(" ") : "Tuzilmagan"),
+          correct: question.type === "mcq" ? question.options[question.answer] : question.answer.join(" "),
+          explanation: question.explanation,
+          isCorrect,
+        };
+      });
+      const score = review.filter((item) => item.isCorrect).length;
+      const result = {
+        score,
+        total: lesson.quiz.length,
+        review,
+        mistakes: review.filter((item) => !item.isCorrect),
+      };
+      const masteryAdd = Math.max(1, Math.round((score / lesson.quiz.length) * 3));
+      recordProgress({
+        lessonCompletions: state.progress.lessonCompletions + 1,
+        masteryBoost: state.progress.masteryBoost + masteryAdd,
+      });
+      sendToBot(
+        {
+          type: "premium_lesson_quiz",
+          edition: CROWN_DATABASE.edition,
+          level: lesson.levelId,
+          lessonId: lesson.id,
+          lessonTitle: lesson.title,
+          score,
+          total: lesson.quiz.length,
+          date: TODAY,
+        },
+        "Lesson quiz natijasi botga yuborildi."
+      );
+      setState({
+        lessonQuizFinished: true,
+        lessonQuizResult: result,
+        lessonSelectedOption: null,
+        lessonReorderAnswer: [],
+      });
+    }
+
+    function finishExamReading() {
+      const reading = currentExamTrackData().reading;
+      const review = reading.questions.map((question, idx) => ({
+        prompt: question.prompt,
+        selected: typeof state.examAnswers[idx] === "number" ? question.options[state.examAnswers[idx]] : "Tanlanmagan",
+        correct: question.options[question.answer],
+        explanation: question.explanation,
+        isCorrect: state.examAnswers[idx] === question.answer,
+      }));
+      const score = review.filter((item) => item.isCorrect).length;
+      const result = {
+        score,
+        total: reading.questions.length,
+        review,
+      };
+      recordProgress({
+        examAttempts: state.progress.examAttempts + 1,
+        totalExamScore: state.progress.totalExamScore + score,
+        totalExamQuestions: state.progress.totalExamQuestions + reading.questions.length,
+        masteryBoost: state.progress.masteryBoost + Math.max(1, Math.round((score / reading.questions.length) * 2)),
+      });
+      sendToBot(
+        {
+          type: "premium_exam_reading",
+          track: state.examTrack,
+          score,
+          total: reading.questions.length,
+          date: TODAY,
+        },
+        "Exam Reading natijasi botga yuborildi."
+      );
+      setState({
+        examFinished: true,
+        examResult: result,
+      });
+    }
+
+    function getFilteredLessons() {
+      const query = state.search.trim().toLowerCase();
+      if (!query) {
+        return currentLevel().lessons.map((lesson) => ({ ...lesson, levelId: currentLevel().id, levelTitle: currentLevel().title }));
+      }
+      return allLessons.filter((lesson) => {
+        const level = levelMap[lesson.levelId];
+        const grammarText = level.grammar.map((item) => `${item.topic} ${item.note}`).join(" ");
+        const vocabText = level.vocabulary.flatMap((item) => [item.domain, ...item.words]).join(" ");
+        const full = `${lesson.title} ${lesson.summary} ${lesson.levelTitle} ${grammarText} ${vocabText}`.toLowerCase();
+        return full.includes(query);
+      });
+    }
+
+    function createAIReply(userText) {
+      const text = userText.toLowerCase();
+      const level = currentLevel();
+      const lesson = currentLesson();
+      const quizMistake = state.lessonQuizResult?.mistakes?.[0];
+
+      if (text.includes("xato") || text.includes("mistake")) {
+        if (quizMistake) {
+          return `Sizning oxirgi xatongiz: "${quizMistake.prompt}". Siz "${quizMistake.selected}" ni tanlagansiz, to'g'ri javob esa "${quizMistake.correct}". Nega? ${quizMistake.explanation} Shu qoida bo'yicha 5 daqiqalik drill boshlaymizmi?`;
+        }
+        return "Hozircha mistake review uchun yakunlangan quiz ma'lumoti yo'q. Avval bir lesson quizni yakunlasangiz, xatolaringiz bo'yicha aniq strategiya beraman.";
+      }
+
+      if (text.includes("ielts") || text.includes("exam")) {
+        return "IELTS/CEFR simulyatsiya uchun premium yondashuv: 1) readingda signal so'zlarni belgilang, 2) writingda ikki qatlamli tezis yozing, 3) speakingda point-reason-example formatini saqlang. Xohlasangiz hozir sizga Writing Task 2 skeleton beraman.";
+      }
+
+      if (text.includes("grammar") || text.includes("grammatika")) {
+        const tip = level.grammar[0];
+        return `${level.id} daraja uchun hozir eng foydali grammatika fokus: "${tip.topic}" (${tip.formula}). Amaliy tavsiya: har kuni 8 ta mikro gap yozing va ovoz chiqarib tekshiring.`;
+      }
+
+      if (text.includes("vocab") || text.includes("lug")) {
+        const vocab = level.vocabulary[0];
+        return `${level.id} darajada ${vocab.domain} bo'limidan boshlang: ${vocab.words.slice(0, 4).join(", ")}. Strategiya: har so'z bilan bittadan gap + bitta savol tuzing.`;
+      }
+
+      if (text.includes("plan") || text.includes("reja")) {
+        return "Premium 7 kunlik mini-reja: 1-kun grammar core, 2-kun vocab sprint, 3-kun reading sim, 4-kun speaking drill, 5-kun writing frame, 6-kun full quiz review, 7-kun weak-zone repair. Agar xohlasangiz buni sizning darajangizga moslab individual qilaman.";
+      }
+
+      if (lesson) {
+        return `Siz hozir "${lesson.title}" darsidasiz. Shu blokda eng kuchli natija uchun: maqsadni o'qish -> 3 ta principle'dan bittasini amalda qo'llash -> 10 savollik quiz. Men har bosqichda siz bilanman.`;
+      }
+
+      return `Rahmat. Siz ${level.id} (${level.title}) kontekstidasiz. Hurmat bilan tavsiya: bugun bittadan grammar, vocab va exam reading mashqini yakunlang. Bu kombinatsiya progresni tezlashtiradi.`;
+    }
+
+    function sendAICoachMessage(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      const reply = createAIReply(trimmed);
+      const nextMessages = [
+        ...state.aiMessages,
+        { role: "user", text: trimmed },
+        { role: "assistant", text: reply },
+      ];
+      recordProgress({ aiSessions: state.progress.aiSessions + 1 });
+      setState({
+        aiMessages: nextMessages,
+        aiDraft: "",
+        toast: "",
+      });
+    }
+
+    function computeMastery() {
+      const base = CROWN_DATABASE.progressBlueprint.baseMastery;
+      const plus = state.progress.masteryBoost;
+      const avgExam = state.progress.totalExamQuestions
+        ? Math.round((state.progress.totalExamScore / state.progress.totalExamQuestions) * 100)
+        : 0;
+      return Math.max(45, Math.min(99, base + plus + Math.round(avgExam * 0.06)));
+    }
+
+    function computeSkillScores() {
+      const base = CROWN_DATABASE.progressBlueprint.skillMap;
+      const lessonBoost = Math.min(12, state.progress.lessonCompletions);
+      const examBoost = Math.min(10, state.progress.examAttempts * 2);
+      return {
+        Reading: Math.min(99, base.Reading + examBoost),
+        Writing: Math.min(99, base.Writing + Math.round(lessonBoost * 0.5)),
+        Speaking: Math.min(99, base.Speaking + Math.round((state.progress.aiSessions / 6))),
+        Listening: Math.min(99, base.Listening + Math.round((state.progress.examAttempts / 2))),
+        Grammar: Math.min(99, base.Grammar + Math.round(lessonBoost * 0.7)),
+        Vocabulary: Math.min(99, base.Vocabulary + Math.round(lessonBoost * 0.6)),
+      };
+    }
+
+    function renderHeader() {
+      return `
+        <section class="royal-card rounded-[30px] p-4 shadow-royal view-fast">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.30em] text-amber-100/70">Luxury Obsidian & Gold</div>
+              <h1 class="mt-2 font-display text-[30px] leading-none text-white">${escapeHtml(CROWN_DATABASE.appName)}</h1>
+              <div class="mt-3 flex items-center gap-2">
+                <span class="text-sm text-slate-200">${escapeHtml(getUserName())}</span>
+                <span class="shimmer-gold animate-shimmer animate-glowPulse rounded-full px-3 py-1 text-xs font-semibold text-black shadow-crown">${escapeHtml(CROWN_DATABASE.premiumBadge)}</span>
+              </div>
+              <p class="mt-3 text-sm leading-6 text-slate-300/76">Unlimited Crown rejimida siz botning barcha professional imkoniyatlariga to'liq kirishga egasiz.</p>
+            </div>
+            <div class="rounded-[20px] border border-emerald-300/20 bg-emerald-400/10 px-3 py-2 text-right">
+              <div class="flex items-center justify-end gap-2 text-[11px] font-semibold text-emerald-100">
+                <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulseDot"></span>
+                Faol
+              </div>
+              <div class="mt-1 text-xs text-emerald-100/80">${escapeHtml(CROWN_DATABASE.unlimitedStatus)}</div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderLimits() {
+      return `
+        <section class="royal-card rounded-[30px] p-4 shadow-royal view-fast">
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.30em] text-amber-100/70">Unlimited Mode</div>
+              <h2 class="mt-2 font-display text-xl text-white">Premium Crown limit paneli</h2>
+            </div>
+            <div class="rounded-full border border-amber-300/20 bg-amber-200/10 px-3 py-1 text-xs text-amber-100">Crown Access: Infinite</div>
+          </div>
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            ${CROWN_DATABASE.limits.map((item) => `
+              <div class="rounded-[22px] border border-amber-300/16 bg-white/5 p-3">
+                <div class="flex items-center justify-between gap-2">
+                  <div>
+                    <div class="text-sm font-semibold text-white">${item.icon} ${escapeHtml(item.label)}</div>
+                    <div class="mt-1 text-xs text-slate-300/74">Premium Crown ruxsati</div>
+                  </div>
+                  <div class="shimmer-text animate-shimmer text-sm font-bold">${escapeHtml(item.value)}</div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderQuickNav() {
+      const sections = [
+        { id: "hub", label: "Hub", icon: "🏛️" },
+        { id: "academic", label: "Academic DB", icon: "📚" },
+        { id: "exam", label: "Exam Center", icon: "🧪" },
+        { id: "ai", label: "AI Coach", icon: "💬" },
+        { id: "progress", label: "Tracker", icon: "📈" },
+      ];
+      return `
+        <section class="royal-card rounded-[24px] p-3 shadow-royal view-fast">
+          <div class="grid grid-cols-5 gap-2">
+            ${sections.map((section) => `
+              <button data-action="switch-section" data-section="${section.id}" class="rounded-[16px] border px-2 py-2 text-center text-xs transition ${state.section === section.id ? "border-amber-300/40 bg-amber-200/12 text-white" : "border-white/8 bg-white/5 text-slate-200"}">
+                <div>${section.icon}</div>
+                <div class="mt-1">${escapeHtml(section.label)}</div>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderHub() {
+      const mastery = computeMastery();
+      return `
+        <section class="royal-card rounded-[30px] p-4 shadow-royal view-fast">
+          <div class="text-[10px] uppercase tracking-[0.30em] text-amber-100/70">Crown Command Hub</div>
+          <h3 class="mt-2 font-display text-2xl text-white">Unlimited boshqaruv markazi</h3>
+          <p class="mt-2 text-sm leading-6 text-slate-300/78">Bu markaz orqali siz Full Academic Database, Exam Simulation, AI Coach va Smart Tracker modullarini bir oqimda boshqarasiz.</p>
+
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <button data-action="switch-section" data-section="academic" class="rounded-[22px] border border-amber-300/16 bg-white/5 p-4 text-left">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/70">Academic</div>
+              <div class="mt-2 text-sm font-semibold text-white">A1-C2 Full Database</div>
+              <div class="mt-2 text-xs text-slate-300/74">Barcha grammatik qoidalar va lug'atlar Premium belgisi bilan ochiq.</div>
+            </button>
+            <button data-action="switch-section" data-section="exam" class="rounded-[22px] border border-amber-300/16 bg-white/5 p-4 text-left">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/70">Exam</div>
+              <div class="mt-2 text-sm font-semibold text-white">IELTS + CEFR Simulation</div>
+              <div class="mt-2 text-xs text-slate-300/74">Reading, writing va speaking bo'yicha to'liq premium tayyorgarlik.</div>
+            </button>
+            <button data-action="switch-section" data-section="ai" class="rounded-[22px] border border-amber-300/16 bg-white/5 p-4 text-left">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/70">Coach</div>
+              <div class="mt-2 text-sm font-semibold text-white">Unlimited AI Coach</div>
+              <div class="mt-2 text-xs text-slate-300/74">Cheksiz kontekstual yordam va strategik feedback.</div>
+            </button>
+            <button data-action="switch-section" data-section="progress" class="rounded-[22px] border border-amber-300/16 bg-white/5 p-4 text-left">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/70">Tracker</div>
+              <div class="mt-2 text-sm font-semibold text-white">Smart Progress Analytics</div>
+              <div class="mt-2 text-xs text-slate-300/74">Murakkab grafiklar, mastery indikatori va personal growth paneli.</div>
+            </button>
+          </div>
+
+          <div class="mt-4 rounded-[24px] border border-amber-300/16 bg-amber-200/10 p-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/75">Mastery Snapshot</div>
+                <div class="mt-2 font-display text-3xl text-white">${mastery}%</div>
+              </div>
+              <div class="h-[82px] w-[82px] rounded-full border border-amber-300/30 grid place-items-center" style="background: conic-gradient(#d4af37 ${Math.round((mastery / 100) * 360)}deg, rgba(255,255,255,0.08) 0deg);">
+                <div class="h-[58px] w-[58px] rounded-full bg-[#050505] grid place-items-center text-xs text-amber-100">Crown</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderLessonQuiz(lesson) {
+      if (!state.lessonQuizStarted) {
+        return `
+          <div class="space-y-3">
+            <div class="rounded-[22px] border border-amber-300/14 bg-white/5 p-4">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Premium Quiz</div>
+              <div class="mt-2 text-sm text-white">Ushbu dars uchun ${lesson.quiz.length} savol tayyor. Yakunda xatolar bo'yicha Crown-level review beriladi.</div>
+            </div>
+            <button data-action="start-lesson-quiz" class="shimmer-gold animate-shimmer w-full rounded-[20px] px-4 py-3 text-sm font-semibold text-black">Quizni boshlash</button>
+          </div>
+        `;
+      }
+
+      if (state.lessonQuizFinished && state.lessonQuizResult) {
+        const result = state.lessonQuizResult;
+        const accuracy = Math.round((result.score / result.total) * 100);
+        return `
+          <div class="space-y-3">
+            <div class="rounded-[22px] border border-amber-300/16 bg-amber-200/10 p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/75">Natija</div>
+                  <div class="mt-2 font-display text-3xl text-white">${result.score}/${result.total}</div>
+                  <div class="mt-2 text-sm text-slate-100">${accuracy >= 85 ? "Mukammal natija. Siz bu mavzuni yuqori darajada egallayapsiz." : "Yaxshi natija. Endi xatolar ustida ishlash orqali yanada kuchayasiz."}</div>
+                </div>
+                <div class="h-[84px] w-[84px] rounded-full border border-amber-300/30 grid place-items-center" style="background: conic-gradient(#d4af37 ${Math.round((accuracy / 100) * 360)}deg, rgba(255,255,255,0.08) 0deg);">
+                  <div class="h-[58px] w-[58px] rounded-full bg-[#0c0c0c] grid place-items-center text-sm text-white">${accuracy}%</div>
+                </div>
+              </div>
+              <button data-action="restart-lesson-quiz" class="mt-4 w-full rounded-[18px] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white">Yana ishlash</button>
+            </div>
+            <div class="rounded-[22px] border border-amber-300/16 bg-white/5 p-4">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Mistake Review</div>
+              <div class="mt-3 space-y-3">
+                ${result.mistakes.length
+                  ? result.mistakes.map((item, idx) => `
+                    <div class="rounded-[18px] border border-rose-300/16 bg-rose-400/8 p-3">
+                      <div class="text-xs text-rose-100/85">Xato ${idx + 1}</div>
+                      <div class="mt-2 text-sm text-white">${escapeHtml(item.prompt)}</div>
+                      <div class="mt-2 text-xs text-slate-200/78">Sizning javobingiz: ${escapeHtml(item.selected)}</div>
+                      <div class="mt-1 text-xs text-slate-200/78">To'g'ri javob: ${escapeHtml(item.correct)}</div>
+                      <div class="mt-2 text-sm text-rose-50">${escapeHtml(item.explanation)}</div>
+                    </div>
+                  `).join("")
+                  : `<div class="rounded-[18px] border border-emerald-300/16 bg-emerald-400/8 p-3 text-sm text-emerald-50">Bu urinishda xato qolmadi. Ajoyib!</div>`}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      const question = currentLessonQuestion();
+      const ready = question.type === "mcq"
+        ? state.lessonSelectedOption !== null
+        : state.lessonReorderAnswer.length === question.answer.length;
+      return `
+        <div class="space-y-3">
+          <div class="rounded-[22px] border border-amber-300/14 bg-white/5 p-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Savol ${state.lessonQuizIndex + 1}/${lesson.quiz.length}</div>
+                <div class="mt-2 text-sm leading-6 text-white">${escapeHtml(question.prompt)}</div>
+              </div>
+              <button data-action="restart-lesson-quiz" class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white">Reset</button>
+            </div>
+            <div class="mt-3 h-2.5 overflow-hidden rounded-full bg-white/8">
+              <div class="spark-bar animate-flowBar h-full rounded-full" style="width:${Math.round(((state.lessonQuizIndex + 1) / lesson.quiz.length) * 100)}%"></div>
+            </div>
+          </div>
+
+          ${question.type === "mcq"
+            ? `<div class="grid gap-3">
+                ${question.options.map((option, index) => `
+                  <button data-action="pick-lesson-option" data-option-index="${index}" data-selected="${state.lessonSelectedOption === index}" class="option-btn rounded-[20px] border border-white/8 bg-white/5 p-4 text-left text-sm text-white transition">
+                    <span class="mr-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xs text-amber-100">${String.fromCharCode(65 + index)}</span>
+                    ${escapeHtml(option)}
+                  </button>
+                `).join("")}
+              </div>`
+            : renderReorderBlock("lesson", question, state.lessonReorderAnswer)}
+
+          <button data-action="next-lesson-question" class="shimmer-gold animate-shimmer w-full rounded-[20px] px-4 py-3 text-sm font-semibold text-black ${ready ? "" : "opacity-40"}">
+            ${state.lessonQuizIndex === lesson.quiz.length - 1 ? "Yakunlash" : "Keyingi savol"}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderReorderBlock(type, question, answerState) {
+      const tokens = question.tokens.map((token, idx) => {
+        const usedCount = answerState.filter((x) => x === token).length;
+        const allowed = question.tokens.slice(0, idx + 1).filter((x) => x === token).length;
+        return { token, disabled: usedCount >= allowed };
+      });
+      return `
+        <div class="space-y-3">
+          <div class="rounded-[20px] border border-white/8 bg-[#101010] p-3">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-xs uppercase tracking-[0.22em] text-amber-100/72">Javob maydoni</div>
+              <div class="flex gap-2">
+                <button data-action="remove-${type}-token" class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-white">Orqaga</button>
+                <button data-action="clear-${type}-reorder" class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-white">Tozalash</button>
+              </div>
+            </div>
+            <div class="mt-3 min-h-[52px] rounded-[16px] border border-dashed border-amber-300/24 bg-amber-200/6 p-2">
+              ${answerState.length
+                ? answerState.map((token) => `<span class="mr-2 mb-2 inline-flex rounded-full bg-white/8 px-3 py-2 text-sm text-white">${escapeHtml(token)}</span>`).join("")
+                : `<div class="px-2 py-2 text-sm text-slate-300/70">So'zlarni to'g'ri tartibda joylashtiring.</div>`}
+            </div>
+          </div>
+          <div class="rounded-[20px] border border-white/8 bg-white/5 p-3">
+            <div class="text-xs uppercase tracking-[0.22em] text-amber-100/72">Word bank</div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              ${tokens.map(({ token, disabled }) => `
+                <button data-action="add-${type}-token" data-token="${escapeHtml(token)}" data-disabled="${disabled}" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-white ${disabled ? "opacity-40" : ""}">
+                  ${escapeHtml(token)}
+                </button>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLessonDetail() {
+      const lesson = currentLesson();
+      if (!lesson) return "";
+      const level = levelMap[lesson.levelId];
+      return `
+        <section class="royal-card rounded-[30px] p-4 shadow-royal view-fast">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">${escapeHtml(level.id)} • ${escapeHtml(level.title)} • ${escapeHtml(level.crown)}</div>
+              <h4 class="mt-2 font-display text-2xl text-white">${escapeHtml(lesson.title)}</h4>
+              <p class="mt-2 text-sm leading-6 text-slate-300/78">${escapeHtml(lesson.summary)}</p>
+            </div>
+            <div class="flex gap-2">
+              <button data-action="close-lesson" class="rounded-[16px] border border-white/10 bg-white/5 px-3 py-2 text-sm text-white">Yopish</button>
+            </div>
+          </div>
+
+          <div class="mt-4 flex gap-2 rounded-[20px] border border-white/8 bg-white/5 p-1">
+            <button data-action="switch-lesson-tab" data-tab="learn" class="flex-1 rounded-[14px] px-3 py-2 text-sm ${state.lessonTab === "learn" ? "shimmer-gold animate-shimmer text-black" : "text-slate-200"}">Darsni o'rganish</button>
+            <button data-action="switch-lesson-tab" data-tab="quiz" class="flex-1 rounded-[14px] px-3 py-2 text-sm ${state.lessonTab === "quiz" ? "shimmer-gold animate-shimmer text-black" : "text-slate-200"}">Bilimni tekshirish</button>
+          </div>
+
+          <div class="mt-4">
+            ${state.lessonTab === "learn"
+              ? `<div class="space-y-3">
+                  <div class="rounded-[22px] border border-amber-300/14 bg-white/5 p-4">
+                    <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Maqsad</div>
+                    <div class="mt-2 text-sm leading-6 text-white">${escapeHtml(lesson.learn.goal)}</div>
+                  </div>
+                  <div class="grid gap-3">
+                    ${lesson.learn.principles.map((item, idx) => `
+                      <div class="rounded-[20px] border border-white/8 bg-[#111111] p-4">
+                        <div class="text-[10px] uppercase tracking-[0.22em] text-amber-100/72">Prinsip ${idx + 1}</div>
+                        <div class="mt-2 text-sm leading-6 text-slate-100">${escapeHtml(item)}</div>
+                      </div>
+                    `).join("")}
+                  </div>
+                  <div class="rounded-[22px] border border-white/8 bg-white/5 p-4">
+                    <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Misollar</div>
+                    <div class="mt-3 grid gap-2">
+                      ${lesson.learn.examples.map((ex) => `<div class="rounded-[16px] border border-amber-300/14 bg-amber-200/8 px-3 py-3 text-sm text-white">${escapeHtml(ex)}</div>`).join("")}
+                    </div>
+                  </div>
+                  <div class="rounded-[22px] border border-white/8 bg-white/5 p-4">
+                    <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Video + PDF</div>
+                    <div class="mt-2 text-sm text-slate-200/80">${escapeHtml(lesson.learn.videoPlaceholder)}</div>
+                    <div class="mt-3 grid grid-cols-2 gap-2">
+                      ${lesson.learn.pdfs.map((pdf) => `
+                        <button data-action="download-pdf" data-name="${escapeHtml(pdf)}" class="rounded-[14px] border border-amber-300/14 bg-amber-200/10 px-3 py-2 text-left text-xs text-white">
+                          ${escapeHtml(pdf)}
+                        </button>
+                      `).join("")}
+                    </div>
+                  </div>
+                </div>`
+              : renderLessonQuiz(lesson)}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAcademic() {
+      const level = currentLevel();
+      const lessons = getFilteredLessons();
+      return `
+        <section class="royal-card rounded-[30px] p-4 shadow-royal view-fast">
+          <div class="text-[10px] uppercase tracking-[0.30em] text-amber-100/70">Full Academic Database</div>
+          <h3 class="mt-2 font-display text-2xl text-white">A1-C2 Crown Curriculum</h3>
+          <p class="mt-2 text-sm leading-6 text-slate-300/78">Barcha darajalar, barcha grammatik qoidalar va lug'at bo'limlari to'liq Premium holatda ochiq.</p>
+
+          <div class="mt-3">
+            <input id="searchInput" value="${escapeHtml(state.search)}" placeholder="Grammar, vocab, lesson yoki level bo'yicha qidiring..." class="w-full rounded-[18px] border border-white/8 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400/70 focus:border-amber-300/30 focus:bg-amber-200/8" />
+          </div>
+
+          <div class="chips-scroll mt-4 flex gap-2 overflow-x-auto pb-1">
+            ${CROWN_DATABASE.levels.map((item) => `
+              <button data-action="select-level" data-level-id="${item.id}" class="min-w-[90px] rounded-full border px-4 py-2 text-sm ${state.levelId === item.id ? "shimmer-gold animate-shimmer border-amber-300/50 text-black" : "border-white/8 bg-white/5 text-slate-200"}">
+                ${escapeHtml(item.id)}
+              </button>
+            `).join("")}
+          </div>
+
+          <div class="mt-4 rounded-[24px] border border-amber-300/14 bg-amber-200/8 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">${escapeHtml(level.id)} • ${escapeHtml(level.crown)}</div>
+                <div class="mt-2 font-display text-xl text-white">${escapeHtml(level.title)}</div>
+                <div class="mt-2 text-sm leading-6 text-slate-100">${escapeHtml(level.overview)}</div>
+              </div>
+              <div class="rounded-full border border-amber-300/24 bg-[#050505]/70 px-3 py-1 text-xs text-amber-100">Premium unlocked</div>
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-[22px] border border-white/8 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Grammatik qoidalar</div>
+            <div class="mt-3 grid gap-2">
+              ${level.grammar.map((item) => `
+                <div class="rounded-[16px] border border-white/8 bg-[#101010] px-3 py-3">
+                  <div class="text-sm font-semibold text-white">${escapeHtml(item.topic)}</div>
+                  <div class="mt-1 text-xs text-amber-100/80">${escapeHtml(item.formula)}</div>
+                  <div class="mt-1 text-xs text-slate-300/76">${escapeHtml(item.note)}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-[22px] border border-white/8 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Lug'at banki</div>
+            <div class="mt-3 grid gap-3">
+              ${level.vocabulary.map((item) => `
+                <div class="rounded-[16px] border border-amber-300/14 bg-amber-200/8 p-3">
+                  <div class="text-xs uppercase tracking-[0.20em] text-amber-100/75">${escapeHtml(item.domain)}</div>
+                  <div class="mt-2 flex flex-wrap gap-2">
+                    ${item.words.map((word) => `<span class="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white">${escapeHtml(word)}</span>`).join("")}
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-sm font-semibold text-white">${state.search ? "Qidiruv natijalari" : "Premium darslar"}</div>
+              <div class="text-xs text-slate-300/74">${lessons.length} ta</div>
+            </div>
+            <div class="scroll-slim mt-3 max-h-[34vh] space-y-3 overflow-y-auto pr-1">
+              ${lessons.map((lesson) => `
+                <button data-action="open-lesson" data-lesson-id="${lesson.id}" class="w-full rounded-[20px] border border-white/8 bg-white/5 p-4 text-left">
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <div class="text-[10px] uppercase tracking-[0.22em] text-amber-100/72">${escapeHtml(lesson.levelTitle)} • Premium</div>
+                      <div class="mt-2 text-sm font-semibold text-white">${escapeHtml(lesson.title)}</div>
+                      <div class="mt-2 text-xs text-slate-300/76">${escapeHtml(lesson.summary)}</div>
+                    </div>
+                    <div class="rounded-full border border-amber-300/20 bg-amber-200/10 px-2 py-1 text-[10px] text-amber-100">Open</div>
+                  </div>
+                </button>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+        ${state.selectedLessonId ? renderLessonDetail() : ""}
+      `;
+    }
+
+    function renderExamReading() {
+      const reading = currentExamTrackData().reading;
+      if (state.examFinished && state.examResult) {
+        const result = state.examResult;
+        const acc = Math.round((result.score / result.total) * 100);
+        return `
+          <div class="space-y-3">
+            <div class="rounded-[22px] border border-amber-300/14 bg-amber-200/10 p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Reading Result</div>
+                  <div class="mt-2 font-display text-3xl text-white">${result.score}/${result.total}</div>
+                  <div class="mt-2 text-sm text-slate-100">${acc >= 80 ? "Excellent. Siz matn signalini kuchli ushlab turibsiz." : "Yaxshi. Endi passage signal so'zlariga ko'proq e'tibor qarating."}</div>
+                </div>
+                <div class="h-[78px] w-[78px] rounded-full border border-amber-300/30 grid place-items-center" style="background: conic-gradient(#d4af37 ${Math.round((acc / 100) * 360)}deg, rgba(255,255,255,0.08) 0deg);">
+                  <div class="h-[54px] w-[54px] rounded-full bg-[#0d0d0d] grid place-items-center text-xs text-white">${acc}%</div>
+                </div>
+              </div>
+              <button data-action="restart-exam-reading" class="mt-4 w-full rounded-[18px] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white">Readingni qayta ishlash</button>
+            </div>
+            <div class="rounded-[22px] border border-white/8 bg-white/5 p-4">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Sharh</div>
+              <div class="mt-3 space-y-3">
+                ${result.review.map((item, idx) => `
+                  <div class="rounded-[16px] border ${item.isCorrect ? "border-emerald-300/16 bg-emerald-400/8" : "border-rose-300/16 bg-rose-400/8"} p-3">
+                    <div class="text-xs text-white">${idx + 1}. ${escapeHtml(item.prompt)}</div>
+                    <div class="mt-1 text-xs text-slate-200/78">Siz: ${escapeHtml(item.selected)}</div>
+                    <div class="mt-1 text-xs text-slate-200/78">To'g'ri: ${escapeHtml(item.correct)}</div>
+                    <div class="mt-2 text-xs text-slate-100">${escapeHtml(item.explanation)}</div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      const question = currentExamQuestion();
+      return `
+        <div class="space-y-3">
+          <div class="rounded-[22px] border border-amber-300/14 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">${escapeHtml(reading.title)}</div>
+            <p class="mt-2 text-sm leading-6 text-slate-100">${escapeHtml(reading.passage)}</p>
+          </div>
+
+          <div class="rounded-[22px] border border-white/8 bg-[#101010] p-4">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-sm text-white">Savol ${state.examIndex + 1}/${reading.questions.length}</div>
+              <div class="text-xs text-amber-100/75">${state.examTrack.toUpperCase()}</div>
+            </div>
+            <div class="mt-2 text-sm leading-6 text-white">${escapeHtml(question.prompt)}</div>
+            <div class="mt-3 grid gap-2">
+              ${question.options.map((option, idx) => `
+                <button data-action="pick-exam-option" data-option-index="${idx}" class="rounded-[16px] border border-white/8 bg-white/5 px-3 py-3 text-left text-sm text-white">
+                  <span class="mr-2 text-amber-100">${String.fromCharCode(65 + idx)}.</span>${escapeHtml(option)}
+                </button>
+              `).join("")}
+            </div>
+            <div class="mt-3 h-2.5 overflow-hidden rounded-full bg-white/8">
+              <div class="spark-bar animate-flowBar h-full rounded-full" style="width:${Math.round(((state.examIndex + 1) / reading.questions.length) * 100)}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExamWriting() {
+      const writing = currentExamTrackData().writing;
+      return `
+        <div class="space-y-3">
+          <div class="rounded-[22px] border border-amber-300/14 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Writing Simulation</div>
+            <div class="mt-3 space-y-3">
+              ${writing.tasks.map((task, idx) => `
+                <div class="rounded-[16px] border border-white/8 bg-[#101010] px-3 py-3 text-sm text-white">
+                  <div class="text-[10px] uppercase tracking-[0.22em] text-amber-100/72">Task ${idx + 1}</div>
+                  <div class="mt-2 leading-6">${escapeHtml(task)}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+          <div class="rounded-[22px] border border-white/8 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Band guidance</div>
+            <div class="mt-2 grid gap-2">
+              ${writing.bandHints.map((hint) => `<div class="rounded-[14px] border border-amber-300/14 bg-amber-200/8 px-3 py-2 text-sm text-slate-100">${escapeHtml(hint)}</div>`).join("")}
+            </div>
+            <button data-action="submit-writing-practice" class="mt-4 w-full rounded-[18px] shimmer-gold animate-shimmer px-4 py-3 text-sm font-semibold text-black">Writing mashqini yakunlangan deb belgilash</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExamSpeaking() {
+      const speaking = currentExamTrackData().speaking;
+      return `
+        <div class="space-y-3">
+          <div class="rounded-[22px] border border-amber-300/14 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Speaking Topics</div>
+            <div class="mt-3 grid gap-2">
+              ${speaking.topics.map((topic, idx) => `<div class="rounded-[14px] border border-white/8 bg-[#101010] px-3 py-3 text-sm text-white">${idx + 1}. ${escapeHtml(topic)}</div>`).join("")}
+            </div>
+          </div>
+          <div class="rounded-[22px] border border-white/8 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Elite speaking tips</div>
+            <div class="mt-2 grid gap-2">
+              ${speaking.eliteTips.map((tip) => `<div class="rounded-[14px] border border-amber-300/14 bg-amber-200/8 px-3 py-2 text-sm text-slate-100">${escapeHtml(tip)}</div>`).join("")}
+            </div>
+            <button data-action="submit-speaking-practice" class="mt-4 w-full rounded-[18px] shimmer-gold animate-shimmer px-4 py-3 text-sm font-semibold text-black">Speaking mashqini yakunlangan deb belgilash</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExamCenter() {
+      const track = currentExamTrackData();
+      return `
+        <section class="royal-card rounded-[30px] p-4 shadow-royal view-fast">
+          <div class="text-[10px] uppercase tracking-[0.30em] text-amber-100/70">Exam Simulation Center</div>
+          <h3 class="mt-2 font-display text-2xl text-white">IELTS va CEFR to'liq simulyatsiya</h3>
+          <p class="mt-2 text-sm leading-6 text-slate-300/78">Reading, writing va speaking bo'limlari bo'yicha premium sinovlar bilan real imtihon rejimiga tayyorlaning.</p>
+
+          <div class="mt-4 flex gap-2 rounded-[20px] border border-white/8 bg-white/5 p-1">
+            <button data-action="switch-exam-track" data-track="ielts" class="flex-1 rounded-[14px] px-3 py-2 text-sm ${state.examTrack === "ielts" ? "shimmer-gold animate-shimmer text-black" : "text-slate-200"}">IELTS</button>
+            <button data-action="switch-exam-track" data-track="cefr" class="flex-1 rounded-[14px] px-3 py-2 text-sm ${state.examTrack === "cefr" ? "shimmer-gold animate-shimmer text-black" : "text-slate-200"}">CEFR</button>
+          </div>
+
+          <div class="mt-3 flex gap-2 rounded-[20px] border border-white/8 bg-white/5 p-1">
+            <button data-action="switch-exam-part" data-part="reading" class="flex-1 rounded-[14px] px-3 py-2 text-sm ${state.examPart === "reading" ? "bg-amber-200/18 text-white" : "text-slate-200"}">Reading</button>
+            <button data-action="switch-exam-part" data-part="writing" class="flex-1 rounded-[14px] px-3 py-2 text-sm ${state.examPart === "writing" ? "bg-amber-200/18 text-white" : "text-slate-200"}">Writing</button>
+            <button data-action="switch-exam-part" data-part="speaking" class="flex-1 rounded-[14px] px-3 py-2 text-sm ${state.examPart === "speaking" ? "bg-amber-200/18 text-white" : "text-slate-200"}">Speaking</button>
+          </div>
+
+          <div class="mt-4">
+            ${state.examPart === "reading" ? renderExamReading() : state.examPart === "writing" ? renderExamWriting() : renderExamSpeaking()}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAICoach() {
+      const prompts = CROWN_DATABASE.aiCoach.promptStarters;
+      return `
+        <section class="royal-card rounded-[30px] p-4 shadow-royal view-fast">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.30em] text-amber-100/70">Unlimited AI Coach</div>
+              <h3 class="mt-2 font-display text-2xl text-white">Cheksiz kontekstual yordam</h3>
+            </div>
+            <div class="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-100">Unlimited</div>
+          </div>
+
+          <div class="chips-scroll mt-4 flex gap-2 overflow-x-auto pb-1">
+            ${prompts.map((prompt) => `
+              <button data-action="ai-prompt" data-prompt="${escapeHtml(prompt)}" class="rounded-full border border-amber-300/14 bg-amber-200/10 px-3 py-2 text-xs text-amber-100">
+                ${escapeHtml(prompt)}
+              </button>
+            `).join("")}
+          </div>
+
+          <div class="scroll-slim mt-4 max-h-[42vh] space-y-3 overflow-y-auto pr-1">
+            ${state.aiMessages.map((msg) => `
+              <div class="${msg.role === "user" ? "ml-8 border-amber-300/16 bg-amber-200/10" : "mr-8 border-white/8 bg-white/5"} rounded-[20px] border p-3">
+                <div class="text-[10px] uppercase tracking-[0.24em] ${msg.role === "user" ? "text-amber-100/72" : "text-slate-300/75"}">${msg.role === "user" ? "Siz" : "Crown AI"}</div>
+                <div class="mt-2 text-sm leading-6 text-white">${escapeHtml(msg.text)}</div>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="mt-4 rounded-[20px] border border-white/8 bg-white/5 p-3">
+            <textarea id="aiInput" class="h-24 w-full resize-none bg-transparent text-sm leading-6 text-white outline-none placeholder:text-slate-400/70" placeholder="Savolingizni yozing: grammar, exam, speaking, strategy...">${escapeHtml(state.aiDraft)}</textarea>
+            <div class="mt-3 flex gap-3">
+              <button data-action="send-ai" class="flex-1 rounded-[16px] shimmer-gold animate-shimmer px-4 py-3 text-sm font-semibold text-black">Yuborish</button>
+              <button data-action="clear-ai" class="flex-1 rounded-[16px] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white">Tozalash</button>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderProgressTracker() {
+      const mastery = computeMastery();
+      const skill = computeSkillScores();
+      const avgExam = state.progress.totalExamQuestions
+        ? Math.round((state.progress.totalExamScore / state.progress.totalExamQuestions) * 100)
+        : 0;
+      const weekly = CROWN_DATABASE.progressBlueprint.weeklyHours.map((item, idx) => {
+        const plus = Math.min(4, Math.floor(state.progress.lessonCompletions / 3));
+        return item + plus + (idx === 6 ? Math.min(3, state.progress.examAttempts) : 0);
+      });
+      const maxWeekly = Math.max(...weekly, 1);
+
+      return `
+        <section class="royal-card rounded-[30px] p-4 shadow-royal view-fast">
+          <div class="text-[10px] uppercase tracking-[0.30em] text-amber-100/70">Smart Progress Tracker</div>
+          <h3 class="mt-2 font-display text-2xl text-white">Murakkab statistik tahlil</h3>
+          <p class="mt-2 text-sm leading-6 text-slate-300/78">Bu bo'lim sizning o'zlashtirish darajangiz, skill kesimi va haftalik trendlaringizni Crown-level vizual orqali ko'rsatadi.</p>
+
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="rounded-[22px] border border-amber-300/14 bg-amber-200/10 p-4">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Overall Mastery</div>
+              <div class="mt-3 flex items-center justify-between gap-3">
+                <div class="font-display text-4xl text-white">${mastery}%</div>
+                <div class="h-[84px] w-[84px] rounded-full border border-amber-300/30 grid place-items-center" style="background: conic-gradient(#d4af37 ${Math.round((mastery / 100) * 360)}deg, rgba(255,255,255,0.08) 0deg);">
+                  <div class="h-[58px] w-[58px] rounded-full bg-[#080808] grid place-items-center text-xs text-amber-100">Crown</div>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-[22px] border border-amber-300/14 bg-white/5 p-4">
+              <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Core Metrics</div>
+              <div class="mt-3 space-y-2 text-sm text-white">
+                <div class="flex justify-between"><span>Lesson completions</span><span>${state.progress.lessonCompletions}</span></div>
+                <div class="flex justify-between"><span>Exam attempts</span><span>${state.progress.examAttempts}</span></div>
+                <div class="flex justify-between"><span>AI coaching sessions</span><span>${state.progress.aiSessions}</span></div>
+                <div class="flex justify-between"><span>Daily streak</span><span>${state.progress.streak} kun</span></div>
+                <div class="flex justify-between"><span>Exam accuracy</span><span>${avgExam}%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-[22px] border border-white/8 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Skill Intelligence Bars</div>
+            <div class="mt-3 space-y-3">
+              ${Object.entries(skill).map(([name, score]) => `
+                <div>
+                  <div class="flex items-center justify-between gap-3 text-sm text-white">
+                    <span>${escapeHtml(name)}</span>
+                    <span>${score}%</span>
+                  </div>
+                  <div class="mt-2 h-2.5 overflow-hidden rounded-full bg-white/8">
+                    <div class="spark-bar animate-flowBar h-full rounded-full" style="width:${score}%"></div>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-[22px] border border-white/8 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-[0.24em] text-amber-100/72">Weekly Crown Activity</div>
+            <div class="mt-4 flex h-[140px] items-end justify-between gap-2">
+              ${weekly.map((value, idx) => `
+                <div class="flex-1 text-center">
+                  <div class="mx-auto w-full max-w-[28px] rounded-t-[10px] spark-bar animate-flowBar" style="height:${Math.max(18, Math.round((value / maxWeekly) * 120))}px"></div>
+                  <div class="mt-2 text-[10px] text-slate-300/72">K${idx + 1}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderToast() {
+      if (!state.toast) return "";
+      return `<div class="royal-card rounded-[20px] px-4 py-3 text-sm text-white view-fast">${escapeHtml(state.toast)}</div>`;
+    }
+
+    function renderMainSection() {
+      if (state.section === "academic") return renderAcademic();
+      if (state.section === "exam") return renderExamCenter();
+      if (state.section === "ai") return renderAICoach();
+      if (state.section === "progress") return renderProgressTracker();
+      return renderHub();
+    }
+
+    function render() {
+      syncTelegram();
+      app.innerHTML = `
+        <main class="relative z-10 mx-auto flex min-h-screen w-full max-w-[450px] flex-col gap-4 px-4 pb-[calc(var(--safe-bottom)+22px)] pt-[calc(var(--safe-top)+14px)]">
+          ${renderHeader()}
+          ${renderLimits()}
+          ${renderQuickNav()}
+          ${renderMainSection()}
+          ${renderToast()}
+        </main>
+      `;
+
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.addEventListener("input", (event) => {
+          state.search = event.target.value;
+          render();
+        });
+      }
+
+      const aiInput = document.getElementById("aiInput");
+      if (aiInput) {
+        aiInput.addEventListener("input", (event) => {
+          state.aiDraft = event.target.value;
+        });
+      }
+    }
+
+    app.addEventListener("click", (event) => {
+      const actionTarget = event.target.closest("[data-action]");
+      if (!actionTarget) return;
+      const action = actionTarget.dataset.action;
+
+      if (action === "switch-section") {
+        const section = actionTarget.dataset.section;
+        setState({ section, toast: "" });
+        return;
+      }
+
+      if (action === "select-level") {
+        const levelId = actionTarget.dataset.levelId;
+        setState({
+          levelId,
+          search: "",
+          selectedLessonId: null,
+          toast: "",
+        });
+        return;
+      }
+
+      if (action === "open-lesson") {
+        openLesson(actionTarget.dataset.lessonId);
+        return;
+      }
+
+      if (action === "close-lesson") {
+        closeLessonDetail();
+        return;
+      }
+
+      if (action === "switch-lesson-tab") {
+        setState({ lessonTab: actionTarget.dataset.tab, toast: "" });
+        return;
+      }
+
+      if (action === "download-pdf") {
+        setState({ toast: `${actionTarget.dataset.name} uchun premium yuklab olish vizual tugmasi bosildi.` });
+        return;
+      }
+
+      if (action === "start-lesson-quiz") {
+        setState({
+          lessonQuizStarted: true,
+          lessonQuizIndex: 0,
+          lessonSelectedOption: null,
+          lessonReorderAnswer: [],
+          lessonAnswers: [],
+          lessonQuizFinished: false,
+          lessonQuizResult: null,
+          toast: "",
+        });
+        return;
+      }
+
+      if (action === "restart-lesson-quiz") {
+        setState({
+          lessonQuizStarted: true,
+          lessonQuizIndex: 0,
+          lessonSelectedOption: null,
+          lessonReorderAnswer: [],
+          lessonAnswers: [],
+          lessonQuizFinished: false,
+          lessonQuizResult: null,
+          toast: "",
+        });
+        return;
+      }
+
+      if (action === "pick-lesson-option") {
+        setState({ lessonSelectedOption: Number(actionTarget.dataset.optionIndex), toast: "" });
+        return;
+      }
+
+      if (action === "add-lesson-token") {
+        if (actionTarget.dataset.disabled === "true") return;
+        setState({
+          lessonReorderAnswer: [...state.lessonReorderAnswer, actionTarget.textContent.trim()],
+          toast: "",
+        });
+        return;
+      }
+
+      if (action === "remove-lesson-token") {
+        setState({
+          lessonReorderAnswer: state.lessonReorderAnswer.slice(0, -1),
+          toast: "",
+        });
+        return;
+      }
+
+      if (action === "clear-lesson-reorder") {
+        setState({ lessonReorderAnswer: [], toast: "" });
+        return;
+      }
+
+      if (action === "next-lesson-question") {
+        const lesson = currentLesson();
+        const question = currentLessonQuestion();
+        const ready = question.type === "mcq"
+          ? state.lessonSelectedOption !== null
+          : state.lessonReorderAnswer.length === question.answer.length;
+        if (!ready) return;
+
+        const answer = question.type === "mcq" ? state.lessonSelectedOption : [...state.lessonReorderAnswer];
+        const nextAnswers = [...state.lessonAnswers];
+        nextAnswers[state.lessonQuizIndex] = answer;
+
+        if (state.lessonQuizIndex === lesson.quiz.length - 1) {
+          state.lessonAnswers = nextAnswers;
+          finishLessonQuiz();
+          return;
+        }
+
+        setState({
+          lessonAnswers: nextAnswers,
+          lessonQuizIndex: state.lessonQuizIndex + 1,
+          lessonSelectedOption: null,
+          lessonReorderAnswer: [],
+          toast: "",
+        });
+        return;
+      }
+
+      if (action === "switch-exam-track") {
+        const track = actionTarget.dataset.track;
+        resetExamReading();
+        setState({ examTrack: track, examPart: "reading", toast: "" });
+        return;
+      }
+
+      if (action === "switch-exam-part") {
+        setState({ examPart: actionTarget.dataset.part, toast: "" });
+        return;
+      }
+
+      if (action === "pick-exam-option") {
+        const nextAnswers = [...state.examAnswers];
+        nextAnswers[state.examIndex] = Number(actionTarget.dataset.optionIndex);
+        const reading = currentExamTrackData().reading;
+        if (state.examIndex === reading.questions.length - 1) {
+          state.examAnswers = nextAnswers;
+          finishExamReading();
+          return;
+        }
+        setState({
+          examAnswers: nextAnswers,
+          examIndex: state.examIndex + 1,
+          toast: "",
+        });
+        return;
+      }
+
+      if (action === "restart-exam-reading") {
+        resetExamReading();
+        setState({ toast: "" });
+        return;
+      }
+
+      if (action === "submit-writing-practice") {
+        recordProgress({
+          examAttempts: state.progress.examAttempts + 1,
+          masteryBoost: state.progress.masteryBoost + 1,
+        });
+        sendToBot(
+          {
+            type: "premium_exam_writing_practice",
+            track: state.examTrack,
+            date: TODAY,
+          },
+          "Writing practice yakunlangani botga yuborildi."
+        );
+        render();
+        return;
+      }
+
+      if (action === "submit-speaking-practice") {
+        recordProgress({
+          examAttempts: state.progress.examAttempts + 1,
+          masteryBoost: state.progress.masteryBoost + 1,
+        });
+        sendToBot(
+          {
+            type: "premium_exam_speaking_practice",
+            track: state.examTrack,
+            date: TODAY,
+          },
+          "Speaking practice yakunlangani botga yuborildi."
+        );
+        render();
+        return;
+      }
+
+      if (action === "ai-prompt") {
+        sendAICoachMessage(actionTarget.dataset.prompt || "");
+        return;
+      }
+
+      if (action === "send-ai") {
+        sendAICoachMessage(state.aiDraft);
+        return;
+      }
+
+      if (action === "clear-ai") {
+        setState({
+          aiDraft: "",
+          aiMessages: [{ role: "assistant", text: CROWN_DATABASE.aiCoach.greeting }],
+          toast: "AI chat yangilandi.",
+        });
+      }
+    });
+
+    document.addEventListener(
+      "click",
+      (event) => {
+        if (event.target.closest("button")) {
+          hapticImpact("light");
+        }
+      },
+      true
+    );
+
+    render();
+  </script>
+</body>
+</html>

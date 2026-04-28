@@ -12,6 +12,63 @@ from aiogram.types import (
 
 from src.config import settings
 
+PLAN_ORDER = ("free", "standard", "pro", "premium")
+PLAN_LABELS = {
+    "free": "Free",
+    "standard": "Standard",
+    "pro": "Pro",
+    "premium": "Premium",
+}
+
+
+def normalize_plan_name(plan_name: str = "free") -> str:
+    plan = (plan_name or "free").strip().lower()
+    return plan if plan in PLAN_ORDER else "free"
+
+
+def resolve_webapp_url(plan_name: str = "free") -> str:
+    """Resolve plan-specific WebApp URL with graceful fallback."""
+    plan = normalize_plan_name(plan_name)
+    plan_url_map = {
+        "free": settings.WEB_APP_URL_FREE,
+        "standard": settings.WEB_APP_URL_STANDARD,
+        "pro": settings.WEB_APP_URL_PRO,
+        "premium": settings.WEB_APP_URL_PREMIUM,
+    }
+    url = plan_url_map.get(plan) or settings.WEB_APP_URL
+    return (url or "").strip()
+
+
+def resolve_materials_launch(plan_name: str = "free") -> tuple[str, str]:
+    """Resolve the hosted materials URL with a safe fallback to lower tiers."""
+    plan = normalize_plan_name(plan_name)
+    plan_url_map = {
+        "free": settings.MATERIALS_URL_FREE,
+        "standard": settings.MATERIALS_URL_STANDARD,
+        "pro": settings.MATERIALS_URL_PRO,
+        "premium": settings.MATERIALS_URL_PREMIUM,
+    }
+
+    direct_url = (plan_url_map.get(plan) or "").strip()
+    if direct_url:
+        return direct_url, plan
+
+    generic_url = (settings.MATERIALS_URL or "").strip()
+    if generic_url:
+        return generic_url, plan
+
+    plan_index = PLAN_ORDER.index(plan)
+    for candidate in reversed(PLAN_ORDER[:plan_index]):
+        fallback_url = (plan_url_map.get(candidate) or "").strip()
+        if fallback_url:
+            return fallback_url, candidate
+
+    return "", plan
+
+
+def resolve_materials_url(plan_name: str = "free") -> str:
+    return resolve_materials_launch(plan_name)[0]
+
 
 def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboardMarkup:
     """Build the main user reply keyboard based on plan and role."""
@@ -21,12 +78,13 @@ def user_main_menu(plan_name: str = "free", role: str = "user") -> ReplyKeyboard
         [KeyboardButton(text="⚙️ Qo'shimcha")],
     ]
 
-    if settings.WEB_APP_URL:
+    webapp_url = resolve_webapp_url(plan_name)
+    if webapp_url:
         rows.append(
             [
                 KeyboardButton(
                     text="📱 Ilovani ochish",
-                    web_app=WebAppInfo(url=settings.WEB_APP_URL),
+                    web_app=WebAppInfo(url=webapp_url),
                 )
             ]
         )
@@ -47,6 +105,7 @@ def edu_menu() -> ReplyKeyboardMarkup:
             [KeyboardButton(text="✅ Tekshirish"), KeyboardButton(text="🌐 Tarjima")],
             [KeyboardButton(text="🔊 Talaffuz"), KeyboardButton(text="📚 Darslar")],
             [KeyboardButton(text="📖 Grammatika"), KeyboardButton(text="🗓 Kunlik so'z")],
+            [KeyboardButton(text="🧩 Materiallar")],
             [KeyboardButton(text="📚 Kutubxona"), KeyboardButton(text="💡 Evrika")],
             [KeyboardButton(text="🔙 Asosiy Menyu")],
         ],
@@ -129,6 +188,7 @@ USER_MENU_ALIASES = {
     "settings": ["⚙️ Sozlamalar", "⚙️ Settings", "settings", "sozlamalar"],
     "help": ["ℹ️ Yordam", "ℹ️ Aloqa", "help", "yordam", "aloqa"],
     "iq_test": ["🧠 IQ Test", "iq test"],
+    "materials": ["🧩 Materiallar", "materiallar", "materials"],
     "library": ["📚 Kutubxona"],
     "evrika": ["💡 Evrika"],
     "zakovat": ["🧠 Zakovat"],

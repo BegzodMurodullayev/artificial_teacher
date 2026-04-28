@@ -52,6 +52,40 @@ async def safe_reply(
         return None
 
 
+def _strip_html_tags(text: str) -> str:
+    return re.sub(r"<[^>]+>", "", text)
+
+
+async def _safe_send_fallback(
+    target: Message | CallbackQuery,
+    text: str,
+    *,
+    parse_mode: Optional[str] = "HTML",
+    reply_markup=None,
+) -> Optional[Message]:
+    """Fallback send when edit fails (old/inline message)."""
+    try:
+        if isinstance(target, CallbackQuery):
+            chat_id = target.message.chat.id if target.message else (target.from_user.id if target.from_user else None)
+            if not chat_id:
+                return None
+            return await target.bot.send_message(
+                chat_id=chat_id,
+                text=text,
+                parse_mode=parse_mode,
+                reply_markup=reply_markup,
+                disable_web_page_preview=True,
+            )
+        return await target.answer(
+            text,
+            parse_mode=parse_mode,
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+        )
+    except Exception:
+        return None
+
+
 async def safe_edit(
     target: Message | CallbackQuery,
     text: str,
@@ -67,6 +101,12 @@ async def safe_edit(
                     parse_mode=parse_mode,
                     reply_markup=reply_markup,
                 )
+            return await _safe_send_fallback(
+                target,
+                text,
+                parse_mode=parse_mode,
+                reply_markup=reply_markup,
+            )
         else:
             return await target.edit_text(
                 text,
@@ -77,25 +117,40 @@ async def safe_edit(
         if "message is not modified" in str(e):
             return None
         logger.warning("safe_edit error: %s", e)
+        clean_text = _strip_html_tags(text)
         try:
-            import re
-            clean_text = re.sub(r'<[^>]+>', '', text)
             if isinstance(target, CallbackQuery):
                 if target.message:
                     return await target.message.edit_text(
                         clean_text,
                         reply_markup=reply_markup,
                     )
+                return await _safe_send_fallback(
+                    target,
+                    clean_text,
+                    parse_mode=None,
+                    reply_markup=reply_markup,
+                )
             else:
                 return await target.edit_text(
                     clean_text,
                     reply_markup=reply_markup,
                 )
         except Exception:
-            return None
+            return await _safe_send_fallback(
+                target,
+                clean_text,
+                parse_mode=None,
+                reply_markup=reply_markup,
+            )
     except Exception as e:
         logger.exception("Unexpected error in safe_edit: %s", e)
-        return None
+        return await _safe_send_fallback(
+            target,
+            _strip_html_tags(text),
+            parse_mode=None,
+            reply_markup=reply_markup,
+        )
     return None
 
 

@@ -10,13 +10,17 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, WebAppInfo
 
 from src.bot.keyboards.user_menu import (
+    PLAN_LABELS,
     USER_MENU_ALIASES,
     edu_menu,
     extra_menu,
     games_menu,
     grammar_rules_keyboard,
     lesson_topics_keyboard,
+    normalize_plan_name,
     resolve_menu_action,
+    resolve_materials_launch,
+    resolve_webapp_url,
     test_menu,
     user_main_menu,
     cabinet_menu,
@@ -26,6 +30,10 @@ from src.database.dao import subscription_dao
 
 logger = logging.getLogger(__name__)
 router = Router(name="menu_dispatch")
+
+
+def _plan_display_name(plan_name: str) -> str:
+    return PLAN_LABELS.get(normalize_plan_name(plan_name), "Free")
 
 
 def _is_admin(db_user: dict | None, user_id: int) -> bool:
@@ -89,20 +97,63 @@ async def _send_daily_word(message: Message, user_id: int) -> None:
     await safe_edit(placeholder, text)
 
 
-async def _send_webapp_entry(message: Message, title: str, body: str, path: str, button_text: str) -> None:
-    from src.config import settings
-
-    if not settings.WEB_APP_URL:
+async def _send_webapp_entry(
+    message: Message,
+    title: str,
+    body: str,
+    path: str,
+    button_text: str,
+    plan_name: str = "free",
+) -> None:
+    web_app_url = resolve_webapp_url(plan_name)
+    if not web_app_url:
         await safe_reply(message, "⚠️ WebApp hozircha ulanmagan.")
         return
 
-    base = settings.WEB_APP_URL.rstrip("/")
+    base = web_app_url.rstrip("/")
+    route = path if path.startswith("/") else f"/{path}"
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=button_text, web_app=WebAppInfo(url=f"{base}{path}"))]
+            [InlineKeyboardButton(text=button_text, web_app=WebAppInfo(url=f"{base}{route}"))]
         ]
     )
     await safe_reply(message, f"{title}\n\n{body}", reply_markup=keyboard)
+
+
+async def _send_materials_entry(message: Message, plan_name: str = "free") -> None:
+    materials_url, resolved_plan = resolve_materials_launch(plan_name)
+    if not materials_url:
+        await _send_webapp_entry(
+            message,
+            "🧩 <b>Materiallar</b>",
+            "Qo'shimcha material sahifalari hali ulanmagan. Hozircha kutubxona bo'limi ochiladi.",
+            "/library?tab=book",
+            "📚 Kutubxonaga kirish",
+            plan_name=plan_name,
+        )
+        return
+
+    current_label = _plan_display_name(plan_name)
+    resolved_label = _plan_display_name(resolved_plan)
+    note = f"Joriy tarif: <b>{current_label}</b>."
+    if resolved_plan != normalize_plan_name(plan_name):
+        note += (
+            f"\n\nℹ️ {current_label} uchun alohida material linki hali kiritilmagan. "
+            f"Vaqtincha <b>{resolved_label}</b> pack ochiladi."
+        )
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🧩 Materiallarni ochish", web_app=WebAppInfo(url=materials_url))]
+        ]
+    )
+    await safe_reply(
+        message,
+        "🧩 <b>Qo'shimcha Materiallar</b>\n\n"
+        "Tarifingizga mos prezentatsiyalar, mashqlar va tayyor lesson packlar shu yerda.\n\n"
+        f"{note}",
+        reply_markup=keyboard,
+    )
 
 
 @router.message(is_menu_action)
@@ -117,6 +168,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
             return
 
         uid = message.from_user.id
+        plan_name = await subscription_dao.get_active_plan_name(db_user["user_id"])
         bot = message.bot
 
         admin_actions = {
@@ -183,7 +235,6 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
             return
 
         if action == "main_menu":
-            plan_name = await subscription_dao.get_active_plan_name(db_user["user_id"])
             await safe_reply(
                 message,
                 "🏠 <b>Bosh menyu</b>",
@@ -260,6 +311,10 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
             await _send_daily_word(message, uid)
             return
 
+        if action == "materials":
+            await _send_materials_entry(message, plan_name=plan_name)
+            return
+
         if action == "subscribe":
             from src.bot.handlers.subscription.plans import cmd_subscribe
 
@@ -294,6 +349,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
                 "Jahon adabiyoti, qo'llanmalar va keng materiallar bazasi.",
                 "/library?tab=book",
                 "📚 Kutubxonaga kirish",
+                plan_name=plan_name,
             )
             return
 
@@ -304,6 +360,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
                 "Qiziqarli ilmiy faktlar va foydali bilimlar bo'limi.",
                 "/library?tab=fact",
                 "💡 Faktlarni ochish",
+                plan_name=plan_name,
             )
             return
 
@@ -314,6 +371,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
                 "Mantiqiy savollar, mini challenge va javobli materiallar shu yerda.",
                 "/library?tab=quiz",
                 "🧠 Zakovatga o'tish",
+                plan_name=plan_name,
             )
             return
 
@@ -332,6 +390,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
                 "Mantiqiy fikrlash darajangizni tekshiruvchi maxsus test.",
                 "/iqtest",
                 "🧠 IQ Testni boshlash",
+                plan_name=plan_name,
             )
             return
 
@@ -342,6 +401,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
                 "Diqqatni jamlash va fokus bloklarini yig'ish uchun taymer.",
                 "/pomodoro",
                 "⏱ Pomodoro taymerni ochish",
+                plan_name=plan_name,
             )
             return
 
@@ -354,8 +414,21 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
         if action == "game_mafia":
             await safe_reply(
                 message,
-                "🕵️ <b>Mafiya</b>\n\n"
-                "Bu o'yin guruhda ishlaydi. Botni guruhga qo'shing va <code>/mafia</code> deb yozing.",
+                "🕵️ <b>Mafiya o'yini</b>\n\n"
+                "Bu o'yin <b>guruhda</b> ishlaydi.\n\n"
+                "📌 <b>Qadamlar:</b>\n"
+                "1. Botni guruhga qo'shing\n"
+                "2. Guruhda <code>/mafia</code> yozing\n"
+                "3. Do'stlaringiz <b>🎮 Qo'shilish</b> tugmasini bossin\n"
+                "4. Kamida 4 kishi to'lganda <b>🚀 Boshlash</b>ni bosing\n\n"
+                "📋 <b>Rollar:</b>\n"
+                "🔪 Mafiya — kechasi qurbon tanlaydi\n"
+                "💊 Doktor — kechasi birini himoya qiladi\n"
+                "🔍 Detektiv — kechasi birini tekshiradi\n"
+                "👤 Fuqaro — kunduzi mafiyani ovoz bilan topadi\n\n"
+                "⏱ Kecha: 90s | Kunduz: 120s\n"
+                "👥 Min: 4 | Max: 12 o'yinchi\n\n"
+                "<i>O'yinni to'xtatish uchun guruhda /stopm yozing.</i>",
             )
             return
 
@@ -366,6 +439,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
                 "AI yoki do'stingizga qarshi X-O o'ynang.",
                 "/games/xo",
                 "❌ X-O o'ynash",
+                plan_name=plan_name,
             )
             return
 
@@ -376,6 +450,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
                 "Juftliklarni toping va xotirangizni mustahkamlang.",
                 "/games/memory",
                 "🃏 Xotira o'yinini ochish",
+                plan_name=plan_name,
             )
             return
 
@@ -414,6 +489,7 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
                 "WebApp ichida X-O, xotira, sudoku va boshqa o'yinlar markazi.",
                 "/games",
                 "🕹️ O'yinlar markazini ochish",
+                plan_name=plan_name,
             )
             return
 

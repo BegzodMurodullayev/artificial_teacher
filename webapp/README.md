@@ -17,3 +17,8 @@ Use any static hosting:
 
 After deploy, set the URL to bot `.env`:
 - `WEB_APP_URL=https://your-domain.example`
+- Optional (har tarif uchun alohida domen/subdomain):
+  - `WEB_APP_URL_FREE=...`
+  - `WEB_APP_URL_STANDARD=...`
+  - `WEB_APP_URL_PRO=...`
+  - `WEB_APP_URL_PREMIUM=...`

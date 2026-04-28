@@ -25,9 +25,18 @@ class SponsorMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: dict[str, Any],
     ) -> Any:
-        # Skip for non-private chats
+        # Skip for non-private chats (messages)
         if isinstance(event, Message) and event.chat.type != "private":
             return await handler(event, data)
+
+        # Skip for non-private callback queries and inline-mode callbacks
+        # Inline callbacks often do not include `message`, and we cannot reliably
+        # show sponsor prompt there. Let the business callback handler run.
+        if isinstance(event, CallbackQuery):
+            if not event.message:
+                return await handler(event, data)
+            if event.message.chat.type != "private":
+                return await handler(event, data)
 
         # Skip for admins/owners
         db_user = data.get("db_user")
@@ -85,7 +94,13 @@ class SponsorMiddleware(BaseMiddleware):
 
         if isinstance(event, Message):
             await event.answer(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
-        elif isinstance(event, CallbackQuery) and event.message:
-            await event.message.answer(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+        elif isinstance(event, CallbackQuery):
+            # Always answer callback to stop Telegram loading spinner
+            try:
+                await event.answer("Obuna tekshiruvi talab qilinadi.", show_alert=False)
+            except Exception:
+                pass
+            if event.message:
+                await event.message.answer(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
 
         return None  # Block handler

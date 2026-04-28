@@ -18,6 +18,7 @@ def get_user_router() -> Router:
     from src.bot.handlers.user.pronunciation import router as pronunciation_router
     from src.bot.handlers.user.check import router as check_router
     from src.bot.handlers.user.check import get_check_callback_router
+    from src.bot.handlers.user.webapp_data import router as webapp_data_router
     from src.bot.handlers.user.message_handler import router as message_router
 
     # Register sub-routers (order matters — specific before generic)
@@ -29,6 +30,7 @@ def get_user_router() -> Router:
     router.include_router(pronunciation_router)
     router.include_router(check_router)
     router.include_router(get_check_callback_router())  # rpt_prv: / rpt_pub: / aud_prv: / aud_pub: callbacks
+    router.include_router(webapp_data_router)    # Telegram WebApp sendData payloads
     router.include_router(message_router)        # Catch-all text/voice → AI Teacher Smart Router (MUST be last)
 
     return router
