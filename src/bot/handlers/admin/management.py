@@ -93,21 +93,27 @@ def _payment_config_keyboard(cfg: dict[str, str]) -> InlineKeyboardMarkup:
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=f"Manual {'✅' if manual_on else '❌'}",
+                    text=f"💳 Manual to'lov: {'✅ Yoqilgan' if manual_on else '❌ O\'chirilgan'}",
                     callback_data="adm_mgmt:cfg:toggle:manual",
-                ),
+                )
+            ],
+            [
                 InlineKeyboardButton(
-                    text=f"Stars {'✅' if stars_on else '❌'}",
+                    text=f"⭐ Telegram Stars: {'✅ Yoqilgan' if stars_on else '❌ O\'chirilgan'}",
                     callback_data="adm_mgmt:cfg:toggle:stars",
-                ),
+                )
             ],
             [
-                InlineKeyboardButton(text="✏️ Provider", callback_data="adm_mgmt:cfg:set:provider_name"),
-                InlineKeyboardButton(text="✏️ Karta", callback_data="adm_mgmt:cfg:set:card_number"),
+                InlineKeyboardButton(text="💳 Karta raqamini kiritish", callback_data="adm_mgmt:cfg:set:card_number"),
             ],
             [
-                InlineKeyboardButton(text="✏️ Karta egasi", callback_data="adm_mgmt:cfg:set:card_holder"),
-                InlineKeyboardButton(text="✏️ Receipt kanal", callback_data="adm_mgmt:cfg:set:receipt_channel"),
+                InlineKeyboardButton(text="👤 Karta egasining ism-familiyasi", callback_data="adm_mgmt:cfg:set:card_holder"),
+            ],
+            [
+                InlineKeyboardButton(text="🏦 To'lov usuli (Provider)", callback_data="adm_mgmt:cfg:set:provider_name"),
+            ],
+            [
+                InlineKeyboardButton(text="📢 Cheklar jo'natiladigan kanal", callback_data="adm_mgmt:cfg:set:receipt_channel"),
             ],
             [InlineKeyboardButton(text="🔙 Dashboard", callback_data="adm:back")],
         ]
