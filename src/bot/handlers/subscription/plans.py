@@ -244,14 +244,14 @@ async def callback_pay_manual(callback: CallbackQuery, db_user: dict | None = No
         text += f"Karta: <code>{escape_html(card_number)}</code>\n"
         if card_holder:
             text += f"Egasi: {escape_html(card_holder)}\n"
-        if receipt_channel:
-            text += f"Cheklar kuzatiladigan kanal: <code>{escape_html(receipt_channel)}</code>\n"
-        text += (
-            "\n📸 <b>To'lov qilgach, chek rasmini shu yerga yuboring.</b>\n"
-            "Admin tez orada ko'rib chiqadi."
-        )
-    else:
-        text += "⚠️ To'lov ma'lumotlari hali sozlanmagan. Adminga murojaat qiling."
+
+    if receipt_channel:
+        text += f"Cheklar kuzatiladigan kanal: <code>{escape_html(receipt_channel)}</code>\n"
+
+    text += (
+        "\n📸 <b>To'lov qilgach, chek rasmini shu yerga yuboring.</b>\n"
+        "Admin tez orada ko'rib chiqadi."
+    )
 
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[[InlineKeyboardButton(text="❌ Bekor qilish", callback_data=f"cancel_pay:{payment_id}")]]
