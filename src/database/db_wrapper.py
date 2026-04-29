@@ -25,8 +25,11 @@ def convert_sql_to_postgres(sql: str) -> str:
     # 2. Convert datetime('now') to CURRENT_TIMESTAMP
     sql = sql.replace("(datetime('now'))", "CAST(CURRENT_TIMESTAMP AS TEXT)")
     sql = sql.replace("datetime('now')", "CAST(CURRENT_TIMESTAMP AS TEXT)")
-    
-    # 3. In PostgreSQL, LIMIT ? OFFSET ? -> LIMIT $1 OFFSET $2
+
+    # 3. Convert AUTOINCREMENT to SERIAL for schema definitions
+    sql = sql.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
+
+    # 4. In PostgreSQL, LIMIT ? OFFSET ? -> LIMIT $1 OFFSET $2
     # This is handled automatically by the ? replacement above!
     
     return sql

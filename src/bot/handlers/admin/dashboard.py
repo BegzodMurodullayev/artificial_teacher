@@ -55,28 +55,7 @@ def _extract_broadcast_text(raw_text: str | None) -> str:
     return parts[1].strip() if len(parts) > 1 else ""
 
 
-def _dashboard_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(text="💳 To'lovlar", callback_data="adm:payments"),
-                InlineKeyboardButton(text="👥 Userlar", callback_data="adm:users"),
-            ],
-            [
-                InlineKeyboardButton(text="📢 Broadcast", callback_data="adm:broadcast"),
-                InlineKeyboardButton(text="📈 Statistika", callback_data="adm:stats"),
-            ],
-            [
-                InlineKeyboardButton(text="⚙️ Rejalar", callback_data="adm:plans"),
-                InlineKeyboardButton(text="🏆 Reyting", callback_data="adm:leaderboard"),
-            ],
-            [
-                InlineKeyboardButton(text="🛡 Adminlar", callback_data="adm:admins"),
-                InlineKeyboardButton(text="💰 To'lov sozlamalari", callback_data="adm:payment_settings"),
-            ],
-            [InlineKeyboardButton(text="📢 Homiy kanallar", callback_data="adm:sponsors")],
-        ]
-    )
+
 
 
 async def _growth_data_last_days(days: int = 7) -> list[dict]:
@@ -180,7 +159,7 @@ async def _render_dashboard(target: Message | CallbackQuery) -> None:
         f"📊 Konversiya: <b>{conversion}</b>\n"
         f"💰 Umumiy tushum: <b>{fmt_price(revenue)}</b>\n"
         f"⏳ Kutilayotgan to'lovlar: <b>{pending}</b>\n\n"
-        "Quyidagi inline tugmalardan bo'limni tanlang."
+        "Pastdagi tugmalardan bo'limni tanlang."
     )
 
     if isinstance(target, CallbackQuery):
