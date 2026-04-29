@@ -167,6 +167,36 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
         if not action:
             return
 
+        await _handle_action(action, message, db_user, state)
+    except Exception as exc:
+        logger.exception("Error in menu_button_handler: %s", exc)
+        await safe_reply(message, "⚠️ Menyuda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
+
+
+@router.callback_query(F.data.startswith("action:"))
+async def menu_callback_handler(callback: CallbackQuery, db_user: dict | None = None, state: FSMContext | None = None):
+    try:
+        db_user = await _ensure_db_user(callback.message, db_user)
+        if not db_user or not callback.message or not callback.from_user:
+            return
+
+        action = callback.data.split(":")[1]
+        if not action:
+            return
+
+        # Replace message.from_user with callback.from_user for consistent ID checking
+        callback.message.from_user = callback.from_user
+        
+        await safe_answer_callback(callback)
+        await _handle_action(action, callback.message, db_user, state)
+    except Exception as exc:
+        logger.exception("Error in menu_callback_handler: %s", exc)
+        await safe_answer_callback(callback, "⚠️ Menyuda xatolik yuz berdi.", show_alert=True)
+
+
+async def _handle_action(action: str, message: Message, db_user: dict, state: FSMContext | None = None):
+    try:
+
         uid = message.from_user.id
         plan_name = await subscription_dao.get_active_plan_name(db_user["user_id"])
         bot = message.bot
@@ -504,5 +534,5 @@ async def menu_button_handler(message: Message, db_user: dict | None = None, sta
             await safe_reply(message, "⚠️ Bu tugma hali qayta ishlanmagan. Iltimos, boshqa bo'limni tanlang.")
 
     except Exception as exc:
-        logger.exception("Error in menu_button_handler: %s", exc)
+        logger.exception("Error in _handle_action: %s", exc)
         await safe_reply(message, "⚠️ Menyuda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
