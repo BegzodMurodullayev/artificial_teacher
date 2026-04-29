@@ -122,6 +122,38 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
         await safe_reply(message, f"✅ <b>Ismingiz o'zgartirildi:</b> {escape_html(new_name)}")
         return
 
+    if current_mode_pre == "PROMO_PENDING":
+        from src.database.dao import reward_dao, subscription_dao
+
+        promo_code = text.strip().upper()
+        promo = await reward_dao.get_promo_code(promo_code)
+        if not promo:
+            await safe_reply(message, "❌ Promo kod topilmadi yoki faol emas.")
+            return
+
+        max_uses = int(promo.get("max_uses", 0) or 0)
+        used_count = int(promo.get("used_count", 0) or 0)
+        if max_uses and used_count >= max_uses:
+            await safe_reply(message, "❌ Bu promo kod limiti tugagan.")
+            return
+
+        plan_name = (promo.get("plan_name") or "free").strip().lower()
+        days = int(promo.get("days", 0) or 0)
+        if days <= 0:
+            await safe_reply(message, "❌ Promo kod muddati noto'g'ri sozlangan.")
+            return
+
+        await subscription_dao.activate_subscription(user_id, plan_name, days=days)
+        await reward_dao.use_promo_code(promo_code)
+        await mode_manager.clear_mode(user_id)
+        await safe_reply(
+            message,
+            f"✅ <b>Promo kod faollashtirildi!</b>\n\n"
+            f"📋 Reja: <b>{escape_html(plan_name.title())}</b>\n"
+            f"📅 Muddati: <b>{days} kun</b>",
+        )
+        return
+
     # Skip menu button texts
     from src.bot.keyboards.user_menu import resolve_menu_action
     if resolve_menu_action(text):
@@ -177,9 +209,14 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
             direction = "en_to_uz" if is_latin and not is_cyrillic else "uz_to_en"
         await process_translation(message, text, user_id, direction=direction, level=level)
 
-    elif selected_mode in ("PRONUNCIATION", "pronunciation"):
+    elif selected_mode in ("PRONUNCIATION", "pronunciation") or (
+        isinstance(selected_mode, str) and selected_mode.startswith("pronunciation:")
+    ):
         from src.bot.handlers.user.pronunciation import process_pronunciation
-        await process_pronunciation(message, text, user_id)
+        accent = "us"
+        if isinstance(selected_mode, str) and selected_mode.startswith("pronunciation:"):
+            accent = selected_mode.split(":", 1)[1] or "us"
+        await process_pronunciation(message, text, user_id, accent=accent, level=level)
 
     elif selected_mode in ("TECHNICAL", "SUPPORT", "bot", "UNCLEAR"):
         response = await ai_service.ask_ai(text, mode="bot", user_id=user_id, level=level)
@@ -196,4 +233,3 @@ async def smart_message_handler(message: Message, bot: Bot, db_user: dict | None
 def set_pending_custom_lesson(user_id: int):
     """Mark that the next message from this user is a custom lesson topic."""
     _PENDING_CUSTOM_LESSON[user_id] = "pending"
-

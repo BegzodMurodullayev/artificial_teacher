@@ -298,7 +298,15 @@ async def callback_settings_rename(callback: CallbackQuery, db_user: dict | None
 async def callback_back_main(callback: CallbackQuery, db_user: dict | None = None):
     """Handle back to main menu."""
     await safe_answer_callback(callback)
-    await safe_edit(callback, "🏠 <b>Asosiy menyu</b>\n\nNima qilmoqchisiz?")
+    plan_name = await subscription_dao.get_active_plan_name(db_user["user_id"]) if db_user else "free"
+    role = db_user.get("role", "user") if db_user else "user"
+    await safe_edit(callback, "🏠 <b>Asosiy menyu</b>\n\nPastdagi tugmalar orqali bo'limni tanlang.")
+    if callback.message:
+        await safe_reply(
+            callback.message,
+            "Kerakli bo'limni tanlang:",
+            reply_markup=user_main_menu(plan_name, role=role),
+        )
 
 
 @router.callback_query(F.data == "check_sponsor")

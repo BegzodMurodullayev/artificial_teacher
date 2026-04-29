@@ -13,6 +13,11 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 logger = logging.getLogger(__name__)
 
 
+def should_bypass_sponsor_callback(callback_data: str | None) -> bool:
+    """Allow explicit sponsor re-check callbacks to reach their handler."""
+    return callback_data in {"check_sponsor", "sponsor_recheck"}
+
+
 class SponsorMiddleware(BaseMiddleware):
     """
     Checks if user is subscribed to all active sponsor channels.
@@ -36,6 +41,8 @@ class SponsorMiddleware(BaseMiddleware):
             if not event.message:
                 return await handler(event, data)
             if event.message.chat.type != "private":
+                return await handler(event, data)
+            if should_bypass_sponsor_callback(getattr(event, "data", None)):
                 return await handler(event, data)
 
         # Skip for admins/owners

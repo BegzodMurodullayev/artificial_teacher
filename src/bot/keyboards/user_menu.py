@@ -189,11 +189,20 @@ USER_MENU_ALIASES = {
     "quiz": ["🧠 Quiz", "quiz"],
     "lessons": ["📚 Darslar", "📚 Lessons", "lessons", "darslar"],
     "grammar": ["📖 Grammatika", "📖 Grammar", "grammar", "grammatika"],
-    "daily_word": ["🗓 Kunlik so'z"],
-    "stats": ["📊 Statistika", "📈 Darajam", "stats", "statistika", "darajam"],
-    "subscribe": ["⭐ Obuna", "⭐ Subscribe", "subscribe", "obuna"],
+    "daily_word": ["🗓 Kunlik so'z", "📅 Kunlik so'z", "kunlik so'z"],
+    "stats": [
+        "📊 Statistika",
+        "📈 Darajam",
+        "📊 Natijalarim",
+        "stats",
+        "statistika",
+        "darajam",
+        "natijalarim",
+        "darajam / reyting",
+    ],
+    "subscribe": ["⭐ Obuna", "⭐ Subscribe", "subscribe", "obuna", "💳 Tariflar", "💎 Tariflar", "tariflar"],
     "settings": ["⚙️ Sozlamalar", "⚙️ Settings", "settings", "sozlamalar"],
-    "help": ["ℹ️ Yordam", "ℹ️ Aloqa", "help", "yordam", "aloqa"],
+    "help": ["ℹ️ Yordam", "ℹ️ Aloqa", "💬 Aloqa", "help", "yordam", "aloqa"],
     "iq_test": ["🧠 IQ Test", "iq test"],
     "materials": ["🧩 Materiallar", "materiallar", "materials"],
     "library": ["📚 Kutubxona"],
@@ -210,7 +219,17 @@ USER_MENU_ALIASES = {
     "game_translate": ["🏃 Tarjima Poygasi"],
     "game_error": ["🔎 Xato Topish"],
     "game_webapp": ["🕹️ Katta O'yinlar (WebApp)", "🕹️ WebApp O'yinlar"],
-    "main_menu": ["🔙 Asosiy Menyu"],
+    "main_menu": [
+        "🔙 Asosiy Menyu",
+        "Menu",
+        "menu",
+        "Menyu",
+        "menyu",
+        "Bosh menyu",
+        "bosh menyu",
+        "🏠 Menyu",
+        "🏠 Bosh menyu",
+    ],
     "edu_menu": ["🎓 Ta'lim"],
     "test_menu": ["🎯 Sinovlar"],
     "games_menu": ["🎮 O'yinlar", "🎮 Guruh O'yinlari"],
@@ -226,15 +245,16 @@ USER_MENU_ALIASES = {
     "adm_admins": ["🛡 Adminlar"],
     "adm_payment_settings": ["💰 To'lov Sozlamalari"],
     "adm_sponsors": ["📢 Homiy Kanallar"],
-    "bonuses": ["🎁 Bonuslar"],
+    "bonuses": ["🎁 Bonuslar", "🎁 Bonus markazi", "bonuslar", "bonus markazi"],
 }
 
 
 def resolve_menu_action(text: str) -> str | None:
     """Resolve user text to a menu action key."""
     clean = text.strip()
+    clean_folded = clean.casefold()
     for action, aliases in USER_MENU_ALIASES.items():
-        if clean in aliases:
+        if any(clean_folded == alias.strip().casefold() for alias in aliases):
             return action
     return None
 
