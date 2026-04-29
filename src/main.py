@@ -44,14 +44,14 @@ def register_middlewares():
 
     # Order matters: auth → sponsor  (throttle temporarily disabled for debugging)
     # dp.message.middleware(ThrottleMiddleware(rate_limit=0.5))
-    dp.message.middleware(AuthMiddleware())
-    dp.message.middleware(SponsorMiddleware())
+    dp.message.outer_middleware(AuthMiddleware())
+    dp.message.outer_middleware(SponsorMiddleware())
 
     # dp.callback_query.middleware(ThrottleMiddleware(rate_limit=0.3))
-    dp.callback_query.middleware(AuthMiddleware())
-    dp.callback_query.middleware(SponsorMiddleware())
+    dp.callback_query.outer_middleware(AuthMiddleware())
+    dp.callback_query.outer_middleware(SponsorMiddleware())
 
-    dp.inline_query.middleware(AuthMiddleware())
+    dp.inline_query.outer_middleware(AuthMiddleware())
 
     logger.info("All middlewares registered")
 
