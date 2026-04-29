@@ -184,10 +184,10 @@ async def _render_dashboard(target: Message | CallbackQuery) -> None:
     )
 
     if isinstance(target, CallbackQuery):
-        await safe_edit(target, text, reply_markup=_dashboard_keyboard())
+        await safe_edit(target, text, reply_markup=None)
         await safe_answer_callback(target)
     else:
-        await safe_reply(target, text, reply_markup=_dashboard_keyboard())
+        await safe_reply(target, text)
 
 
 async def _ensure_admin_reply_menu(message: Message) -> None:

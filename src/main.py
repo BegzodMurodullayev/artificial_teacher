@@ -81,12 +81,20 @@ def create_api_app():
     app.add_middleware(TelegramAuthMiddleware)
 
     # Health check (supports GET and HEAD for UptimeRobot)
-    @app.api_route("/", methods=["GET", "HEAD"])
+    @app.get("/")
     async def health(request: Request):
         return {"status": "ok", "service": "Artificial Teacher v2.0", "timestamp": time.time()}
 
-    @app.api_route("/health", methods=["GET", "HEAD"])
+    @app.head("/")
+    async def health_head(request: Request):
+        return {"status": "ok"}
+
+    @app.get("/health")
     async def health_check(request: Request):
+        return {"status": "ok"}
+
+    @app.head("/health")
+    async def health_check_head(request: Request):
         return {"status": "ok"}
 
     @app.get("/ping")
