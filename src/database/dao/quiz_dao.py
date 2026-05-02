@@ -26,6 +26,7 @@ async def create_quiz_session(
 ) -> int:
     """Create a new quiz session. Returns session ID."""
     db = await get_db()
+    await db.execute("UPDATE quiz_sessions SET status = 'abandoned' WHERE user_id = ? AND status = 'active'", (user_id,))
     cursor = await db.execute(
         """INSERT INTO quiz_sessions
            (user_id, qtype, level, language, total_questions, question_timeout, chat_id, status)

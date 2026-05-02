@@ -377,7 +377,7 @@ async def _handle_action(action: str, message: Message, db_user: dict, state: FS
                 message,
                 "📚 <b>Kutubxona</b>",
                 "Jahon adabiyoti, qo'llanmalar va keng materiallar bazasi.",
-                "/library?tab=book",
+                "/#/library?tab=book",
                 "📚 Kutubxonaga kirish",
                 plan_name=plan_name,
             )
@@ -388,7 +388,7 @@ async def _handle_action(action: str, message: Message, db_user: dict, state: FS
                 message,
                 "💡 <b>Evrika</b>",
                 "Qiziqarli ilmiy faktlar va foydali bilimlar bo'limi.",
-                "/library?tab=fact",
+                "/#/library?tab=fact",
                 "💡 Faktlarni ochish",
                 plan_name=plan_name,
             )
@@ -399,7 +399,7 @@ async def _handle_action(action: str, message: Message, db_user: dict, state: FS
                 message,
                 "🧠 <b>Zakovat</b>",
                 "Mantiqiy savollar, mini challenge va javobli materiallar shu yerda.",
-                "/library?tab=quiz",
+                "/#/library?tab=quiz",
                 "🧠 Zakovatga o'tish",
                 plan_name=plan_name,
             )
@@ -418,7 +418,7 @@ async def _handle_action(action: str, message: Message, db_user: dict, state: FS
                 message,
                 "🧠 <b>IQ Test</b>",
                 "Mantiqiy fikrlash darajangizni tekshiruvchi maxsus test.",
-                "/iqtest",
+                "/#/iqtest",
                 "🧠 IQ Testni boshlash",
                 plan_name=plan_name,
             )
@@ -429,7 +429,7 @@ async def _handle_action(action: str, message: Message, db_user: dict, state: FS
                 message,
                 "⏱ <b>Pomodoro Timer</b>",
                 "Diqqatni jamlash va fokus bloklarini yig'ish uchun taymer.",
-                "/pomodoro",
+                "/#/pomodoro",
                 "⏱ Pomodoro taymerni ochish",
                 plan_name=plan_name,
             )
@@ -467,7 +467,7 @@ async def _handle_action(action: str, message: Message, db_user: dict, state: FS
                 message,
                 "❌ <b>X-O</b>",
                 "AI yoki do'stingizga qarshi X-O o'ynang.",
-                "/games/xo",
+                "/#/games/xo",
                 "❌ X-O o'ynash",
                 plan_name=plan_name,
             )
@@ -478,7 +478,7 @@ async def _handle_action(action: str, message: Message, db_user: dict, state: FS
                 message,
                 "🃏 <b>Xotira o'yini</b>",
                 "Juftliklarni toping va xotirangizni mustahkamlang.",
-                "/games/memory",
+                "/#/games/memory",
                 "🃏 Xotira o'yinini ochish",
                 plan_name=plan_name,
             )
@@ -523,7 +523,7 @@ async def _handle_action(action: str, message: Message, db_user: dict, state: FS
                 message,
                 "🎮 <b>Katta o'yinlar</b>",
                 "WebApp ichida X-O, xotira, sudoku va boshqa o'yinlar markazi.",
-                "/games",
+                "/#/games",
                 "🕹️ O'yinlar markazini ochish",
                 plan_name=plan_name,
             )

@@ -3,7 +3,8 @@ Stats DAO — user statistics and daily usage tracking.
 """
 
 import logging
-from datetime import date
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from src.database.connection import get_db
 
@@ -81,7 +82,7 @@ async def inc_usage(user_id: int, field: str, amount: int = 1) -> None:
         return
 
     db = await get_db()
-    today = date.today().isoformat()
+    today = datetime.now(ZoneInfo("Asia/Tashkent")).date().isoformat()
     await db.execute(
         """INSERT INTO daily_usage (user_id, usage_date) VALUES (?, ?)
            ON CONFLICT(user_id, usage_date) DO NOTHING""",
@@ -97,7 +98,7 @@ async def inc_usage(user_id: int, field: str, amount: int = 1) -> None:
 async def get_usage_today(user_id: int) -> dict:
     """Get today's usage counters."""
     db = await get_db()
-    today = date.today().isoformat()
+    today = datetime.now(ZoneInfo("Asia/Tashkent")).date().isoformat()
     cursor = await db.execute(
         "SELECT * FROM daily_usage WHERE user_id = ? AND usage_date = ?",
         (user_id, today),

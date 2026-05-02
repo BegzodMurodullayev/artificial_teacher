@@ -3,7 +3,7 @@
  */
 
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { MainLayout } from '@/layouts/MainLayout'
 import { AdminLayout } from '@/layouts/AdminLayout'
 import { Loader } from '@/components/ui/Loader'
@@ -67,7 +67,7 @@ function AppInitializer() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AppInitializer />
       <Routes>
         {/* ── User WebApp ── */}
@@ -139,6 +139,6 @@ export default function App() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }

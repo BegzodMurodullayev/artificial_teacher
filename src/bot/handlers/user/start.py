@@ -169,7 +169,7 @@ async def cmd_library(message: Message, db_user: dict | None = None):
     web_app_url = resolve_webapp_url(plan_name)
     if web_app_url:
         kb = InlineKeyboardMarkup(inline_keyboard=[[
-            InlineKeyboardButton(text="📚 Kutubxonaga kirish", web_app=WebAppInfo(url=f"{web_app_url.rstrip('/')}/library"))
+            InlineKeyboardButton(text="📚 Kutubxonaga kirish", web_app=WebAppInfo(url=f"{web_app_url.rstrip('/')}/#/library"))
         ]])
         await safe_reply(message, "📚 <b>Kutubxona</b>\n\nJahon adabiyoti, faktlar va zakovat savollari markazi!", reply_markup=kb)
     else:
@@ -195,7 +195,7 @@ async def cmd_iqtest(message: Message, db_user: dict | None = None):
     web_app_url = resolve_webapp_url(plan_name)
     if web_app_url:
         kb = InlineKeyboardMarkup(inline_keyboard=[[
-            InlineKeyboardButton(text="🧠 IQ Testni boshlash", web_app=WebAppInfo(url=f"{web_app_url.rstrip('/')}/iqtest"))
+            InlineKeyboardButton(text="🧠 IQ Testni boshlash", web_app=WebAppInfo(url=f"{web_app_url.rstrip('/')}/#/iqtest"))
         ]])
         await safe_reply(message, "🧠 <b>IQ Test</b>\n\nMantiqiy fikrlash darajangizni aniqlovchi va savollari tez-tez yangilanib turuvchi maxsus test!", reply_markup=kb)
     else:
