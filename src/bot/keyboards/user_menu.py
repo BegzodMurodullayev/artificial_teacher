@@ -27,16 +27,8 @@ def normalize_plan_name(plan_name: str = "free") -> str:
 
 
 def resolve_webapp_url(plan_name: str = "free") -> str:
-    """Resolve plan-specific WebApp URL with graceful fallback."""
-    plan = normalize_plan_name(plan_name)
-    plan_url_map = {
-        "free": settings.WEB_APP_URL_FREE,
-        "standard": settings.WEB_APP_URL_STANDARD,
-        "pro": settings.WEB_APP_URL_PRO,
-        "premium": settings.WEB_APP_URL_PREMIUM,
-    }
-    url = plan_url_map.get(plan) or settings.WEB_APP_URL
-    return (url or "").strip()
+    """Resolve the main WebApp URL. Always uses the primary WEB_APP_URL."""
+    return (settings.WEB_APP_URL or "").strip()
 
 
 def resolve_materials_launch(plan_name: str = "free") -> tuple[str, str]:
